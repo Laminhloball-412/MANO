@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: slice-exporter-config
+  namespace: monitoring
+data:
+  slices.json: |
+    [
+      {
+        "slice_id": "slice-1",
+        "slice_type": "eMBB",
+        "sst": 1,
+        "sd": "000001",
+        "amf": "amf-metrics.share.svc.cluster.local:9090",
+        "smf": "smf-metrics.slice-1.svc.cluster.local:9090"
+      },
+      {
+        "slice_id": "slice-2",
+        "slice_type": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "amf": "amf-metrics.share.svc.cluster.local:9090",
+        "smf": "smf-metrics.slice-2.svc.cluster.local:9090"
+      },
+      {
+        "slice_id": "slice-3",
+        "slice_type": "mMTC",
+        "sst": 3,
+        "sd": "000001",
+        "amf": "amf-metrics.share.svc.cluster.local:9090",
+        "smf": "smf-metrics.slice-3.svc.cluster.local:9090"
+      }
+    ]

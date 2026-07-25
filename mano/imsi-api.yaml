@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imsi-api
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: imsi-api
+  template:
+    metadata:
+      labels:
+        app: imsi-api
+    spec:
+      containers:
+        - name: imsi-api
+          image: python:3.11-slim
+          command:
+            - sh
+            - -c
+            - "pip install flask pymongo==3.12.3 -q && python /code/app.py"
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: code
+              mountPath: /code
+      volumes:
+        - name: code
+          configMap:
+            name: imsi-api-code
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: imsi-api-svc
+  namespace: monitoring
+spec:
+  selector:
+    app: imsi-api
+  ports:
+    - port: 5000
+      targetPort: 5000

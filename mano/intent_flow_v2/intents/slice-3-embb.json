@@ -1,0 +1,8 @@
+{
+  "intent_id": "live-slice-3-embb-20260724",
+  "slice_type": "embb",
+  "service": "high-bandwidth video streaming",
+  "bandwidth_mbps": 100,
+  "sst": 1,
+  "sd": "000003"
+}

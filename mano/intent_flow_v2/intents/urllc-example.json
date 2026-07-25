@@ -1,0 +1,6 @@
+{
+  "intent_id": "demo-urllc-001",
+  "service": "industrial robot control",
+  "latency_ms": 5,
+  "reliability_percent": 99.9999
+}

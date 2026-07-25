@@ -1,0 +1,21 @@
+# Repositories nested inside the VM project tree: retain their source, not their history.
+**/.git/
+**/.git.local-backup/
+
+# Rebuildable dependencies and build output
+**/.venv/
+**/venv/
+**/node_modules/
+**/build/
+**/.cache/
+**/__pycache__/
+**/*.py[cod]
+**/*.o
+**/*.a
+**/*.so
+**/*.so.*
+
+# Generated runtime data
+**/*.log
+**/*.sqlite3
+**/media/

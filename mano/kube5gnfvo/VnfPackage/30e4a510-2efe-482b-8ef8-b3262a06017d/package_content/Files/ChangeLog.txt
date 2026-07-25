@@ -1,0 +1,2 @@
+# BSF VNF Package
+# open5gs v2.7.2

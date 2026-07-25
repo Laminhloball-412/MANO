@@ -1,0 +1,33 @@
+{% extends 'bar.html' %}
+{% block title %}Dashboard{% endblock%}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="d-sm-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h1 class="h3 mb-1 text-gray-800">Open5GS Multi-Slice Dashboard</h1>
+      <div class="text-muted">Live operations view powered by Grafana and Prometheus.</div>
+    </div>
+    <a class="btn btn-sm btn-outline-primary"
+       href="{{ GRAFANA_URL }}"
+       target="_blank"
+       rel="noopener noreferrer">
+      <i class="fas fa-external-link-alt"></i> Open in Grafana
+    </a>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body p-0">
+      <iframe
+        src="{{ GRAFANA_URL }}"
+        title="Open5GS Multi-Slice Grafana Dashboard"
+        width="100%"
+        frameborder="0"
+        loading="eager"
+        allowfullscreen
+        style="display:block; border:0; width:100%; height:calc(100vh - 175px); min-height:760px;">
+      </iframe>
+    </div>
+  </div>
+</div>
+{% endblock %}

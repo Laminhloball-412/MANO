@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5G UE Manager</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --border:    #30363d;
+      --accent:    #00d4aa;
+      --accent-dim:#00a882;
+      --danger:    #f85149;
+      --warn:      #e3b341;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --green:     #3fb950;
+      --mono:      'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+    h1 span { color: var(--accent); }
+
+    .badge {
+      margin-left: auto;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--mono);
+      background: #1c2128;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      transition: all 0.3s;
+    }
+    .badge.connecting { border-color: var(--warn); color: var(--warn); }
+    .badge.connected  { border-color: var(--green); color: var(--green); background: #0d1f0d; }
+    .badge.failed     { border-color: var(--danger); color: var(--danger); }
+    .badge.attaching, .badge.authenticating, .badge.random_access {
+      border-color: var(--accent); color: var(--accent);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--accent); }
+    input::placeholder { color: #484f58; }
+
+    .hint {
+      font-size: 11px;
+      color: #484f58;
+      margin-top: 4px;
+      font-family: var(--mono);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    button {
+      flex: 1;
+      padding: 11px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-save {
+      background: #21262d;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-save:hover { background: #30363d; border-color: var(--accent); color: var(--accent); }
+
+    .btn-attach {
+      background: var(--accent);
+      color: #0d1117;
+    }
+    .btn-attach:hover { background: var(--accent-dim); }
+    .btn-attach:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-detach {
+      background: #2d1515;
+      color: var(--danger);
+      border: 1px solid #5c1f1f;
+    }
+    .btn-detach:hover { background: #3d1a1a; }
+
+    .toast {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: none;
+    }
+    .toast.ok  { background: #0d1f0d; border: 1px solid #1f4d1f; color: var(--green); }
+    .toast.err { background: #1f0d0d; border: 1px solid #5c1f1f; color: var(--danger); }
+
+    /* Status panel */
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--text); }
+    .stat-value.green { color: var(--green); }
+    .stat-value.accent { color: var(--accent); }
+    .stat-value.muted  { color: var(--muted); }
+
+    /* Log terminal */
+    .terminal {
+      background: #0a0e14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      height: 380px;
+      overflow-y: auto;
+      padding: 16px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .terminal::-webkit-scrollbar { width: 6px; }
+    .terminal::-webkit-scrollbar-track { background: transparent; }
+    .terminal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .log-line { color: #8b949e; }
+    .log-line.ok    { color: var(--green); }
+    .log-line.info  { color: var(--accent); }
+    .log-line.warn  { color: var(--warn); }
+    .log-line.error { color: var(--danger); }
+    .log-line.pdu   { color: var(--text); font-weight: 600; }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .dot.live { background: var(--green); animation: pulse 1.5s infinite; }
+    .dot.idle { background: var(--muted); }
+
+    .clear-btn {
+      font-size: 11px;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 8px;
+      border-radius: 4px;
+      flex: none;
+    }
+    .clear-btn:hover { color: var(--text); background: var(--border); }
+
+    .step-flow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .step { padding: 3px 8px; border-radius: 4px; background: #1c2128; border: 1px solid var(--border); }
+    .step.active { border-color: var(--accent); color: var(--accent); background: #0d1f1c; }
+    .step.done   { border-color: var(--green);  color: var(--green);  background: #0d1f0d; }
+    .arrow { color: #30363d; }
+
+    @media (max-width: 800px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📡</div>
+  <h1>5G UE <span>Manager</span></h1>
+  <div class="badge" id="badge">DISCONNECTED</div>
+</header>
+
+<div class="grid">
+
+  <!-- LEFT: Config form -->
+  <div class="card">
+    <div class="card-title">UE Configuration</div>
+      <div class="field">
+  <label>IMSI</label>
+  <input id="imsi" type="text" placeholder="460990000000001"
+         value="460990000000001">
+  <div class="hint">15-digit subscriber identity</div>
+      </div>
+
+      <div class="field">
+  <label>Slice SST</label>
+  <input id="sst" type="text" placeholder="1" value="1">
+  <div class="hint">Slice/Service Type (1=eMBB, 2=URLLC)</div>
+      </div>
+
+      <div class="field">
+       <label>Slice SD</label>
+  <input id="sd" type="text" placeholder="000001" value="000001">
+  <div class="hint">Slice Differentiator (6 hex digits)</div>
+      </div>
+    <div class="field">
+      <label>Security Key (K)</label>
+      <input id="k" type="text" placeholder="465B5CE8B199B49FAA5F0A2EE238A6BC"
+             value="465B5CE8B199B49FAA5F0A2EE238A6BC">
+      <div class="hint">128-bit hex, no spaces</div>
+      </div>
+
+    <div class="field">
+      <label>Operator Key (OPc)</label>
+      <input id="opc" type="text" placeholder="E8ED289DEBA952E4283B54E88E6183CA"
+             value="E8ED289DEBA952E4283B54E88E6183CA">
+      <div class="hint">128-bit hex, no spaces</div>
+    </div>
+
+    <div class="field">
+      <label>IMEI</label>
+      <input id="imei" type="text" placeholder="353490069873318"
+             value="353490069873318">
+      <div class="hint">15-digit device identifier</div>
+    </div>
+
+    <div class="field">
+      <label>APN</label>
+      <input id="apn" type="text" placeholder="srsapn" value="srsapn">
+      <div class="hint">Access Point Name</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-save" onclick="saveConfig()">💾 Save Config</button>
+      <button class="btn-attach" id="btn-attach" onclick="attachUE()">▶ Attach UE</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn-detach" onclick="detachUE()">⏹ Detach UE</button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <!-- RIGHT: Status + Logs -->
+  <div>
+    <!-- Status -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title">Connection Status</div>
+
+      <div class="step-flow" id="steps">
+        <span class="step" id="step-attach">Attach</span>
+        <span class="arrow">→</span>
+        <span class="step" id="step-auth">Authenticate</span>
+        <span class="arrow">→</span>
+        <span class="step" id="step-pdu">PDU Session</span>
+        <span class="arrow">→</span>
+        <span class="step" id="step-done">Connected</span>
+      </div>
+
+      <div class="status-grid">
+        <div class="stat">
+          <div class="stat-label">State</div>
+          <div class="stat-value" id="stat-state">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">IP Address</div>
+          <div class="stat-value accent" id="stat-ip">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terminal -->
+    <div class="card">
+      <div class="terminal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="dot idle" id="dot"></span>
+          <span style="font-size:13px; font-weight:600;">Live Output</span>
+        </div>
+        <button class="clear-btn" onclick="clearLogs()">Clear</button>
+      </div>
+      <div class="terminal" id="terminal">
+        <div class="log-line muted" style="color:#484f58;">Waiting for UE attach...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let evtSource = null;
+  let autoScroll = true;
+
+  const terminal  = document.getElementById("terminal");
+  const badge     = document.getElementById("badge");
+  const dot       = document.getElementById("dot");
+  const statState = document.getElementById("stat-state");
+  const statIp    = document.getElementById("stat-ip");
+
+  const STEPS = {
+    attaching:      ["step-attach"],
+    random_access:  ["step-attach", "step-auth"],
+    authenticating: ["step-attach", "step-auth"],
+    connected:      ["step-attach", "step-auth", "step-pdu", "step-done"],
+    failed:         [],
+    disconnected:   []
+  };
+
+  function updateSteps(state) {
+    ["step-attach","step-auth","step-pdu","step-done"].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove("active","done");
+    });
+    const active = STEPS[state] || [];
+    active.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (i === active.length - 1 && state !== "connected") {
+        el.classList.add("active");
+      } else {
+        el.classList.add("done");
+      }
+    });
+  }
+
+  function updateStatus(data) {
+    const state = data.state || "disconnected";
+    const ip    = data.ip || "—";
+
+    statState.textContent = state.replace(/_/g," ").toUpperCase();
+    statState.className   = "stat-value";
+    statIp.textContent    = ip;
+
+    badge.textContent  = state.toUpperCase().replace(/_/g," ");
+    badge.className    = "badge " + state;
+
+    updateSteps(state);
+
+    if (state === "connected") {
+      statState.classList.add("green");
+      dot.className = "dot live";
+    } else if (state === "disconnected" || state === "failed") {
+      dot.className = "dot idle";
+    } else {
+      dot.className = "dot live";
+    }
+  }
+
+  function classForLine(line) {
+    if (line.includes("PDU Session Establishment successful")) return "pdu";
+    if (line.includes("[OK]") || line.includes("RRC Connected") || line.includes("Complete")) return "ok";
+    if (line.includes("[INFO]")) return "info";
+    if (line.includes("[WARN]") || line.includes("Warning")) return "warn";
+    if (line.includes("[ERROR]") || line.includes("Failed") || line.includes("Error")) return "error";
+    return "";
+  }
+
+  function appendLog(line) {
+    if (line === "[PING]") return;
+    const div = document.createElement("div");
+    div.className = "log-line " + classForLine(line);
+    div.textContent = line;
+    terminal.appendChild(div);
+    if (autoScroll) terminal.scrollTop = terminal.scrollHeight;
+  }
+
+  function clearLogs() {
+    terminal.innerHTML = "";
+  }
+
+  terminal.addEventListener("scroll", () => {
+    const atBottom = terminal.scrollHeight - terminal.scrollTop - terminal.clientHeight < 20;
+    autoScroll = atBottom;
+  });
+
+  // Poll status every second
+  setInterval(async () => {
+    try {
+      const r = await fetch("/status");
+      const d = await r.json();
+      updateStatus(d);
+    } catch(e) {}
+  }, 1000);
+
+  function startSSE() {
+    if (evtSource) evtSource.close();
+    evtSource = new EventSource("/logs/stream");
+    evtSource.onmessage = e => appendLog(e.data);
+    evtSource.onerror   = () => { evtSource.close(); evtSource = null; };
+  }
+
+  function showToast(msg, ok) {
+    const t = document.getElementById("toast");
+    t.textContent  = msg;
+    t.className    = "toast " + (ok ? "ok" : "err");
+    t.style.display = "block";
+    setTimeout(() => t.style.display = "none", 4000);
+  }
+
+  async function saveConfig() {
+    const body = {
+      k:    document.getElementById("k").value.trim(),
+      opc:  document.getElementById("opc").value.trim(),
+      imei: document.getElementById("imei").value.trim(),
+      apn:  document.getElementById("apn").value.trim(),
+      imsi: document.getElementById("imsi").value.trim(),
+      sst:  document.getElementById("sst").value.trim(),
+      sd:   document.getElementById("sd").value.trim()
+    };
+
+    if (!body.k || !body.opc || !body.imei || !body.apn) {
+      showToast("All fields are required", false);
+      return;
+    }
+
+    try {
+      const r = await fetch("/save-config", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body)
+      });
+      const d = await r.json();
+      showToast(d.success ? "✓ Config saved to ue_rf.conf" : "✗ " + d.error, d.success);
+    } catch(e) {
+      showToast("✗ Request failed: " + e, false);
+    }
+  }
+
+  async function attachUE() {
+    clearLogs();
+    startSSE();
+
+    try {
+      const r = await fetch("/attach", { method: "POST" });
+      const d = await r.json();
+      if (!d.success) {
+        showToast("✗ " + d.error, false);
+      }
+    } catch(e) {
+      showToast("✗ Request failed: " + e, false);
+    }
+  }
+
+  async function detachUE() {
+    try {
+      const r = await fetch("/detach", { method: "POST" });
+      const d = await r.json();
+      showToast(d.success ? "✓ UE detached" : "✗ " + d.error, d.success);
+    } catch(e) {}
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+{
+  "slice_name": "slice-8",
+  "run_id": "20260626-021941",
+  "source": {
+    "nsd_zip": "/home/ubuntu/mano/descriptor_sources/NSD-1c.zip",
+    "vnf_zip": "/home/ubuntu/mano/descriptor_sources/VNF-slice-1-20260626-090011.zip"
+  },
+  "ids": {
+    "nsd": {
+      "old": "1c8d97c9-4d8f-4c7e-aeab-519103d0bd1a",
+      "new": "cc955b7a-e356-4c8e-ad79-148b352f8c18",
+      "definition": "/home/ubuntu/mano/generated_descriptors_test/slice-8-20260626-021941/NSD/Definitions/ns.yaml",
+      "vnfd_refs": [
+        "c7caccf8-1aa6-4098-bd32-879b91f5asmf",
+        "3786bce5-b6c5-4e51-850a-256fe3451upf",
+        "f6f95e22-2747-45b1-98f5-61f8d9e74pcf"
+      ]
+    },
+    "vnf": {
+      "pcf": {
+        "old": "45e8d26a-b26e-4624-998b-abf14f604pcf",
+        "new": "f6f95e22-2747-45b1-98f5-61f8d9e74pcf",
+        "definition": "/home/ubuntu/mano/generated_descriptors_test/slice-8-20260626-021941/VNF/pcf/Definitions/pcf.yaml"
+      },
+      "smf": {
+        "old": "443593c0-85cf-43e3-bb1c-f4538595bsmf",
+        "new": "c7caccf8-1aa6-4098-bd32-879b91f5asmf",
+        "definition": "/home/ubuntu/mano/generated_descriptors_test/slice-8-20260626-021941/VNF/smf/Definitions/smf.yaml"
+      },
+      "upf": {
+        "old": "47ab5b9b-ce6e-425e-a3d9-9d76325a7upf",
+        "new": "3786bce5-b6c5-4e51-850a-256fe3451upf",
+        "definition": "/home/ubuntu/mano/generated_descriptors_test/slice-8-20260626-021941/VNF/upf/Definitions/upf.yaml"
+      }
+    }
+  },
+  "changed_fqdn_files": [
+    "/home/ubuntu/mano/generated_descriptors_test/slice-8-20260626-021941/VNF/pcf/Files/Artifacts/pcfcfg.conf",
+    "/home/ubuntu/mano/generated_descriptors_test/slice-8-20260626-021941/VNF/smf/Files/Artifacts/smfcfg.conf",
+    "/home/ubuntu/mano/generated_descriptors_test/slice-8-20260626-021941/VNF/upf/Files/Artifacts/upfcfg.conf"
+  ],
+  "validation": {
+    "nsd_vnfd_refs": [
+      "3786bce5-b6c5-4e51-850a-256fe3451upf",
+      "c7caccf8-1aa6-4098-bd32-879b91f5asmf",
+      "f6f95e22-2747-45b1-98f5-61f8d9e74pcf"
+    ],
+    "vnf_descriptor_ids": [
+      "3786bce5-b6c5-4e51-850a-256fe3451upf",
+      "c7caccf8-1aa6-4098-bd32-879b91f5asmf",
+      "f6f95e22-2747-45b1-98f5-61f8d9e74pcf"
+    ]
+  },
+  "outputs": {
+    "run_dir": "/home/ubuntu/mano/generated_descriptors_test/slice-8-20260626-021941",
+    "nsd_zip": "/home/ubuntu/mano/generated_descriptors_test/slice-8-20260626-021941/NSD-slice-8-20260626-021941.zip",
+    "vnf_zip": "/home/ubuntu/mano/generated_descriptors_test/slice-8-20260626-021941/VNF-slice-8-20260626-021941.zip"
+  }
+}

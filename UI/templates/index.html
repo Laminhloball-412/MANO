@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+
+  <title>5G UE Control</title>
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/app.css') }}"
+  >
+
+  <script
+    defer
+    src="{{ url_for('static', filename='js/app.js') }}">
+  </script>
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">5G LAB CONTROL</p>
+        <h1>UE Manager</h1>
+      </div>
+
+      <div class="header-status">
+        <span id="dot" class="dot idle"></span>
+        <span id="badge" class="badge disconnected">DISCONNECTED</span>
+      </div>
+    </header>
+
+    <main class="app-content">
+
+      <!-- HOME -->
+      <section id="screen-home" class="screen active">
+        <article class="card status-card">
+          <div class="card-heading">
+            <div>
+              <p class="section-label">CURRENT SESSION</p>
+              <h2>UE connection</h2>
+            </div>
+
+            <div class="signal-icon" aria-hidden="true">⌁</div>
+          </div>
+
+          <div class="status-grid">
+            <div class="status-item">
+              <span class="stat-label">Status</span>
+              <strong id="stat-state" class="stat-value">DISCONNECTED</strong>
+            </div>
+
+            <div class="status-item">
+              <span class="stat-label">UE IP address</span>
+              <strong id="stat-ip" class="stat-value">—</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-heading">
+            <div>
+              <p class="section-label">REGISTRATION</p>
+              <h2>Connection progress</h2>
+            </div>
+          </div>
+
+          <div class="progress-list">
+            <div id="step-attach" class="progress-step">
+              <span class="step-marker">1</span>
+              <div>
+                <strong>Network access</strong>
+                <small>Searching and attaching to the cell</small>
+              </div>
+            </div>
+
+            <div id="step-auth" class="progress-step">
+              <span class="step-marker">2</span>
+              <div>
+                <strong>Authentication</strong>
+                <small>USIM and RRC authentication</small>
+              </div>
+            </div>
+
+            <div id="step-pdu" class="progress-step">
+              <span class="step-marker">3</span>
+              <div>
+                <strong>PDU session</strong>
+                <small>Requesting a data connection</small>
+              </div>
+            </div>
+
+            <div id="step-done" class="progress-step">
+              <span class="step-marker">4</span>
+              <div>
+                <strong>Connected</strong>
+                <small>UE is ready for data traffic</small>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div class="action-stack">
+          <button id="attach-btn" class="button button-primary" type="button" onclick="attachUE()">
+            <span>▶</span>
+            Attach UE
+          </button>
+
+          <button id="detach-btn" class="button button-danger" type="button" onclick="detachUE()">
+            <span>■</span>
+            Detach UE
+          </button>
+        </div>
+      </section>
+
+      <!-- CONFIG -->
+      <section id="screen-config" class="screen">
+        <div class="screen-heading">
+          <p class="section-label">SUBSCRIBER PROFILE</p>
+          <h2>UE configuration</h2>
+          <p>Enter the subscriber and network parameters used by srsUE.</p>
+        </div>
+
+        <article class="card">
+          <div class="form-field">
+            <label for="imsi">IMSI</label>
+            <input
+              id="imsi"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="Enter IMSI"
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="k">Authentication key (K)</label>
+            <input
+              id="k"
+              type="password"
+              autocomplete="new-password"
+              placeholder="32 hexadecimal characters"
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="opc">Operator key (OPc)</label>
+            <input
+              id="opc"
+              type="password"
+              autocomplete="new-password"
+              placeholder="32 hexadecimal characters"
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="imei">IMEI</label>
+            <input
+              id="imei"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="Enter IMEI"
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="apn">APN / DNN</label>
+            <input
+              id="apn"
+              type="text"
+              autocomplete="off"
+              placeholder="Example: srsapn"
+            >
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="sst">SST</label>
+              <input
+                id="sst"
+                type="number"
+                inputmode="numeric"
+                min="0"
+                max="255"
+                placeholder="1"
+              >
+            </div>
+
+            <div class="form-field">
+              <label for="sd">SD</label>
+              <input
+                id="sd"
+                type="text"
+                autocomplete="off"
+                placeholder="000001"
+              >
+            </div>
+          </div>
+
+          <button class="button button-primary" type="button" onclick="saveConfig()">
+            Save configuration
+          </button>
+        </article>
+      </section>
+
+      <!-- LOGS -->
+      <section id="screen-logs" class="screen">
+        <div class="screen-heading logs-heading">
+          <div>
+            <p class="section-label">LIVE OUTPUT</p>
+            <h2>srsUE logs</h2>
+          </div>
+
+          <button class="icon-button" type="button" onclick="clearLogs()">
+            Clear
+          </button>
+        </div>
+
+        <article class="terminal-card">
+          <div class="terminal-toolbar">
+            <div class="terminal-dots" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <span>Live terminal</span>
+          </div>
+
+          <div id="terminal" class="terminal" aria-live="polite">
+            <div class="log-line info">Waiting for UE logs...</div>
+          </div>
+        </article>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="screen-about" class="screen">
+        <div class="screen-heading">
+          <p class="section-label">SYSTEM INFORMATION</p>
+          <h2>About this demo</h2>
+        </div>
+
+        <article class="card about-card">
+          <div class="about-logo">5G</div>
+          <h3>5G UE Control</h3>
+          <p>
+            Mobile-first control interface for configuring, attaching and
+            monitoring an srsUE instance in the laboratory.
+          </p>
+
+          <dl class="about-list">
+            <div>
+              <dt>Frontend</dt>
+              <dd>Responsive Web App</dd>
+            </div>
+            <div>
+              <dt>Backend</dt>
+              <dd>Flask</dd>
+            </div>
+            <div>
+              <dt>UE</dt>
+              <dd>srsRAN</dd>
+            </div>
+          </dl>
+        </article>
+      </section>
+
+    </main>
+
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <button class="nav-item active" type="button" data-target="home">
+        <span class="nav-icon">⌂</span>
+        <span>Home</span>
+      </button>
+
+      <button class="nav-item" type="button" data-target="config">
+        <span class="nav-icon">⚙</span>
+        <span>Config</span>
+      </button>
+
+      <button class="nav-item" type="button" data-target="logs">
+        <span class="nav-icon">≡</span>
+        <span>Logs</span>
+      </button>
+
+      <button class="nav-item" type="button" data-target="about">
+        <span class="nav-icon">ⓘ</span>
+        <span>About</span>
+      </button>
+    </nav>
+
+    <div id="toast" class="toast" role="status"></div>
+  </div>
+</body>
+</html>

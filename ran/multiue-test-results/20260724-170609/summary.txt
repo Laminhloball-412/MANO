@@ -1,0 +1,13 @@
+run_id=20260724-170609
+rounds=1
+ues=1 2 3
+attach_wait=20
+drain_wait=8
+ue_start_gap=3
+=== ROUND 1/1 ===
+ROUND 1: UE1 PASS IP=10.45.0.17
+ROUND 1: UE2 PASS IP=10.45.0.10
+ROUND 1: UE3 PASS IP=10.45.0.10
+ROUND 1: PASS (3/3 UEs)
+FINAL: 1/1 rounds passed with 3/3 UEs
+RESULT_DIR=/home/ubuntu/ran/multiue-test-results/20260724-170609

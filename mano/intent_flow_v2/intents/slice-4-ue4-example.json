@@ -1,0 +1,8 @@
+{
+  "intent_id": "live-slice-4-ue4-20260724",
+  "slice_type": "embb",
+  "service": "UE4 high-bandwidth research traffic",
+  "bandwidth_mbps": 100,
+  "availability": "high",
+  "description": "Create the next free eMBB slice for UE4; namespace and SD are allocated automatically."
+}

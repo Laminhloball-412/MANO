@@ -1,0 +1,20 @@
+run_id=20260724-170938
+rounds=2
+ues=1 2 3
+reset_ip_state=1
+reset_namespaces=slice-1 slice-2 slice-3
+attach_wait=20
+drain_wait=5
+ue_start_gap=3
+=== ROUND 1/2 ===
+ROUND 1: UE1 PASS IP=10.45.0.1
+ROUND 1: UE2 FAIL RRC Connected
+ROUND 1: UE3 PASS IP=10.45.0.1
+ROUND 1: FAIL
+=== ROUND 2/2 ===
+ROUND 2: UE1 PASS IP=10.45.0.1
+ROUND 2: UE2 FAIL RRC Connected
+ROUND 2: UE3 PASS IP=10.45.0.1
+ROUND 2: FAIL
+FINAL: 0/2 rounds passed with 3/3 UEs
+RESULT_DIR=/home/ubuntu/ran/multiue-test-results/20260724-170938

@@ -1,0 +1,30 @@
+run_id=20260724-155525
+rounds=5
+attach_wait=24
+=== ROUND 1/5 ===
+ROUND 1: UE1 FAIL RRC Connected
+ROUND 1: UE2 PASS IP=10.45.0.2
+ROUND 1: UE3 PASS IP=10.45.0.2
+ROUND 1: FAIL
+=== ROUND 2/5 ===
+ROUND 2: UE1 PASS IP=10.45.0.2
+ROUND 2: UE2 PASS IP=10.45.0.3
+ROUND 2: UE3 PASS IP=10.45.0.3
+ROUND 2: PASS (3/3 UEs)
+=== ROUND 3/5 ===
+ROUND 3: UE1 PASS IP=10.45.0.3
+ROUND 3: UE2 FAIL PDU Session Establishment Reject with cause: Network failure
+ROUND 3: UE3 PASS IP=10.45.0.4
+ROUND 3: FAIL
+=== ROUND 4/5 ===
+ROUND 4: UE1 PASS IP=10.45.0.4
+ROUND 4: UE2 PASS IP=10.45.0.5
+ROUND 4: UE3 PASS IP=10.45.0.5
+ROUND 4: PASS (3/3 UEs)
+=== ROUND 5/5 ===
+ROUND 5: UE1 FAIL RRC Connected
+ROUND 5: UE2 PASS IP=10.45.0.6
+ROUND 5: UE3 FAIL PDU Session Establishment Reject with cause: Network failure
+ROUND 5: FAIL
+FINAL: 2/5 rounds passed with 3/3 UEs
+RESULT_DIR=/home/ubuntu/ran/multiue-test-results/20260724-155525

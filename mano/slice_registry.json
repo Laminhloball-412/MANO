@@ -1,0 +1,26 @@
+{
+  "slots": {
+    "1": {
+      "nssi_id": "35eaf9a1-dc9d-42ee-b19f-7327169d560f",
+      "slice_name": "slice-1",
+      "namespace": "slice-1",
+      "template_id": "790a5368-15ac-4463-9d29-8d9e8892d6cc",
+      "created_at": "2026-07-23T12:37:33"
+    },
+    "2": {
+      "nssi_id": "20b59e90-66dd-4c6f-9812-553e972e1c7a",
+      "slice_name": "slice-2",
+      "namespace": "slice-2",
+      "template_id": "6fb3b8de-641a-4eeb-b24c-ca98157a6b3a",
+      "created_at": "2026-07-23T12:39:47"
+    },
+    "3": null,
+    "4": null,
+    "5": null,
+    "6": null,
+    "7": null,
+    "8": null,
+    "9": null,
+    "10": null
+  }
+}

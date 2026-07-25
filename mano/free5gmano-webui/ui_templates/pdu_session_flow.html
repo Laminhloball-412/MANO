@@ -1,0 +1,116 @@
+{% extends 'bar.html' %}
+{% block title %}PDU Session Flow{% endblock %}
+{% block js %}
+<style>
+  .pdu-hero { background: linear-gradient(120deg, #263d78, #4e73df); color: #fff; border: 0; }
+  .pdu-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 7px; }
+  .pdu-dot-live { background: #1cc88a; box-shadow: 0 0 0 4px rgba(28,200,138,.15); }
+  .pdu-dot-idle { background: #f6c23e; }
+  .pdu-kpi { font-size: 1.05rem; font-weight: 700; color: #3a3b45; overflow-wrap: anywhere; }
+  .pdu-kpi-label { font-size: .68rem; font-weight: 800; letter-spacing: .08em; color: #858796; text-transform: uppercase; }
+  .pdu-flow { display: grid; grid-template-columns: 86px 1fr; gap: 0 18px; }
+  .pdu-plane { font-size: .72rem; font-weight: 800; color: #4e73df; text-align: right; padding-top: 19px; }
+  .pdu-event { position: relative; border-left: 2px solid #dfe4ee; padding: 13px 0 17px 25px; min-height: 82px; }
+  .pdu-event:before { content: ""; position: absolute; left: -7px; top: 20px; width: 12px; height: 12px; border-radius: 50%; background: #858796; border: 3px solid #fff; box-shadow: 0 0 0 1px #dfe4ee; }
+  .pdu-event.context-observed:before { background: #4e73df; }
+  .pdu-event.live:before { background: #1cc88a; }
+  .pdu-event.capture-required:before { background: #f6c23e; }
+  .pdu-event.inactive:before, .pdu-event.not-observed:before { background: #858796; }
+  .pdu-arrow { color: #4e73df; font-weight: 700; }
+  .pdu-session-row { cursor: pointer; }
+  .pdu-session-row.is-selected { background: #eef3ff; }
+  .pdu-mono { font-family: Consolas, "Liberation Mono", monospace; }
+  @media (max-width: 767px) {
+    .pdu-flow { grid-template-columns: 1fr; }
+    .pdu-plane { text-align: left; padding: 12px 0 0 25px; }
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h3 mb-1 text-gray-800">PDU Session Flow</h1>
+      <div class="text-muted">Follow each UE from session establishment to its N3 user-plane tunnel.</div>
+    </div>
+    <div>
+      <span class="small text-muted mr-2" id="pdu-last-update">Not updated</span>
+      <button class="btn btn-sm btn-outline-primary" onclick="loadPduFlow(true)">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="card shadow mb-4 pdu-hero">
+    <div class="card-body d-md-flex align-items-center justify-content-between">
+      <div>
+        <div class="small text-uppercase font-weight-bold mb-1">Selected UE</div>
+        <div class="h4 mb-1" id="pdu-selected-name">Waiting for Open5GS...</div>
+        <div id="pdu-selected-supi" class="small text-white-50">—</div>
+      </div>
+      <div class="mt-3 mt-md-0 text-md-right">
+        <div id="pdu-selected-state" class="font-weight-bold">Checking session</div>
+        <div class="small text-white-50">Auto-refresh every 5 seconds</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pdu-alert" class="alert alert-info">Reading live session context from Open5GS...</div>
+
+  <div class="row">
+    <div class="col-xl-4 mb-4">
+      <div class="card shadow h-100">
+        <div class="card-header py-3 d-flex justify-content-between">
+          <h6 class="m-0 font-weight-bold text-primary">UE sessions</h6>
+          <span class="badge badge-light" id="pdu-session-count">0</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead><tr><th>UE</th><th>Slice</th><th>State</th></tr></thead>
+            <tbody id="pdu-session-list">
+              <tr><td colspan="3" class="text-center text-muted py-4">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-8 mb-4">
+      <div class="card shadow h-100">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Session identity and tunnel</h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 col-6 mb-3"><div class="pdu-kpi-label">UE IPv4</div><div class="pdu-kpi pdu-mono" id="kpi-ip">—</div></div>
+            <div class="col-md-3 col-6 mb-3"><div class="pdu-kpi-label">PDU Session ID</div><div class="pdu-kpi" id="kpi-psi">—</div></div>
+            <div class="col-md-3 col-6 mb-3"><div class="pdu-kpi-label">DNN</div><div class="pdu-kpi" id="kpi-dnn">—</div></div>
+            <div class="col-md-3 col-6 mb-3"><div class="pdu-kpi-label">S-NSSAI</div><div class="pdu-kpi" id="kpi-snssai">—</div></div>
+            <div class="col-md-3 col-6 mb-3"><div class="pdu-kpi-label">QFI / 5QI</div><div class="pdu-kpi" id="kpi-qos">—</div></div>
+            <div class="col-md-3 col-6 mb-3"><div class="pdu-kpi-label">UL TEID</div><div class="pdu-kpi pdu-mono" id="kpi-ul-teid">—</div></div>
+            <div class="col-md-3 col-6 mb-3"><div class="pdu-kpi-label">DL TEID</div><div class="pdu-kpi pdu-mono" id="kpi-dl-teid">—</div></div>
+            <div class="col-md-3 col-6 mb-3"><div class="pdu-kpi-label">PDR</div><div class="pdu-kpi" id="kpi-pdr">—</div></div>
+          </div>
+          <hr>
+          <div class="small text-muted mb-2">N3 path</div>
+          <div class="pdu-mono small"><span id="kpi-gnb">gNB —</span> <span class="pdu-arrow mx-2">→ GTP-U →</span> <span id="kpi-upf">UPF —</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">End-to-end session procedure</h6>
+      <span class="badge badge-warning" id="capture-badge">Context view</span>
+    </div>
+    <div class="card-body">
+      <div class="alert alert-warning small" id="capture-note"></div>
+      <div class="pdu-flow" id="pdu-timeline"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block foot_js %}
+<script src="/static/js/nm_js/pdu_session_flow.js?v=20260724-3"></script>
+{% endblock %}

@@ -1,0 +1,6 @@
+{
+  "intent_id": "demo-embb-001",
+  "service": "4K video streaming",
+  "bandwidth_mbps": 100,
+  "availability": "high"
+}

@@ -1,0 +1,16 @@
+tosca_definitions_version: tosca_simple_yaml_1_2
+
+topology_template:
+  node_templates:
+    NS1:
+      type: tosca.nodes.nfv.NS
+      properties:
+        descriptor_id: cc955b7a-e356-4c8e-ad79-148b352f8c18
+        designer: imac
+        version: 1.0
+        name: open5gs-ns
+        invariant_id: 1111-2222-aaaa-cccc
+        constituent_vnfd:
+          - vnfd_id: c7caccf8-1aa6-4098-bd32-879b91f5asmf
+          - vnfd_id: 3786bce5-b6c5-4e51-850a-256fe3451upf
+          - vnfd_id: f6f95e22-2747-45b1-98f5-61f8d9e74pcf

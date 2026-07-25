@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: slice-exporter
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: slice-exporter
+rules:
+  - apiGroups: [""]
+    resources: [services, namespaces]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: slice-exporter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: slice-exporter
+subjects:
+  - kind: ServiceAccount
+    name: slice-exporter
+    namespace: monitoring
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: slice-exporter-config
+  namespace: monitoring
+data:
+  # Danh sách slice — thêm/bớt tại đây khi tạo/xóa slice
+  slices.json: |
+    [
+      {"slice_id": "slice-1", "sst": 1, "sd": "000001",
+       "amf": "amf-metrics.share.svc.cluster.local:9090",
+       "smf": "smf-metrics.slice-1.svc.cluster.local:9090"},
+      {"slice_id": "slice-2", "sst": 2, "sd": "000002",
+       "amf": "amf-metrics.share.svc.cluster.local:9090",
+       "smf": "smf-metrics.slice-2.svc.cluster.local:9090"}
+    ]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slice-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: slice-exporter
+  template:
+    metadata:
+      labels:
+        app: slice-exporter
+    spec:
+      serviceAccountName: slice-exporter
+      containers:
+        - name: exporter
+          image: nguyen0105/open5gs-slice-exporter:v4
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SCRAPE_INTERVAL
+              value: "15"
+            - name: PORT
+              value: "8080"
+            - name: CONFIG_FILE
+              value: "/config/slices.json"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+      volumes:
+        - name: config
+          configMap:
+            name: slice-exporter-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slice-exporter
+  namespace: monitoring
+spec:
+  selector:
+    app: slice-exporter
+  ports:
+    - port: 8080
+      targetPort: 8080

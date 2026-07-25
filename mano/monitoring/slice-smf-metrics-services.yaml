@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: smf-metrics
+  namespace: slice-1
+  labels:
+    app.kubernetes.io/name: open5gs-smf-metrics
+    app.kubernetes.io/part-of: auto-slice-monitoring
+spec:
+  selector:
+    app: smf-svc
+  ports:
+    - name: metrics
+      port: 9090
+      targetPort: 9090
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smf-metrics
+  namespace: slice-2
+  labels:
+    app.kubernetes.io/name: open5gs-smf-metrics
+    app.kubernetes.io/part-of: auto-slice-monitoring
+spec:
+  selector:
+    app: smf-svc
+  ports:
+    - name: metrics
+      port: 9090
+      targetPort: 9090
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smf-metrics
+  namespace: slice-3
+  labels:
+    app.kubernetes.io/name: open5gs-smf-metrics
+    app.kubernetes.io/part-of: auto-slice-monitoring
+spec:
+  selector:
+    app: smf-svc
+  ports:
+    - name: metrics
+      port: 9090
+      targetPort: 9090
+      protocol: TCP

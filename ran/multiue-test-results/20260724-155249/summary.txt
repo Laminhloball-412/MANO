@@ -1,0 +1,10 @@
+run_id=20260724-155249
+rounds=1
+attach_wait=25
+=== ROUND 1/1 ===
+ROUND 1: UE1 FAIL no attach status
+ROUND 1: UE2 FAIL no attach status
+ROUND 1: UE3 FAIL no attach status
+ROUND 1: FAIL
+FINAL: 0/1 rounds passed with 3/3 UEs
+RESULT_DIR=/home/ubuntu/ran/multiue-test-results/20260724-155249
