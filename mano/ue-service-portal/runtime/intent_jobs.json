@@ -1,0 +1,6340 @@
+{
+  "intent-ed060d692d37": {
+    "job_id": "intent-ed060d692d37",
+    "status": "FAILED",
+    "stage": "FAILED",
+    "created_at": "2026-08-11T14:42:38.795900+00:00",
+    "input": {
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control"
+      },
+      "qos_requirements": {
+        "max_jitter_ms": 3,
+        "min_throughput_mbps": 2,
+        "min_reliability_percent": 99.999,
+        "max_latency_ms": 10,
+        "message_rate_per_second": 100,
+        "max_packet_loss_percent": 0.01
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T14:42:38.795909+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T14:42:38.796519+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T14:42:39.409043+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T14:42:39.409634+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T14:42:39.411224+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:42:41.080055+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:42:41.080545+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T14:42:41.111035+00:00",
+        "stage": "FAILED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 2.0,
+        "max_latency_ms": 10.0,
+        "max_jitter_ms": 3.0,
+        "max_packet_loss_percent": 0.01,
+        "min_reliability_percent": 99.999,
+        "message_rate_per_second": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "URLLC supports 2.000 Mbps required throughput",
+        "URLLC achievable latency 5.000 ms satisfies maximum 10.000 ms",
+        "Lowest policy cost among eligible profiles: 3"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-6cbddd8f99-8c7qc",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-7b44585b4d-zl79l"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "failed_at": "2026-08-11T14:42:41.110953+00:00",
+    "error": "Command '['sudo', '-n', 'ip', 'netns', 'list']' returned non-zero exit status 1."
+  },
+  "intent-586ff727a61f": {
+    "job_id": "intent-586ff727a61f",
+    "status": "RUNNING",
+    "stage": "RENDERING_UE_CONFIG",
+    "created_at": "2026-08-11T14:43:41.102807+00:00",
+    "input": {
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control"
+      },
+      "qos_requirements": {
+        "max_jitter_ms": 3,
+        "min_throughput_mbps": 2,
+        "min_reliability_percent": 99.999,
+        "max_latency_ms": 10,
+        "message_rate_per_second": 100,
+        "max_packet_loss_percent": 0.01
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T14:43:41.102822+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T14:43:41.103734+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T14:43:41.804538+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T14:43:41.804872+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T14:43:41.806795+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:43:43.479623+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:43:43.479979+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 2.0,
+        "max_latency_ms": 10.0,
+        "max_jitter_ms": 3.0,
+        "max_packet_loss_percent": 0.01,
+        "min_reliability_percent": 99.999,
+        "message_rate_per_second": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "URLLC supports 2.000 Mbps required throughput",
+        "URLLC achievable latency 5.000 ms satisfies maximum 10.000 ms",
+        "Lowest policy cost among eligible profiles: 3"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-6cbddd8f99-8c7qc",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-7b44585b4d-zl79l"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    }
+  },
+  "intent-9da984d9ded2": {
+    "job_id": "intent-9da984d9ded2",
+    "status": "FAILED",
+    "stage": "FAILED",
+    "created_at": "2026-08-11T14:45:18.833094+00:00",
+    "input": {
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control"
+      },
+      "qos_requirements": {
+        "max_jitter_ms": 3,
+        "min_throughput_mbps": 2,
+        "min_reliability_percent": 99.999,
+        "max_latency_ms": 10,
+        "message_rate_per_second": 100,
+        "max_packet_loss_percent": 0.01
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T14:45:18.833109+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T14:45:18.834550+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T14:45:19.505087+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T14:45:19.505545+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T14:45:19.507562+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:45:21.078561+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:45:21.079008+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T14:45:21.148673+00:00",
+        "stage": "FAILED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 2.0,
+        "max_latency_ms": 10.0,
+        "max_jitter_ms": 3.0,
+        "max_packet_loss_percent": 0.01,
+        "min_reliability_percent": 99.999,
+        "message_rate_per_second": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "URLLC supports 2.000 Mbps required throughput",
+        "URLLC achievable latency 5.000 ms satisfies maximum 10.000 ms",
+        "Lowest policy cost among eligible profiles: 3"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-6cbddd8f99-8c7qc",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-7b44585b4d-zl79l"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "failed_at": "2026-08-11T14:45:21.148554+00:00",
+    "error": "Command '['sudo', '-n', 'ip', 'netns', 'exec', 'ue2', 'ip', 'link', 'set', 'lo', 'up']' returned non-zero exit status 255."
+  },
+  "intent-ae691195cdb4": {
+    "job_id": "intent-ae691195cdb4",
+    "status": "COMPLETED_WITH_WARNING",
+    "stage": "COMPLETED_WITH_WARNING",
+    "created_at": "2026-08-11T14:46:16.941961+00:00",
+    "input": {
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control"
+      },
+      "qos_requirements": {
+        "max_jitter_ms": 3,
+        "min_throughput_mbps": 2,
+        "min_reliability_percent": 99.999,
+        "max_latency_ms": 10,
+        "message_rate_per_second": 100,
+        "max_packet_loss_percent": 0.01
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T14:46:16.941974+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T14:46:16.943925+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T14:46:17.695772+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T14:46:17.696270+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T14:46:17.698262+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:46:19.224333+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:46:19.225214+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T14:46:24.332615+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T14:46:25.338239+00:00",
+        "stage": "VERIFYING_INTERNET"
+      },
+      {
+        "at": "2026-08-11T14:46:28.416145+00:00",
+        "stage": "COMPLETED_WITH_WARNING"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 2.0,
+        "max_latency_ms": 10.0,
+        "max_jitter_ms": 3.0,
+        "max_packet_loss_percent": 0.01,
+        "min_reliability_percent": 99.999,
+        "message_rate_per_second": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "URLLC supports 2.000 Mbps required throughput",
+        "URLLC achievable latency 5.000 ms satisfies maximum 10.000 ms",
+        "Lowest policy cost among eligible profiles: 3"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-6cbddd8f99-8c7qc",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-7b44585b4d-zl79l"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T14:46:24.331939+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1115680,
+          "pgid": 1115680,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1115730,
+          "pgid": 1115730,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1115730,
+          "pgid": 1115730,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.0.1"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue2",
+      "pid": 1115730,
+      "pgid": 1115730,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003/ue2.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003/ue2.runtime.conf"
+      ],
+      "id": 2,
+      "ue": "ue-2",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214619-256003/ue2.runtime.conf",
+      "target_sst": 2,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.0.1"
+    },
+    "completed_at": "2026-08-11T14:46:28.415977+00:00",
+    "internet": {
+      "ok": false,
+      "route_returncode": 0,
+      "ping_returncode": 1,
+      "ping_output": "PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.\n\n--- 8.8.8.8 ping statistics ---\n2 packets transmitted, 0 received, 100% packet loss, time 1028ms\n\n"
+    }
+  },
+  "intent-ace2e1123901": {
+    "job_id": "intent-ace2e1123901",
+    "status": "COMPLETED_WITH_WARNING",
+    "stage": "COMPLETED_WITH_WARNING",
+    "created_at": "2026-08-11T14:48:49.364847+00:00",
+    "input": {
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control"
+      },
+      "qos_requirements": {
+        "max_jitter_ms": 3,
+        "min_throughput_mbps": 2,
+        "min_reliability_percent": 99.999,
+        "max_latency_ms": 10,
+        "message_rate_per_second": 100,
+        "max_packet_loss_percent": 0.01
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T14:48:49.364863+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T14:48:49.367036+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T14:48:50.192987+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T14:48:50.194071+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T14:48:50.196189+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:48:52.097239+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:48:52.098315+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T14:48:59.231379+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T14:49:00.232936+00:00",
+        "stage": "VERIFYING_INTERNET"
+      },
+      {
+        "at": "2026-08-11T14:49:03.359263+00:00",
+        "stage": "COMPLETED_WITH_WARNING"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 2.0,
+        "max_latency_ms": 10.0,
+        "max_jitter_ms": 3.0,
+        "max_packet_loss_percent": 0.01,
+        "min_reliability_percent": 99.999,
+        "message_rate_per_second": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "URLLC supports 2.000 Mbps required throughput",
+        "URLLC achievable latency 5.000 ms satisfies maximum 10.000 ms",
+        "Lowest policy cost among eligible profiles: 3"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-6cbddd8f99-8c7qc",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-7b44585b4d-zl79l"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ],
+        "egress": {
+          "pod": "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-6cbddd8f99-8c7qc",
+          "subnet": "10.45.0.0/16",
+          "masquerade": true
+        }
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T14:48:59.230878+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1118367,
+          "pgid": 1118367,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1118445,
+          "pgid": 1118445,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1118445,
+          "pgid": 1118445,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.0.2"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue2",
+      "pid": 1118445,
+      "pgid": 1118445,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733/ue2.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733/ue2.runtime.conf"
+      ],
+      "id": 2,
+      "ue": "ue-2",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-214854-128733/ue2.runtime.conf",
+      "target_sst": 2,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.0.2"
+    },
+    "completed_at": "2026-08-11T14:49:03.358989+00:00",
+    "internet": {
+      "ok": false,
+      "route_returncode": 0,
+      "ping_returncode": 1,
+      "ping_output": "PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.\n\n--- 8.8.8.8 ping statistics ---\n2 packets transmitted, 0 received, 100% packet loss, time 1046ms\n\n"
+    }
+  },
+  "intent-ac14536db361": {
+    "job_id": "intent-ac14536db361",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T14:56:14.711578+00:00",
+    "input": {
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control"
+      },
+      "qos_requirements": {
+        "max_jitter_ms": 3,
+        "min_throughput_mbps": 2,
+        "min_reliability_percent": 99.999,
+        "max_latency_ms": 10,
+        "message_rate_per_second": 100,
+        "max_packet_loss_percent": 0.01
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T14:56:14.711591+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T14:56:14.713569+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T14:56:15.307458+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T14:56:15.308634+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T14:56:15.310459+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:56:17.064537+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T14:56:17.065725+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T14:56:24.239557+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T14:56:25.241893+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T14:56:25.244310+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 2.0,
+        "max_latency_ms": 10.0,
+        "max_jitter_ms": 3.0,
+        "max_packet_loss_percent": 0.01,
+        "min_reliability_percent": 99.999,
+        "message_rate_per_second": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "URLLC supports 2.000 Mbps required throughput",
+        "URLLC achievable latency 5.000 ms satisfies maximum 10.000 ms",
+        "Lowest policy cost among eligible profiles: 3"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-6cbddd8f99-8c7qc",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-7b44585b4d-zl79l"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T14:56:24.238535+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1124596,
+          "pgid": 1124596,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1124646,
+          "pgid": 1124646,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1124646,
+          "pgid": 1124646,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.0.3"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue2",
+      "pid": 1124646,
+      "pgid": 1124646,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411/ue2.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411/ue2.runtime.conf"
+      ],
+      "id": 2,
+      "ue": "ue-2",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-215619-095411/ue2.runtime.conf",
+      "target_sst": 2,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.0.3"
+    },
+    "completed_at": "2026-08-11T14:56:25.243674+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.0.3"
+    }
+  },
+  "intent-7ae9d8273106": {
+    "job_id": "intent-7ae9d8273106",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T15:17:41.957842+00:00",
+    "input": {
+      "schema_version": "1.0",
+      "input_source": "simulation",
+      "submitted_at": "2026-08-11T15:17:41.955519+00:00",
+      "ue": {
+        "ue_id": 1
+      },
+      "service": {
+        "name": "video_streaming",
+        "category": "video"
+      },
+      "qos_requirements": {
+        "max_jitter_ms": 15,
+        "min_throughput_mbps": 20,
+        "min_reliability_percent": 99,
+        "max_latency_ms": 120,
+        "message_rate_per_second": 30,
+        "max_packet_loss_percent": 1
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T15:17:41.957849+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T15:17:41.959903+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T15:17:42.506413+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T15:17:42.507866+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T15:17:42.509209+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T15:17:44.141325+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T15:17:44.142943+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T15:17:51.307274+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T15:17:52.309875+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T15:17:52.313084+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 1,
+      "name": "ue-1",
+      "imsi": "460990000000001",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue1.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 20.0,
+        "max_latency_ms": 120.0,
+        "max_jitter_ms": 15.0,
+        "max_packet_loss_percent": 1.0,
+        "min_reliability_percent": 99.0,
+        "message_rate_per_second": 30.0
+      },
+      "selected_slice": {
+        "label": "eMBB",
+        "sst": 1,
+        "sd": "000001",
+        "namespace": "slice-1",
+        "selection_cost": 2,
+        "capabilities": {
+          "max_throughput_mbps": 1000.0,
+          "latency_ms": 30.0,
+          "jitter_ms": 15.0,
+          "packet_loss_percent": 1.0,
+          "reliability_percent": 99.0
+        },
+        "slice_type": "embb"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": false,
+          "checks": {
+            "throughput": false,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "eMBB supports 20.000 Mbps required throughput",
+        "eMBB achievable latency 30.000 ms satisfies maximum 120.000 ms",
+        "Lowest policy cost among eligible profiles: 2"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-embb-1785919483-f7c8dffa",
+        "nssi_id": "aa87c4ca-69d8-4e75-8683-8fb8eaf1b466",
+        "sd": "000001",
+        "slice_type": "embb",
+        "sst": 1,
+        "status": "READY",
+        "namespace": "slice-1"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "4316b359-7c2e-40f1-a910-29af81c50upf-cokir-6b8d8dfc89-2zmrf",
+          "c04ecaf9-82db-4cb8-89ed-355a2bb21smf-yatkd-78f74f9d7b-qzmdw",
+          "e113401f-ace5-443d-af02-316071c39pcf-rycgd-75665c6d44-c8tvh"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 1,
+      "target_sst": 1,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T15:17:51.306566+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1144036,
+          "pgid": 1144036,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue1",
+          "pid": 1144115,
+          "pgid": 1144115,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377/ue1.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377/ue1.runtime.conf"
+          ],
+          "id": 1,
+          "ue": "ue-1",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377/ue1.runtime.conf",
+          "target_sst": 1,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue1",
+          "pid": 1144115,
+          "pgid": 1144115,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377/ue1.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377/ue1.runtime.conf"
+          ],
+          "id": 1,
+          "ue": "ue-1",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377/ue1.runtime.conf",
+          "target_sst": 1,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.0.1"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue1",
+      "pid": 1144115,
+      "pgid": 1144115,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377/ue1.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377/ue1.runtime.conf"
+      ],
+      "id": 1,
+      "ue": "ue-1",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-221746-167377/ue1.runtime.conf",
+      "target_sst": 1,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.0.1"
+    },
+    "completed_at": "2026-08-11T15:17:52.312470+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.0.1"
+    }
+  },
+  "intent-3d16fe76a7ea": {
+    "job_id": "intent-3d16fe76a7ea",
+    "status": "RUNNING",
+    "stage": "RENDERING_UE_CONFIG",
+    "created_at": "2026-08-11T15:21:45.741657+00:00",
+    "input": {
+      "schema_version": "1.0",
+      "input_source": "simulation",
+      "submitted_at": "2026-08-11T15:21:45.738265+00:00",
+      "ue": {
+        "ue_id": 1
+      },
+      "service": {
+        "name": "massive_iot",
+        "category": "iot"
+      },
+      "qos_requirements": {
+        "min_throughput_mbps": 0.2,
+        "max_latency_ms": 250,
+        "max_jitter_ms": 120,
+        "max_packet_loss_percent": 5,
+        "min_reliability_percent": 95,
+        "message_rate_per_second": 1
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T15:21:45.741664+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T15:21:45.744970+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T15:21:47.115197+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T15:21:47.120993+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T15:21:47.125724+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T15:21:50.807251+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T15:21:50.809391+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      }
+    ],
+    "ue": {
+      "ue_id": 1,
+      "name": "ue-1",
+      "imsi": "460990000000001",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue1.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 0.2,
+        "max_latency_ms": 250.0,
+        "max_jitter_ms": 120.0,
+        "max_packet_loss_percent": 5.0,
+        "min_reliability_percent": 95.0,
+        "message_rate_per_second": 1.0
+      },
+      "selected_slice": {
+        "label": "mMTC",
+        "sst": 3,
+        "sd": "000001",
+        "namespace": "slice-3",
+        "selection_cost": 1,
+        "capabilities": {
+          "max_throughput_mbps": 2.0,
+          "latency_ms": 200.0,
+          "jitter_ms": 100.0,
+          "packet_loss_percent": 5.0,
+          "reliability_percent": 95.0
+        },
+        "slice_type": "mmtc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "mMTC supports 0.200 Mbps required throughput",
+        "mMTC achievable latency 200.000 ms satisfies maximum 250.000 ms",
+        "Lowest policy cost among eligible profiles: 1"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-mmtc-1785919544-4fa84adb",
+        "nssi_id": "e126611d-2420-4b6b-930c-44a5b3dcbe82",
+        "sd": "000001",
+        "slice_type": "mmtc",
+        "sst": 3,
+        "status": "READY",
+        "namespace": "slice-3"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "81ed3b98-f770-492c-bd69-907c9c73asmf-udxsm-7cbf74c6b-r6wns",
+          "adc04653-df6c-4ad6-aa3e-c36b8ea90upf-pfzwv-55955b4f7c-8wtsv",
+          "eef7ec27-df8f-4845-b755-c92f1df68pcf-fqkln-5b585d7964-79hsd"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    }
+  },
+  "intent-bc499b348ec3": {
+    "job_id": "intent-bc499b348ec3",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T15:24:39.779077+00:00",
+    "input": {
+      "schema_version": "1.0",
+      "input_source": "simulation",
+      "submitted_at": "2026-08-11T15:24:39.776857+00:00",
+      "ue": {
+        "ue_id": 1
+      },
+      "service": {
+        "name": "massive_iot",
+        "category": "iot"
+      },
+      "qos_requirements": {
+        "min_throughput_mbps": 0.2,
+        "max_latency_ms": 250,
+        "max_jitter_ms": 120,
+        "max_packet_loss_percent": 5,
+        "min_reliability_percent": 95,
+        "message_rate_per_second": 1
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T15:24:39.779086+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T15:24:39.781850+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T15:24:40.510412+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T15:24:40.512295+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T15:24:40.514052+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T15:24:50.993367+00:00",
+        "stage": "SLICE_CREATED"
+      },
+      {
+        "at": "2026-08-11T15:24:50.995326+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T15:24:58.188466+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T15:24:59.191904+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T15:24:59.198046+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 1,
+      "name": "ue-1",
+      "imsi": "460990000000001",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue1.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 0.2,
+        "max_latency_ms": 250.0,
+        "max_jitter_ms": 120.0,
+        "max_packet_loss_percent": 5.0,
+        "min_reliability_percent": 95.0,
+        "message_rate_per_second": 1.0
+      },
+      "selected_slice": {
+        "label": "mMTC",
+        "sst": 3,
+        "sd": "000001",
+        "namespace": "slice-3",
+        "selection_cost": 1,
+        "capabilities": {
+          "max_throughput_mbps": 2.0,
+          "latency_ms": 200.0,
+          "jitter_ms": 100.0,
+          "packet_loss_percent": 5.0,
+          "reliability_percent": 95.0
+        },
+        "slice_type": "mmtc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "mMTC supports 0.200 Mbps required throughput",
+        "mMTC achievable latency 200.000 ms satisfies maximum 250.000 ms",
+        "Lowest policy cost among eligible profiles: 1"
+      ]
+    },
+    "slice_result": {
+      "action": "CREATED",
+      "slice": {
+        "intent_id": "web-mmtc-1786461881-fa21302b",
+        "slice_type": "mmtc",
+        "namespace": "slice-4",
+        "sst": 3,
+        "sd": "000001",
+        "status": "READY",
+        "nssi_id": "ce4a2bc9-9062-4590-9d82-22fc17130c01",
+        "pods": [
+          "6b9ce1fd-bc8e-4bba-a816-ade54262aupf-npaut-6df6f5b7f-hlnwl",
+          "704a5b9e-7322-4635-9211-18e2edbaapcf-ewhmp-d6d545d68-t5d8c",
+          "e0a4cc7a-d22d-4d3a-8d64-3c8d30885smf-eoisg-7599fdd7b4-4z2hk"
+        ]
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "6b9ce1fd-bc8e-4bba-a816-ade54262aupf-npaut-6df6f5b7f-hlnwl",
+          "704a5b9e-7322-4635-9211-18e2edbaapcf-ewhmp-d6d545d68-t5d8c",
+          "e0a4cc7a-d22d-4d3a-8d64-3c8d30885smf-eoisg-7599fdd7b4-4z2hk"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 1,
+      "target_sst": 3,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T15:24:58.187513+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1167682,
+          "pgid": 1167682,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue1",
+          "pid": 1167788,
+          "pgid": 1167788,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620/ue1.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620/ue1.runtime.conf"
+          ],
+          "id": 1,
+          "ue": "ue-1",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620/ue1.runtime.conf",
+          "target_sst": 3,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue1",
+          "pid": 1167788,
+          "pgid": 1167788,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620/ue1.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620/ue1.runtime.conf"
+          ],
+          "id": 1,
+          "ue": "ue-1",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620/ue1.runtime.conf",
+          "target_sst": 3,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.0.1"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue1",
+      "pid": 1167788,
+      "pgid": 1167788,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620/ue1.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620/ue1.runtime.conf"
+      ],
+      "id": 1,
+      "ue": "ue-1",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-222453-034620/ue1.runtime.conf",
+      "target_sst": 3,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.0.1"
+    },
+    "completed_at": "2026-08-11T15:24:59.197105+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.0.1"
+    }
+  },
+  "intent-b3ba008382fc": {
+    "job_id": "intent-b3ba008382fc",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T15:39:45.362831+00:00",
+    "input": {
+      "schema_version": "1.0",
+      "input_source": "prometheus_simulation",
+      "submitted_at": "2026-08-11T15:39:45.360111+00:00",
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control",
+        "category": "control"
+      },
+      "measurement_window": {
+        "seconds": 30,
+        "samples": 30,
+        "aggregation": "avg_and_p95"
+      },
+      "observed_kpis": {
+        "reliability_percent_window": 99.999,
+        "latency_ms_p95": 8,
+        "message_rate_per_second_avg": 100,
+        "packet_loss_percent_avg": 0.01,
+        "throughput_mbps_avg": 5,
+        "jitter_ms_p95": 2
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T15:39:45.362838+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T15:39:45.366945+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T15:39:46.038444+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T15:39:46.040445+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T15:39:46.043566+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T15:39:47.322306+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T15:39:47.324286+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T15:39:54.488817+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T15:39:55.495987+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T15:39:55.505299+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "decision_mode": "prometheus_observation_similarity",
+      "observed_kpis": {
+        "throughput_mbps_avg": 5.0,
+        "latency_ms_p95": 8.0,
+        "jitter_ms_p95": 2.0,
+        "packet_loss_percent_avg": 0.01,
+        "reliability_percent_window": 99.999,
+        "message_rate_per_second_avg": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "permitted_by_subscriber": true,
+          "distance": 0.33878,
+          "similarity_score": 66.122,
+          "contributions": {
+            "throughput_mbps_avg": 0.1575,
+            "latency_ms_p95": 0.072,
+            "jitter_ms_p95": 0.0195,
+            "packet_loss_percent_avg": 0.0098,
+            "reliability_percent_window": 0.00998,
+            "message_rate_per_second_avg": 0.07
+          },
+          "reference": {
+            "throughput_mbps_avg": 50.0,
+            "latency_ms_p95": 80.0,
+            "jitter_ms_p95": 15.0,
+            "packet_loss_percent_avg": 0.5,
+            "reliability_percent_window": 99.5,
+            "message_rate_per_second_avg": 30.0
+          }
+        },
+        {
+          "slice_type": "urllc",
+          "permitted_by_subscriber": true,
+          "distance": 0.0,
+          "similarity_score": 100.0,
+          "contributions": {
+            "throughput_mbps_avg": 0.0,
+            "latency_ms_p95": 0.0,
+            "jitter_ms_p95": 0.0,
+            "packet_loss_percent_avg": 0.0,
+            "reliability_percent_window": 0.0,
+            "message_rate_per_second_avg": 0.0
+          },
+          "reference": {
+            "throughput_mbps_avg": 5.0,
+            "latency_ms_p95": 8.0,
+            "jitter_ms_p95": 2.0,
+            "packet_loss_percent_avg": 0.01,
+            "reliability_percent_window": 99.999,
+            "message_rate_per_second_avg": 100.0
+          }
+        },
+        {
+          "slice_type": "mmtc",
+          "permitted_by_subscriber": true,
+          "distance": 0.52458,
+          "similarity_score": 47.542,
+          "contributions": {
+            "throughput_mbps_avg": 0.0168,
+            "latency_ms_p95": 0.172,
+            "jitter_ms_p95": 0.117,
+            "packet_loss_percent_avg": 0.0598,
+            "reliability_percent_window": 0.05998,
+            "message_rate_per_second_avg": 0.099
+          },
+          "reference": {
+            "throughput_mbps_avg": 0.2,
+            "latency_ms_p95": 180.0,
+            "jitter_ms_p95": 80.0,
+            "packet_loss_percent_avg": 3.0,
+            "reliability_percent_window": 97.0,
+            "message_rate_per_second_avg": 1.0
+          }
+        }
+      ],
+      "reasons": [
+        "URLLC has the smallest normalized KPI distance (0.0000)",
+        "Only slice profiles permitted by this subscriber were considered",
+        "Input represents a 30-second aggregated Prometheus observation"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-6cbddd8f99-8c7qc",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-7b44585b4d-zl79l"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T15:39:54.486540+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1189229,
+          "pgid": 1189229,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1189280,
+          "pgid": 1189280,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1189280,
+          "pgid": 1189280,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.0.1"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue2",
+      "pid": 1189280,
+      "pgid": 1189280,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886/ue2.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886/ue2.runtime.conf"
+      ],
+      "id": 2,
+      "ue": "ue-2",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-223949-355886/ue2.runtime.conf",
+      "target_sst": 2,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.0.1"
+    },
+    "completed_at": "2026-08-11T15:39:55.503672+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.0.1"
+    }
+  },
+  "intent-b81235dbd65d": {
+    "job_id": "intent-b81235dbd65d",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T16:21:01.334302+00:00",
+    "input": {
+      "schema_version": "1.0",
+      "input_source": "prometheus_simulation",
+      "submitted_at": "2026-08-11T16:21:01.332457+00:00",
+      "ue": {
+        "ue_id": 1
+      },
+      "service": {
+        "name": "video_streaming",
+        "category": "video"
+      },
+      "measurement_window": {
+        "seconds": 30,
+        "samples": 30,
+        "aggregation": "avg_and_p95"
+      },
+      "observed_kpis": {
+        "reliability_percent_window": 99.5,
+        "latency_ms_p95": 80,
+        "message_rate_per_second_avg": 30,
+        "packet_loss_percent_avg": 0.5,
+        "throughput_mbps_avg": 35,
+        "jitter_ms_p95": 12
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T16:21:01.334308+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T16:21:01.336825+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T16:21:01.955528+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T16:21:01.957724+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T16:21:01.959889+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:21:03.331044+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:21:03.333370+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T16:21:08.505184+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T16:21:09.512383+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T16:21:09.514877+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 1,
+      "name": "ue-1",
+      "imsi": "460990000000001",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue1.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "decision_mode": "prometheus_observation_similarity",
+      "observed_kpis": {
+        "throughput_mbps_avg": 35.0,
+        "latency_ms_p95": 80.0,
+        "jitter_ms_p95": 12.0,
+        "packet_loss_percent_avg": 0.5,
+        "reliability_percent_window": 99.5,
+        "message_rate_per_second_avg": 30.0
+      },
+      "selected_slice": {
+        "label": "eMBB",
+        "sst": 1,
+        "sd": "000001",
+        "namespace": "slice-1",
+        "selection_cost": 2,
+        "capabilities": {
+          "max_throughput_mbps": 1000.0,
+          "latency_ms": 30.0,
+          "jitter_ms": 15.0,
+          "packet_loss_percent": 1.0,
+          "reliability_percent": 99.0
+        },
+        "slice_type": "embb"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "permitted_by_subscriber": true,
+          "distance": 0.057,
+          "similarity_score": 94.3,
+          "contributions": {
+            "throughput_mbps_avg": 0.0525,
+            "latency_ms_p95": 0.0,
+            "jitter_ms_p95": 0.0045,
+            "packet_loss_percent_avg": 0.0,
+            "reliability_percent_window": 0.0,
+            "message_rate_per_second_avg": 0.0
+          },
+          "reference": {
+            "throughput_mbps_avg": 50.0,
+            "latency_ms_p95": 80.0,
+            "jitter_ms_p95": 15.0,
+            "packet_loss_percent_avg": 0.5,
+            "reliability_percent_window": 99.5,
+            "message_rate_per_second_avg": 30.0
+          }
+        },
+        {
+          "slice_type": "urllc",
+          "permitted_by_subscriber": true,
+          "distance": 0.28178,
+          "similarity_score": 71.822,
+          "contributions": {
+            "throughput_mbps_avg": 0.105,
+            "latency_ms_p95": 0.072,
+            "jitter_ms_p95": 0.015,
+            "packet_loss_percent_avg": 0.0098,
+            "reliability_percent_window": 0.00998,
+            "message_rate_per_second_avg": 0.07
+          },
+          "reference": {
+            "throughput_mbps_avg": 5.0,
+            "latency_ms_p95": 8.0,
+            "jitter_ms_p95": 2.0,
+            "packet_loss_percent_avg": 0.01,
+            "reliability_percent_window": 99.999,
+            "message_rate_per_second_avg": 100.0
+          }
+        },
+        {
+          "slice_type": "mmtc",
+          "permitted_by_subscriber": true,
+          "distance": 0.4528,
+          "similarity_score": 54.72,
+          "contributions": {
+            "throughput_mbps_avg": 0.1218,
+            "latency_ms_p95": 0.1,
+            "jitter_ms_p95": 0.102,
+            "packet_loss_percent_avg": 0.05,
+            "reliability_percent_window": 0.05,
+            "message_rate_per_second_avg": 0.029
+          },
+          "reference": {
+            "throughput_mbps_avg": 0.2,
+            "latency_ms_p95": 180.0,
+            "jitter_ms_p95": 80.0,
+            "packet_loss_percent_avg": 3.0,
+            "reliability_percent_window": 97.0,
+            "message_rate_per_second_avg": 1.0
+          }
+        }
+      ],
+      "reasons": [
+        "eMBB has the smallest normalized KPI distance (0.0570)",
+        "Only slice profiles permitted by this subscriber were considered",
+        "Input represents a 30-second aggregated Prometheus observation"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-embb-1785919483-f7c8dffa",
+        "nssi_id": "aa87c4ca-69d8-4e75-8683-8fb8eaf1b466",
+        "sd": "000001",
+        "slice_type": "embb",
+        "sst": 1,
+        "status": "READY",
+        "namespace": "slice-1"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "4316b359-7c2e-40f1-a910-29af81c50upf-cokir-6b8d8dfc89-2zmrf",
+          "c04ecaf9-82db-4cb8-89ed-355a2bb21smf-yatkd-78f74f9d7b-qzmdw",
+          "e113401f-ace5-443d-af02-316071c39pcf-rycgd-75665c6d44-c8tvh"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 1,
+      "target_sst": 1,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T16:21:08.502789+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1226954,
+          "pgid": 1226954,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue1",
+          "pid": 1227004,
+          "pgid": 1227004,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396/ue1.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396/ue1.runtime.conf"
+          ],
+          "id": 1,
+          "ue": "ue-1",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396/ue1.runtime.conf",
+          "target_sst": 1,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue1",
+          "pid": 1227004,
+          "pgid": 1227004,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396/ue1.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396/ue1.runtime.conf"
+          ],
+          "id": 1,
+          "ue": "ue-1",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396/ue1.runtime.conf",
+          "target_sst": 1,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.0.1"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue1",
+      "pid": 1227004,
+      "pgid": 1227004,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396/ue1.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396/ue1.runtime.conf"
+      ],
+      "id": 1,
+      "ue": "ue-1",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232103-363396/ue1.runtime.conf",
+      "target_sst": 1,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.0.1"
+    },
+    "completed_at": "2026-08-11T16:21:09.514537+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.0.1"
+    }
+  },
+  "intent-f0baf293ab95": {
+    "job_id": "intent-f0baf293ab95",
+    "status": "FAILED",
+    "stage": "FAILED",
+    "created_at": "2026-08-11T16:23:55.043461+00:00",
+    "input": {
+      "schema_version": "1.0",
+      "input_source": "prometheus_simulation",
+      "submitted_at": "2026-08-11T16:23:55.039654+00:00",
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control",
+        "category": "control"
+      },
+      "measurement_window": {
+        "seconds": 30,
+        "samples": 30,
+        "aggregation": "avg_and_p95"
+      },
+      "observed_kpis": {
+        "reliability_percent_window": 99.999,
+        "latency_ms_p95": 8,
+        "message_rate_per_second_avg": 100,
+        "packet_loss_percent_avg": 0.01,
+        "throughput_mbps_avg": 5,
+        "jitter_ms_p95": 2
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T16:23:55.043471+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T16:23:55.048686+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T16:23:55.711232+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T16:23:55.713903+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T16:23:55.715718+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:23:55.877986+00:00",
+        "stage": "FAILED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "decision_mode": "prometheus_observation_similarity",
+      "observed_kpis": {
+        "throughput_mbps_avg": 5.0,
+        "latency_ms_p95": 8.0,
+        "jitter_ms_p95": 2.0,
+        "packet_loss_percent_avg": 0.01,
+        "reliability_percent_window": 99.999,
+        "message_rate_per_second_avg": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "permitted_by_subscriber": true,
+          "distance": 0.33878,
+          "similarity_score": 66.122,
+          "contributions": {
+            "throughput_mbps_avg": 0.1575,
+            "latency_ms_p95": 0.072,
+            "jitter_ms_p95": 0.0195,
+            "packet_loss_percent_avg": 0.0098,
+            "reliability_percent_window": 0.00998,
+            "message_rate_per_second_avg": 0.07
+          },
+          "reference": {
+            "throughput_mbps_avg": 50.0,
+            "latency_ms_p95": 80.0,
+            "jitter_ms_p95": 15.0,
+            "packet_loss_percent_avg": 0.5,
+            "reliability_percent_window": 99.5,
+            "message_rate_per_second_avg": 30.0
+          }
+        },
+        {
+          "slice_type": "urllc",
+          "permitted_by_subscriber": true,
+          "distance": 0.0,
+          "similarity_score": 100.0,
+          "contributions": {
+            "throughput_mbps_avg": 0.0,
+            "latency_ms_p95": 0.0,
+            "jitter_ms_p95": 0.0,
+            "packet_loss_percent_avg": 0.0,
+            "reliability_percent_window": 0.0,
+            "message_rate_per_second_avg": 0.0
+          },
+          "reference": {
+            "throughput_mbps_avg": 5.0,
+            "latency_ms_p95": 8.0,
+            "jitter_ms_p95": 2.0,
+            "packet_loss_percent_avg": 0.01,
+            "reliability_percent_window": 99.999,
+            "message_rate_per_second_avg": 100.0
+          }
+        },
+        {
+          "slice_type": "mmtc",
+          "permitted_by_subscriber": true,
+          "distance": 0.52458,
+          "similarity_score": 47.542,
+          "contributions": {
+            "throughput_mbps_avg": 0.0168,
+            "latency_ms_p95": 0.172,
+            "jitter_ms_p95": 0.117,
+            "packet_loss_percent_avg": 0.0598,
+            "reliability_percent_window": 0.05998,
+            "message_rate_per_second_avg": 0.099
+          },
+          "reference": {
+            "throughput_mbps_avg": 0.2,
+            "latency_ms_p95": 180.0,
+            "jitter_ms_p95": 80.0,
+            "packet_loss_percent_avg": 3.0,
+            "reliability_percent_window": 97.0,
+            "message_rate_per_second_avg": 1.0
+          }
+        }
+      ],
+      "reasons": [
+        "URLLC has the smallest normalized KPI distance (0.0000)",
+        "Only slice profiles permitted by this subscriber were considered",
+        "Input represents a 30-second aggregated Prometheus observation"
+      ]
+    },
+    "failed_at": "2026-08-11T16:23:55.877626+00:00",
+    "error": "503 Server Error: Service Unavailable for url: http://127.0.0.1:8888/api/auto-slice/status/"
+  },
+  "intent-c4d393ac34ea": {
+    "job_id": "intent-c4d393ac34ea",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T16:24:44.864090+00:00",
+    "input": {
+      "schema_version": "1.0",
+      "input_source": "prometheus_simulation",
+      "submitted_at": "2026-08-11T16:24:44.861878+00:00",
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control",
+        "category": "control"
+      },
+      "measurement_window": {
+        "seconds": 30,
+        "samples": 30,
+        "aggregation": "avg_and_p95"
+      },
+      "observed_kpis": {
+        "reliability_percent_window": 99.999,
+        "latency_ms_p95": 8,
+        "message_rate_per_second_avg": 100,
+        "packet_loss_percent_avg": 0.01,
+        "throughput_mbps_avg": 5,
+        "jitter_ms_p95": 2
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T16:24:44.864099+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T16:24:44.866997+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T16:24:45.692737+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T16:24:45.695335+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T16:24:45.697792+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:24:47.179948+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:24:47.182659+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T16:24:54.384673+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T16:24:55.393802+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T16:24:55.401054+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "decision_mode": "prometheus_observation_similarity",
+      "observed_kpis": {
+        "throughput_mbps_avg": 5.0,
+        "latency_ms_p95": 8.0,
+        "jitter_ms_p95": 2.0,
+        "packet_loss_percent_avg": 0.01,
+        "reliability_percent_window": 99.999,
+        "message_rate_per_second_avg": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "permitted_by_subscriber": true,
+          "distance": 0.33878,
+          "similarity_score": 66.122,
+          "contributions": {
+            "throughput_mbps_avg": 0.1575,
+            "latency_ms_p95": 0.072,
+            "jitter_ms_p95": 0.0195,
+            "packet_loss_percent_avg": 0.0098,
+            "reliability_percent_window": 0.00998,
+            "message_rate_per_second_avg": 0.07
+          },
+          "reference": {
+            "throughput_mbps_avg": 50.0,
+            "latency_ms_p95": 80.0,
+            "jitter_ms_p95": 15.0,
+            "packet_loss_percent_avg": 0.5,
+            "reliability_percent_window": 99.5,
+            "message_rate_per_second_avg": 30.0
+          }
+        },
+        {
+          "slice_type": "urllc",
+          "permitted_by_subscriber": true,
+          "distance": 0.0,
+          "similarity_score": 100.0,
+          "contributions": {
+            "throughput_mbps_avg": 0.0,
+            "latency_ms_p95": 0.0,
+            "jitter_ms_p95": 0.0,
+            "packet_loss_percent_avg": 0.0,
+            "reliability_percent_window": 0.0,
+            "message_rate_per_second_avg": 0.0
+          },
+          "reference": {
+            "throughput_mbps_avg": 5.0,
+            "latency_ms_p95": 8.0,
+            "jitter_ms_p95": 2.0,
+            "packet_loss_percent_avg": 0.01,
+            "reliability_percent_window": 99.999,
+            "message_rate_per_second_avg": 100.0
+          }
+        },
+        {
+          "slice_type": "mmtc",
+          "permitted_by_subscriber": true,
+          "distance": 0.52458,
+          "similarity_score": 47.542,
+          "contributions": {
+            "throughput_mbps_avg": 0.0168,
+            "latency_ms_p95": 0.172,
+            "jitter_ms_p95": 0.117,
+            "packet_loss_percent_avg": 0.0598,
+            "reliability_percent_window": 0.05998,
+            "message_rate_per_second_avg": 0.099
+          },
+          "reference": {
+            "throughput_mbps_avg": 0.2,
+            "latency_ms_p95": 180.0,
+            "jitter_ms_p95": 80.0,
+            "packet_loss_percent_avg": 3.0,
+            "reliability_percent_window": 97.0,
+            "message_rate_per_second_avg": 1.0
+          }
+        }
+      ],
+      "reasons": [
+        "URLLC has the smallest normalized KPI distance (0.0000)",
+        "Only slice profiles permitted by this subscriber were considered",
+        "Input represents a 30-second aggregated Prometheus observation"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-6cbddd8f99-8c7qc",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-7b44585b4d-zl79l"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T16:24:54.381689+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1241532,
+          "pgid": 1241532,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1241602,
+          "pgid": 1241602,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1241602,
+          "pgid": 1241602,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.0.1"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue2",
+      "pid": 1241602,
+      "pgid": 1241602,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845/ue2.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845/ue2.runtime.conf"
+      ],
+      "id": 2,
+      "ue": "ue-2",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-232449-214845/ue2.runtime.conf",
+      "target_sst": 2,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.0.1"
+    },
+    "completed_at": "2026-08-11T16:24:55.399775+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.0.1"
+    }
+  },
+  "intent-90c6d18dcf2c": {
+    "job_id": "intent-90c6d18dcf2c",
+    "status": "FAILED",
+    "stage": "FAILED",
+    "created_at": "2026-08-11T16:34:08.657468+00:00",
+    "input": {
+      "service": {
+        "category": "robot",
+        "name": "robot_control"
+      },
+      "ue": {
+        "ue_id": 2
+      },
+      "schema_version": "1.0",
+      "input_source": "prometheus_simulation",
+      "measurement_window": {
+        "aggregation": "avg_and_p95",
+        "seconds": 30,
+        "samples": 30
+      },
+      "observed_kpis": {
+        "reliability_percent_window": 99.999,
+        "latency_ms_p95": 10,
+        "message_rate_per_second_avg": 100,
+        "packet_loss_percent_avg": 0.05,
+        "throughput_mbps_avg": 5,
+        "jitter_ms_p95": 2
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T16:34:08.657478+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T16:34:08.660932+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T16:34:09.514560+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T16:34:09.517417+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T16:34:09.520043+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:34:10.902288+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:34:10.903945+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T16:34:18.080376+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T16:35:33.157859+00:00",
+        "stage": "FAILED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "decision_mode": "prometheus_observation_similarity",
+      "observed_kpis": {
+        "throughput_mbps_avg": 5.0,
+        "latency_ms_p95": 10.0,
+        "jitter_ms_p95": 2.0,
+        "packet_loss_percent_avg": 0.05,
+        "reliability_percent_window": 99.999,
+        "message_rate_per_second_avg": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "permitted_by_subscriber": true,
+          "distance": 0.33598,
+          "similarity_score": 66.402,
+          "contributions": {
+            "throughput_mbps_avg": 0.1575,
+            "latency_ms_p95": 0.07,
+            "jitter_ms_p95": 0.0195,
+            "packet_loss_percent_avg": 0.009,
+            "reliability_percent_window": 0.00998,
+            "message_rate_per_second_avg": 0.07
+          },
+          "reference": {
+            "throughput_mbps_avg": 50.0,
+            "latency_ms_p95": 80.0,
+            "jitter_ms_p95": 15.0,
+            "packet_loss_percent_avg": 0.5,
+            "reliability_percent_window": 99.5,
+            "message_rate_per_second_avg": 30.0
+          }
+        },
+        {
+          "slice_type": "urllc",
+          "permitted_by_subscriber": true,
+          "distance": 0.0028,
+          "similarity_score": 99.72,
+          "contributions": {
+            "throughput_mbps_avg": 0.0,
+            "latency_ms_p95": 0.002,
+            "jitter_ms_p95": 0.0,
+            "packet_loss_percent_avg": 0.0008,
+            "reliability_percent_window": 0.0,
+            "message_rate_per_second_avg": 0.0
+          },
+          "reference": {
+            "throughput_mbps_avg": 5.0,
+            "latency_ms_p95": 8.0,
+            "jitter_ms_p95": 2.0,
+            "packet_loss_percent_avg": 0.01,
+            "reliability_percent_window": 99.999,
+            "message_rate_per_second_avg": 100.0
+          }
+        },
+        {
+          "slice_type": "mmtc",
+          "permitted_by_subscriber": true,
+          "distance": 0.52178,
+          "similarity_score": 47.822,
+          "contributions": {
+            "throughput_mbps_avg": 0.0168,
+            "latency_ms_p95": 0.17,
+            "jitter_ms_p95": 0.117,
+            "packet_loss_percent_avg": 0.059,
+            "reliability_percent_window": 0.05998,
+            "message_rate_per_second_avg": 0.099
+          },
+          "reference": {
+            "throughput_mbps_avg": 0.2,
+            "latency_ms_p95": 180.0,
+            "jitter_ms_p95": 80.0,
+            "packet_loss_percent_avg": 3.0,
+            "reliability_percent_window": 97.0,
+            "message_rate_per_second_avg": 1.0
+          }
+        }
+      ],
+      "reasons": [
+        "URLLC has the smallest normalized KPI distance (0.0028)",
+        "Only slice profiles permitted by this subscriber were considered",
+        "Input represents a 30-second aggregated Prometheus observation"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-c795ddb6c-h4tzj",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-7b44585b4d-zl79l"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTING",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T16:34:18.079263+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1260924,
+          "pgid": 1260924,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1260993,
+          "pgid": 1260993,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1260993,
+          "pgid": 1260993,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTING",
+          "ip": null
+        }
+      ],
+      "active_processes": 2
+    },
+    "failed_at": "2026-08-11T16:35:33.156866+00:00",
+    "error": "Timed out waiting for UE PDU session: {'name': 'ue2', 'pid': 1260993, 'pgid': 1260993, 'log': '/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637/ue2.log', 'command': ['sudo', '-n', '/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue', '/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637/ue2.runtime.conf'], 'id': 2, 'ue': 'ue-2', 'config': '/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233412-931637/ue2.runtime.conf', 'target_sst': 2, 'target_sd': '000001', 'status': 'CONNECTING', 'ip': None}"
+  },
+  "intent-eb4bf0842a12": {
+    "job_id": "intent-eb4bf0842a12",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T16:37:31.598014+00:00",
+    "input": {
+      "service": {
+        "category": "robot",
+        "name": "robot_control"
+      },
+      "ue": {
+        "ue_id": 2
+      },
+      "schema_version": "1.0",
+      "input_source": "prometheus_simulation",
+      "measurement_window": {
+        "aggregation": "avg_and_p95",
+        "seconds": 30,
+        "samples": 30
+      },
+      "observed_kpis": {
+        "reliability_percent_window": 99.999,
+        "latency_ms_p95": 10,
+        "message_rate_per_second_avg": 100,
+        "packet_loss_percent_avg": 0.05,
+        "throughput_mbps_avg": 5,
+        "jitter_ms_p95": 2
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T16:37:31.598023+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T16:37:31.602946+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T16:37:32.253138+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T16:37:32.254920+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T16:37:32.256998+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:37:33.736700+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:37:33.738627+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T16:37:40.939279+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T16:37:41.941953+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T16:37:41.945533+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "decision_mode": "prometheus_observation_similarity",
+      "observed_kpis": {
+        "throughput_mbps_avg": 5.0,
+        "latency_ms_p95": 10.0,
+        "jitter_ms_p95": 2.0,
+        "packet_loss_percent_avg": 0.05,
+        "reliability_percent_window": 99.999,
+        "message_rate_per_second_avg": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "permitted_by_subscriber": true,
+          "distance": 0.33598,
+          "similarity_score": 66.402,
+          "contributions": {
+            "throughput_mbps_avg": 0.1575,
+            "latency_ms_p95": 0.07,
+            "jitter_ms_p95": 0.0195,
+            "packet_loss_percent_avg": 0.009,
+            "reliability_percent_window": 0.00998,
+            "message_rate_per_second_avg": 0.07
+          },
+          "reference": {
+            "throughput_mbps_avg": 50.0,
+            "latency_ms_p95": 80.0,
+            "jitter_ms_p95": 15.0,
+            "packet_loss_percent_avg": 0.5,
+            "reliability_percent_window": 99.5,
+            "message_rate_per_second_avg": 30.0
+          }
+        },
+        {
+          "slice_type": "urllc",
+          "permitted_by_subscriber": true,
+          "distance": 0.0028,
+          "similarity_score": 99.72,
+          "contributions": {
+            "throughput_mbps_avg": 0.0,
+            "latency_ms_p95": 0.002,
+            "jitter_ms_p95": 0.0,
+            "packet_loss_percent_avg": 0.0008,
+            "reliability_percent_window": 0.0,
+            "message_rate_per_second_avg": 0.0
+          },
+          "reference": {
+            "throughput_mbps_avg": 5.0,
+            "latency_ms_p95": 8.0,
+            "jitter_ms_p95": 2.0,
+            "packet_loss_percent_avg": 0.01,
+            "reliability_percent_window": 99.999,
+            "message_rate_per_second_avg": 100.0
+          }
+        },
+        {
+          "slice_type": "mmtc",
+          "permitted_by_subscriber": true,
+          "distance": 0.52178,
+          "similarity_score": 47.822,
+          "contributions": {
+            "throughput_mbps_avg": 0.0168,
+            "latency_ms_p95": 0.17,
+            "jitter_ms_p95": 0.117,
+            "packet_loss_percent_avg": 0.059,
+            "reliability_percent_window": 0.05998,
+            "message_rate_per_second_avg": 0.099
+          },
+          "reference": {
+            "throughput_mbps_avg": 0.2,
+            "latency_ms_p95": 180.0,
+            "jitter_ms_p95": 80.0,
+            "packet_loss_percent_avg": 3.0,
+            "reliability_percent_window": 97.0,
+            "message_rate_per_second_avg": 1.0
+          }
+        }
+      ],
+      "reasons": [
+        "URLLC has the smallest normalized KPI distance (0.0028)",
+        "Only slice profiles permitted by this subscriber were considered",
+        "Input represents a 30-second aggregated Prometheus observation"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-c795ddb6c-h4tzj",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-5dc47586d9-d28zk"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T16:37:40.938596+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1275459,
+          "pgid": 1275459,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1275526,
+          "pgid": 1275526,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1275526,
+          "pgid": 1275526,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.0.1"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue2",
+      "pid": 1275526,
+      "pgid": 1275526,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457/ue2.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457/ue2.runtime.conf"
+      ],
+      "id": 2,
+      "ue": "ue-2",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-233735-769457/ue2.runtime.conf",
+      "target_sst": 2,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.0.1"
+    },
+    "completed_at": "2026-08-11T16:37:41.944952+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.0.1"
+    }
+  },
+  "intent-5c04c4ec44b6": {
+    "job_id": "intent-5c04c4ec44b6",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T16:46:54.539813+00:00",
+    "input": {
+      "service": {
+        "category": "video",
+        "name": "video_streaming"
+      },
+      "ue": {
+        "ue_id": 1
+      },
+      "schema_version": "1.0",
+      "input_source": "prometheus_simulation",
+      "measurement_window": {
+        "aggregation": "avg_and_p95",
+        "seconds": 30,
+        "samples": 30
+      },
+      "observed_kpis": {
+        "reliability_percent_window": 99.5,
+        "latency_ms_p95": 80,
+        "message_rate_per_second_avg": 30,
+        "packet_loss_percent_avg": 0.5,
+        "throughput_mbps_avg": 35,
+        "jitter_ms_p95": 12
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T16:46:54.539826+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T16:46:54.544243+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T16:46:55.145738+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T16:46:55.147854+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T16:46:55.150170+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:46:56.751872+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:46:56.755152+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T16:47:03.970964+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T16:47:04.976197+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T16:47:04.981403+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 1,
+      "name": "ue-1",
+      "imsi": "460990000000001",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue1.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "decision_mode": "prometheus_observation_similarity",
+      "observed_kpis": {
+        "throughput_mbps_avg": 35.0,
+        "latency_ms_p95": 80.0,
+        "jitter_ms_p95": 12.0,
+        "packet_loss_percent_avg": 0.5,
+        "reliability_percent_window": 99.5,
+        "message_rate_per_second_avg": 30.0
+      },
+      "selected_slice": {
+        "label": "eMBB",
+        "sst": 1,
+        "sd": "000001",
+        "namespace": "slice-1",
+        "selection_cost": 2,
+        "capabilities": {
+          "max_throughput_mbps": 1000.0,
+          "latency_ms": 30.0,
+          "jitter_ms": 15.0,
+          "packet_loss_percent": 1.0,
+          "reliability_percent": 99.0
+        },
+        "slice_type": "embb"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "permitted_by_subscriber": true,
+          "distance": 0.057,
+          "similarity_score": 94.3,
+          "contributions": {
+            "throughput_mbps_avg": 0.0525,
+            "latency_ms_p95": 0.0,
+            "jitter_ms_p95": 0.0045,
+            "packet_loss_percent_avg": 0.0,
+            "reliability_percent_window": 0.0,
+            "message_rate_per_second_avg": 0.0
+          },
+          "reference": {
+            "throughput_mbps_avg": 50.0,
+            "latency_ms_p95": 80.0,
+            "jitter_ms_p95": 15.0,
+            "packet_loss_percent_avg": 0.5,
+            "reliability_percent_window": 99.5,
+            "message_rate_per_second_avg": 30.0
+          }
+        },
+        {
+          "slice_type": "urllc",
+          "permitted_by_subscriber": true,
+          "distance": 0.28178,
+          "similarity_score": 71.822,
+          "contributions": {
+            "throughput_mbps_avg": 0.105,
+            "latency_ms_p95": 0.072,
+            "jitter_ms_p95": 0.015,
+            "packet_loss_percent_avg": 0.0098,
+            "reliability_percent_window": 0.00998,
+            "message_rate_per_second_avg": 0.07
+          },
+          "reference": {
+            "throughput_mbps_avg": 5.0,
+            "latency_ms_p95": 8.0,
+            "jitter_ms_p95": 2.0,
+            "packet_loss_percent_avg": 0.01,
+            "reliability_percent_window": 99.999,
+            "message_rate_per_second_avg": 100.0
+          }
+        },
+        {
+          "slice_type": "mmtc",
+          "permitted_by_subscriber": true,
+          "distance": 0.4528,
+          "similarity_score": 54.72,
+          "contributions": {
+            "throughput_mbps_avg": 0.1218,
+            "latency_ms_p95": 0.1,
+            "jitter_ms_p95": 0.102,
+            "packet_loss_percent_avg": 0.05,
+            "reliability_percent_window": 0.05,
+            "message_rate_per_second_avg": 0.029
+          },
+          "reference": {
+            "throughput_mbps_avg": 0.2,
+            "latency_ms_p95": 180.0,
+            "jitter_ms_p95": 80.0,
+            "packet_loss_percent_avg": 3.0,
+            "reliability_percent_window": 97.0,
+            "message_rate_per_second_avg": 1.0
+          }
+        }
+      ],
+      "reasons": [
+        "eMBB has the smallest normalized KPI distance (0.0570)",
+        "Only slice profiles permitted by this subscriber were considered",
+        "Input represents a 30-second aggregated Prometheus observation"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-embb-1785919483-f7c8dffa",
+        "nssi_id": "aa87c4ca-69d8-4e75-8683-8fb8eaf1b466",
+        "sd": "000001",
+        "slice_type": "embb",
+        "sst": 1,
+        "status": "READY",
+        "namespace": "slice-1"
+      },
+      "health": {
+        "operational": true,
+        "infrastructure_ready": true,
+        "pfcp_associated": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "4316b359-7c2e-40f1-a910-29af81c50upf-cokir-6c967bb659-2xlmc",
+          "c04ecaf9-82db-4cb8-89ed-355a2bb21smf-yatkd-6978f68db4-fbzn5",
+          "e113401f-ace5-443d-af02-316071c39pcf-rycgd-75665c6d44-c8tvh"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 1,
+      "target_sst": 1,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T16:47:03.969978+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1288312,
+          "pgid": 1288312,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue1",
+          "pid": 1288369,
+          "pgid": 1288369,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473/ue1.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473/ue1.runtime.conf"
+          ],
+          "id": 1,
+          "ue": "ue-1",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473/ue1.runtime.conf",
+          "target_sst": 1,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue1",
+          "pid": 1288369,
+          "pgid": 1288369,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473/ue1.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473/ue1.runtime.conf"
+          ],
+          "id": 1,
+          "ue": "ue-1",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473/ue1.runtime.conf",
+          "target_sst": 1,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.1.2"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue1",
+      "pid": 1288369,
+      "pgid": 1288369,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473/ue1.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473/ue1.runtime.conf"
+      ],
+      "id": 1,
+      "ue": "ue-1",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234658-796473/ue1.runtime.conf",
+      "target_sst": 1,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.1.2"
+    },
+    "completed_at": "2026-08-11T16:47:04.980448+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.1.2"
+    }
+  },
+  "intent-3e5681b72b28": {
+    "job_id": "intent-3e5681b72b28",
+    "status": "FAILED",
+    "stage": "FAILED",
+    "created_at": "2026-08-11T16:48:35.196757+00:00",
+    "input": {
+      "service": {
+        "category": "robot",
+        "name": "robot_control"
+      },
+      "ue": {
+        "ue_id": 2
+      },
+      "schema_version": "1.0",
+      "input_source": "prometheus_simulation",
+      "measurement_window": {
+        "aggregation": "avg_and_p95",
+        "seconds": 30,
+        "samples": 30
+      },
+      "observed_kpis": {
+        "reliability_percent_window": 99.999,
+        "latency_ms_p95": 8,
+        "message_rate_per_second_avg": 100,
+        "packet_loss_percent_avg": 0.01,
+        "throughput_mbps_avg": 5,
+        "jitter_ms_p95": 2
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T16:48:35.196764+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T16:48:35.200473+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T16:48:35.896391+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T16:48:35.906732+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T16:48:35.910313+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:48:39.194127+00:00",
+        "stage": "FAILED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "decision_mode": "prometheus_observation_similarity",
+      "observed_kpis": {
+        "throughput_mbps_avg": 5.0,
+        "latency_ms_p95": 8.0,
+        "jitter_ms_p95": 2.0,
+        "packet_loss_percent_avg": 0.01,
+        "reliability_percent_window": 99.999,
+        "message_rate_per_second_avg": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "permitted_by_subscriber": true,
+          "distance": 0.33878,
+          "similarity_score": 66.122,
+          "contributions": {
+            "throughput_mbps_avg": 0.1575,
+            "latency_ms_p95": 0.072,
+            "jitter_ms_p95": 0.0195,
+            "packet_loss_percent_avg": 0.0098,
+            "reliability_percent_window": 0.00998,
+            "message_rate_per_second_avg": 0.07
+          },
+          "reference": {
+            "throughput_mbps_avg": 50.0,
+            "latency_ms_p95": 80.0,
+            "jitter_ms_p95": 15.0,
+            "packet_loss_percent_avg": 0.5,
+            "reliability_percent_window": 99.5,
+            "message_rate_per_second_avg": 30.0
+          }
+        },
+        {
+          "slice_type": "urllc",
+          "permitted_by_subscriber": true,
+          "distance": 0.0,
+          "similarity_score": 100.0,
+          "contributions": {
+            "throughput_mbps_avg": 0.0,
+            "latency_ms_p95": 0.0,
+            "jitter_ms_p95": 0.0,
+            "packet_loss_percent_avg": 0.0,
+            "reliability_percent_window": 0.0,
+            "message_rate_per_second_avg": 0.0
+          },
+          "reference": {
+            "throughput_mbps_avg": 5.0,
+            "latency_ms_p95": 8.0,
+            "jitter_ms_p95": 2.0,
+            "packet_loss_percent_avg": 0.01,
+            "reliability_percent_window": 99.999,
+            "message_rate_per_second_avg": 100.0
+          }
+        },
+        {
+          "slice_type": "mmtc",
+          "permitted_by_subscriber": true,
+          "distance": 0.52458,
+          "similarity_score": 47.542,
+          "contributions": {
+            "throughput_mbps_avg": 0.0168,
+            "latency_ms_p95": 0.172,
+            "jitter_ms_p95": 0.117,
+            "packet_loss_percent_avg": 0.0598,
+            "reliability_percent_window": 0.05998,
+            "message_rate_per_second_avg": 0.099
+          },
+          "reference": {
+            "throughput_mbps_avg": 0.2,
+            "latency_ms_p95": 180.0,
+            "jitter_ms_p95": 80.0,
+            "packet_loss_percent_avg": 3.0,
+            "reliability_percent_window": 97.0,
+            "message_rate_per_second_avg": 1.0
+          }
+        }
+      ],
+      "reasons": [
+        "URLLC has the smallest normalized KPI distance (0.0000)",
+        "Only slice profiles permitted by this subscriber were considered",
+        "Input represents a 30-second aggregated Prometheus observation"
+      ]
+    },
+    "failed_at": "2026-08-11T16:48:39.193295+00:00",
+    "error": "503 Server Error: Service Unavailable for url: http://127.0.0.1:8888/api/auto-slice/status/"
+  },
+  "intent-a1acef40920a": {
+    "job_id": "intent-a1acef40920a",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T16:49:47.201499+00:00",
+    "input": {
+      "service": {
+        "category": "robot",
+        "name": "robot_control"
+      },
+      "ue": {
+        "ue_id": 2
+      },
+      "schema_version": "1.0",
+      "input_source": "prometheus_simulation",
+      "measurement_window": {
+        "aggregation": "avg_and_p95",
+        "seconds": 30,
+        "samples": 30
+      },
+      "observed_kpis": {
+        "reliability_percent_window": 99.999,
+        "latency_ms_p95": 8,
+        "message_rate_per_second_avg": 100,
+        "packet_loss_percent_avg": 0.01,
+        "throughput_mbps_avg": 5,
+        "jitter_ms_p95": 2
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T16:49:47.201507+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T16:49:47.206776+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T16:49:47.907138+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T16:49:47.910997+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T16:49:47.915599+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:49:49.381179+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:49:49.383587+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T16:49:56.555319+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T16:49:58.564407+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T16:49:58.575675+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "decision_mode": "prometheus_observation_similarity",
+      "observed_kpis": {
+        "throughput_mbps_avg": 5.0,
+        "latency_ms_p95": 8.0,
+        "jitter_ms_p95": 2.0,
+        "packet_loss_percent_avg": 0.01,
+        "reliability_percent_window": 99.999,
+        "message_rate_per_second_avg": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "permitted_by_subscriber": true,
+          "distance": 0.33878,
+          "similarity_score": 66.122,
+          "contributions": {
+            "throughput_mbps_avg": 0.1575,
+            "latency_ms_p95": 0.072,
+            "jitter_ms_p95": 0.0195,
+            "packet_loss_percent_avg": 0.0098,
+            "reliability_percent_window": 0.00998,
+            "message_rate_per_second_avg": 0.07
+          },
+          "reference": {
+            "throughput_mbps_avg": 50.0,
+            "latency_ms_p95": 80.0,
+            "jitter_ms_p95": 15.0,
+            "packet_loss_percent_avg": 0.5,
+            "reliability_percent_window": 99.5,
+            "message_rate_per_second_avg": 30.0
+          }
+        },
+        {
+          "slice_type": "urllc",
+          "permitted_by_subscriber": true,
+          "distance": 0.0,
+          "similarity_score": 100.0,
+          "contributions": {
+            "throughput_mbps_avg": 0.0,
+            "latency_ms_p95": 0.0,
+            "jitter_ms_p95": 0.0,
+            "packet_loss_percent_avg": 0.0,
+            "reliability_percent_window": 0.0,
+            "message_rate_per_second_avg": 0.0
+          },
+          "reference": {
+            "throughput_mbps_avg": 5.0,
+            "latency_ms_p95": 8.0,
+            "jitter_ms_p95": 2.0,
+            "packet_loss_percent_avg": 0.01,
+            "reliability_percent_window": 99.999,
+            "message_rate_per_second_avg": 100.0
+          }
+        },
+        {
+          "slice_type": "mmtc",
+          "permitted_by_subscriber": true,
+          "distance": 0.52458,
+          "similarity_score": 47.542,
+          "contributions": {
+            "throughput_mbps_avg": 0.0168,
+            "latency_ms_p95": 0.172,
+            "jitter_ms_p95": 0.117,
+            "packet_loss_percent_avg": 0.0598,
+            "reliability_percent_window": 0.05998,
+            "message_rate_per_second_avg": 0.099
+          },
+          "reference": {
+            "throughput_mbps_avg": 0.2,
+            "latency_ms_p95": 180.0,
+            "jitter_ms_p95": 80.0,
+            "packet_loss_percent_avg": 3.0,
+            "reliability_percent_window": 97.0,
+            "message_rate_per_second_avg": 1.0
+          }
+        }
+      ],
+      "reasons": [
+        "URLLC has the smallest normalized KPI distance (0.0000)",
+        "Only slice profiles permitted by this subscriber were considered",
+        "Input represents a 30-second aggregated Prometheus observation"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "infrastructure_ready": true,
+        "pfcp_associated": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-5d94f7f7df-ml75t",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-794cf8b779-x9tdz"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T16:49:56.554588+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1302205,
+          "pgid": 1302205,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1302386,
+          "pgid": 1302386,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1302386,
+          "pgid": 1302386,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.2.2"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue2",
+      "pid": 1302386,
+      "pgid": 1302386,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775/ue2.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775/ue2.runtime.conf"
+      ],
+      "id": 2,
+      "ue": "ue-2",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-234951-401775/ue2.runtime.conf",
+      "target_sst": 2,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.2.2"
+    },
+    "completed_at": "2026-08-11T16:49:58.573822+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.2.2"
+    }
+  },
+  "intent-ecd4cc42345e": {
+    "job_id": "intent-ecd4cc42345e",
+    "status": "FAILED",
+    "stage": "FAILED",
+    "created_at": "2026-08-11T16:58:01.360461+00:00",
+    "input": {
+      "service": {
+        "category": "robot",
+        "name": "robot_control"
+      },
+      "ue": {
+        "ue_id": 2
+      },
+      "schema_version": "1.0",
+      "input_source": "prometheus_simulation",
+      "measurement_window": {
+        "aggregation": "avg_and_p95",
+        "seconds": 30,
+        "samples": 30
+      },
+      "observed_kpis": {
+        "reliability_percent_window": 99.999,
+        "latency_ms_p95": 8,
+        "message_rate_per_second_avg": 100,
+        "packet_loss_percent_avg": 0.01,
+        "throughput_mbps_avg": 5,
+        "jitter_ms_p95": 2
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T16:58:01.360469+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T16:58:01.363957+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T16:58:02.007524+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T16:58:02.010130+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T16:58:02.018434+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:58:03.382314+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T16:58:03.384635+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T16:58:10.558776+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T16:59:25.656278+00:00",
+        "stage": "FAILED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "decision_mode": "prometheus_observation_similarity",
+      "observed_kpis": {
+        "throughput_mbps_avg": 5.0,
+        "latency_ms_p95": 8.0,
+        "jitter_ms_p95": 2.0,
+        "packet_loss_percent_avg": 0.01,
+        "reliability_percent_window": 99.999,
+        "message_rate_per_second_avg": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "permitted_by_subscriber": true,
+          "distance": 0.33878,
+          "similarity_score": 66.122,
+          "contributions": {
+            "throughput_mbps_avg": 0.1575,
+            "latency_ms_p95": 0.072,
+            "jitter_ms_p95": 0.0195,
+            "packet_loss_percent_avg": 0.0098,
+            "reliability_percent_window": 0.00998,
+            "message_rate_per_second_avg": 0.07
+          },
+          "reference": {
+            "throughput_mbps_avg": 50.0,
+            "latency_ms_p95": 80.0,
+            "jitter_ms_p95": 15.0,
+            "packet_loss_percent_avg": 0.5,
+            "reliability_percent_window": 99.5,
+            "message_rate_per_second_avg": 30.0
+          }
+        },
+        {
+          "slice_type": "urllc",
+          "permitted_by_subscriber": true,
+          "distance": 0.0,
+          "similarity_score": 100.0,
+          "contributions": {
+            "throughput_mbps_avg": 0.0,
+            "latency_ms_p95": 0.0,
+            "jitter_ms_p95": 0.0,
+            "packet_loss_percent_avg": 0.0,
+            "reliability_percent_window": 0.0,
+            "message_rate_per_second_avg": 0.0
+          },
+          "reference": {
+            "throughput_mbps_avg": 5.0,
+            "latency_ms_p95": 8.0,
+            "jitter_ms_p95": 2.0,
+            "packet_loss_percent_avg": 0.01,
+            "reliability_percent_window": 99.999,
+            "message_rate_per_second_avg": 100.0
+          }
+        },
+        {
+          "slice_type": "mmtc",
+          "permitted_by_subscriber": true,
+          "distance": 0.52458,
+          "similarity_score": 47.542,
+          "contributions": {
+            "throughput_mbps_avg": 0.0168,
+            "latency_ms_p95": 0.172,
+            "jitter_ms_p95": 0.117,
+            "packet_loss_percent_avg": 0.0598,
+            "reliability_percent_window": 0.05998,
+            "message_rate_per_second_avg": 0.099
+          },
+          "reference": {
+            "throughput_mbps_avg": 0.2,
+            "latency_ms_p95": 180.0,
+            "jitter_ms_p95": 80.0,
+            "packet_loss_percent_avg": 3.0,
+            "reliability_percent_window": 97.0,
+            "message_rate_per_second_avg": 1.0
+          }
+        }
+      ],
+      "reasons": [
+        "URLLC has the smallest normalized KPI distance (0.0000)",
+        "Only slice profiles permitted by this subscriber were considered",
+        "Input represents a 30-second aggregated Prometheus observation"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "infrastructure_ready": true,
+        "pfcp_associated": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-5d94f7f7df-ml75t",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-794cf8b779-x9tdz"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTING",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T16:58:10.557157+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1308759,
+          "pgid": 1308759,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml",
+            "-c",
+            "/home/ubuntu/mano/ue-service-portal/config/gnb-slicing.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1308809,
+          "pgid": 1308809,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1308809,
+          "pgid": 1308809,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTING",
+          "ip": null
+        }
+      ],
+      "active_processes": 2
+    },
+    "failed_at": "2026-08-11T16:59:25.655244+00:00",
+    "error": "Timed out waiting for UE PDU session: {'name': 'ue2', 'pid': 1308809, 'pgid': 1308809, 'log': '/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714/ue2.log', 'command': ['sudo', '-n', '/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue', '/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714/ue2.runtime.conf'], 'id': 2, 'ue': 'ue-2', 'config': '/home/ubuntu/mano/ue-service-portal/runtime/intent-20260811-235805-408714/ue2.runtime.conf', 'target_sst': 2, 'target_sd': '000001', 'status': 'CONNECTING', 'ip': None}"
+  },
+  "intent-10364ef801bf": {
+    "job_id": "intent-10364ef801bf",
+    "status": "FAILED",
+    "stage": "FAILED",
+    "created_at": "2026-08-11T17:03:43.119307+00:00",
+    "input": {
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control"
+      },
+      "qos_requirements": {
+        "min_throughput_mbps": 5,
+        "max_latency_ms": 10,
+        "max_jitter_ms": 2,
+        "max_packet_loss_percent": 0.01,
+        "min_reliability_percent": 99.999,
+        "message_rate_per_second": 100
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T17:03:43.119321+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T17:03:43.125996+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T17:03:43.710741+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T17:03:43.726921+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T17:03:43.731204+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T17:03:45.264887+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T17:03:45.269202+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T17:03:52.458153+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T17:05:07.559495+00:00",
+        "stage": "FAILED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 5.0,
+        "max_latency_ms": 10.0,
+        "max_jitter_ms": 2.0,
+        "max_packet_loss_percent": 0.01,
+        "min_reliability_percent": 99.999,
+        "message_rate_per_second": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": false,
+          "checks": {
+            "throughput": false,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "URLLC supports 5.000 Mbps required throughput",
+        "URLLC achievable latency 5.000 ms satisfies maximum 10.000 ms",
+        "Lowest policy cost among eligible profiles: 3"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "infrastructure_ready": true,
+        "pfcp_associated": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-5d94f7f7df-ml75t",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-794cf8b779-x9tdz"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTING",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T17:03:52.456726+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1311747,
+          "pgid": 1311747,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1311778,
+          "pgid": 1311778,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1311778,
+          "pgid": 1311778,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTING",
+          "ip": null
+        }
+      ],
+      "active_processes": 2
+    },
+    "failed_at": "2026-08-11T17:05:07.557554+00:00",
+    "error": "Timed out waiting for UE PDU session: {'name': 'ue2', 'pid': 1311778, 'pgid': 1311778, 'log': '/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458/ue2.log', 'command': ['sudo', '-n', '/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue', '/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458/ue2.runtime.conf'], 'id': 2, 'ue': 'ue-2', 'config': '/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000347-298458/ue2.runtime.conf', 'target_sst': 2, 'target_sd': '000001', 'status': 'CONNECTING', 'ip': None}"
+  },
+  "intent-52e24eaf2e59": {
+    "job_id": "intent-52e24eaf2e59",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T17:05:38.742180+00:00",
+    "input": {
+      "ue": {
+        "ue_id": 2
+      },
+      "service": {
+        "name": "robot_control"
+      },
+      "qos_requirements": {
+        "min_throughput_mbps": 5,
+        "max_latency_ms": 10,
+        "max_jitter_ms": 2,
+        "max_packet_loss_percent": 0.01,
+        "min_reliability_percent": 99.999,
+        "message_rate_per_second": 100
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T17:05:38.742188+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T17:05:38.747335+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T17:05:39.311397+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T17:05:39.315850+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T17:05:39.320278+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T17:05:40.741468+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T17:05:40.745947+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T17:05:45.952833+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T17:05:46.972185+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T17:05:46.979273+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 2,
+      "name": "ue-2",
+      "imsi": "460990000000002",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue2.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 5.0,
+        "max_latency_ms": 10.0,
+        "max_jitter_ms": 2.0,
+        "max_packet_loss_percent": 0.01,
+        "min_reliability_percent": 99.999,
+        "message_rate_per_second": 100.0
+      },
+      "selected_slice": {
+        "label": "URLLC",
+        "sst": 2,
+        "sd": "000001",
+        "namespace": "slice-2",
+        "selection_cost": 3,
+        "capabilities": {
+          "max_throughput_mbps": 100.0,
+          "latency_ms": 5.0,
+          "jitter_ms": 2.0,
+          "packet_loss_percent": 0.01,
+          "reliability_percent": 99.999
+        },
+        "slice_type": "urllc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": false,
+          "checks": {
+            "throughput": true,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": false,
+          "checks": {
+            "throughput": false,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "URLLC supports 5.000 Mbps required throughput",
+        "URLLC achievable latency 5.000 ms satisfies maximum 10.000 ms",
+        "Lowest policy cost among eligible profiles: 3"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-urllc-1785919507-104457bc",
+        "nssi_id": "c6246732-fc9b-4768-afb7-d74408608c98",
+        "sd": "000001",
+        "slice_type": "urllc",
+        "sst": 2,
+        "status": "READY",
+        "namespace": "slice-2"
+      },
+      "health": {
+        "operational": true,
+        "infrastructure_ready": true,
+        "pfcp_associated": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "480f35c0-362b-4583-b8b1-807bfe685upf-bxgkj-5d94f7f7df-ml75t",
+          "4f322732-c6db-4358-8534-eccc0864fpcf-mtjni-5584b5c4d6-dzxpm",
+          "6bd122f7-abf4-4617-b4fb-5ac67ae8fsmf-isfuc-794cf8b779-x9tdz"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 2,
+      "target_sst": 2,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T17:05:45.947250+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1313759,
+          "pgid": 1313759,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue2",
+          "pid": 1313809,
+          "pgid": 1313809,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue2",
+          "pid": 1313809,
+          "pgid": 1313809,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954/ue2.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954/ue2.runtime.conf"
+          ],
+          "id": 2,
+          "ue": "ue-2",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954/ue2.runtime.conf",
+          "target_sst": 2,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.2.3"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue2",
+      "pid": 1313809,
+      "pgid": 1313809,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954/ue2.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954/ue2.runtime.conf"
+      ],
+      "id": 2,
+      "ue": "ue-2",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000540-774954/ue2.runtime.conf",
+      "target_sst": 2,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.2.3"
+    },
+    "completed_at": "2026-08-11T17:05:46.977929+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.2.3"
+    }
+  },
+  "intent-07dcb5ef6ee9": {
+    "job_id": "intent-07dcb5ef6ee9",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T17:06:24.585481+00:00",
+    "input": {
+      "ue": {
+        "ue_id": 1
+      },
+      "service": {
+        "name": "video_streaming"
+      },
+      "qos_requirements": {
+        "min_throughput_mbps": 20,
+        "max_latency_ms": 120,
+        "max_jitter_ms": 15,
+        "max_packet_loss_percent": 1,
+        "min_reliability_percent": 99,
+        "message_rate_per_second": 30
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T17:06:24.585489+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T17:06:24.591690+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T17:06:25.310466+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T17:06:25.313204+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T17:06:25.315745+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T17:06:26.790578+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T17:06:26.795105+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T17:06:31.990587+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T17:06:33.008043+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T17:06:33.022849+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 1,
+      "name": "ue-1",
+      "imsi": "460990000000001",
+      "dnn": "srsapn",
+      "configured_sst": 1,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue1.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 20.0,
+        "max_latency_ms": 120.0,
+        "max_jitter_ms": 15.0,
+        "max_packet_loss_percent": 1.0,
+        "min_reliability_percent": 99.0,
+        "message_rate_per_second": 30.0
+      },
+      "selected_slice": {
+        "label": "eMBB",
+        "sst": 1,
+        "sd": "000001",
+        "namespace": "slice-1",
+        "selection_cost": 2,
+        "capabilities": {
+          "max_throughput_mbps": 1000.0,
+          "latency_ms": 30.0,
+          "jitter_ms": 15.0,
+          "packet_loss_percent": 1.0,
+          "reliability_percent": 99.0
+        },
+        "slice_type": "embb"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": false,
+          "checks": {
+            "throughput": false,
+            "latency": false,
+            "jitter": false,
+            "packet_loss": false,
+            "reliability": false
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "eMBB supports 20.000 Mbps required throughput",
+        "eMBB achievable latency 30.000 ms satisfies maximum 120.000 ms",
+        "Lowest policy cost among eligible profiles: 2"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-embb-1785919483-f7c8dffa",
+        "nssi_id": "aa87c4ca-69d8-4e75-8683-8fb8eaf1b466",
+        "sd": "000001",
+        "slice_type": "embb",
+        "sst": 1,
+        "status": "READY",
+        "namespace": "slice-1"
+      },
+      "health": {
+        "operational": true,
+        "infrastructure_ready": true,
+        "pfcp_associated": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "4316b359-7c2e-40f1-a910-29af81c50upf-cokir-6c967bb659-2xlmc",
+          "c04ecaf9-82db-4cb8-89ed-355a2bb21smf-yatkd-6978f68db4-fbzn5",
+          "e113401f-ace5-443d-af02-316071c39pcf-rycgd-75665c6d44-c8tvh"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 1,
+      "target_sst": 1,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T17:06:31.989079+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1314779,
+          "pgid": 1314779,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue1",
+          "pid": 1314831,
+          "pgid": 1314831,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231/ue1.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231/ue1.runtime.conf"
+          ],
+          "id": 1,
+          "ue": "ue-1",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231/ue1.runtime.conf",
+          "target_sst": 1,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue1",
+          "pid": 1314831,
+          "pgid": 1314831,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231/ue1.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231/ue1.runtime.conf"
+          ],
+          "id": 1,
+          "ue": "ue-1",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231/ue1.runtime.conf",
+          "target_sst": 1,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.1.2"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue1",
+      "pid": 1314831,
+      "pgid": 1314831,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231/ue1.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231/ue1.runtime.conf"
+      ],
+      "id": 1,
+      "ue": "ue-1",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000626-825231/ue1.runtime.conf",
+      "target_sst": 1,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.1.2"
+    },
+    "completed_at": "2026-08-11T17:06:33.020298+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.1.2"
+    }
+  },
+  "intent-324f7519e18d": {
+    "job_id": "intent-324f7519e18d",
+    "status": "COMPLETED",
+    "stage": "COMPLETED",
+    "created_at": "2026-08-11T17:07:20.728218+00:00",
+    "input": {
+      "ue": {
+        "ue_id": 3
+      },
+      "service": {
+        "name": "iot_sensor"
+      },
+      "qos_requirements": {
+        "min_throughput_mbps": 0.2,
+        "max_latency_ms": 200,
+        "max_jitter_ms": 100,
+        "max_packet_loss_percent": 5,
+        "min_reliability_percent": 95,
+        "message_rate_per_second": 1
+      }
+    },
+    "events": [
+      {
+        "at": "2026-08-11T17:07:20.728225+00:00",
+        "stage": "QUEUED"
+      },
+      {
+        "at": "2026-08-11T17:07:20.734429+00:00",
+        "stage": "VALIDATING_UE"
+      },
+      {
+        "at": "2026-08-11T17:07:21.308300+00:00",
+        "stage": "CLASSIFYING_INTENT"
+      },
+      {
+        "at": "2026-08-11T17:07:21.312964+00:00",
+        "stage": "VALIDATING_SUBSCRIBER"
+      },
+      {
+        "at": "2026-08-11T17:07:21.317424+00:00",
+        "stage": "RESOLVING_SLICE"
+      },
+      {
+        "at": "2026-08-11T17:07:22.695682+00:00",
+        "stage": "REUSING_SLICE"
+      },
+      {
+        "at": "2026-08-11T17:07:22.700453+00:00",
+        "stage": "RENDERING_UE_CONFIG"
+      },
+      {
+        "at": "2026-08-11T17:07:27.924969+00:00",
+        "stage": "WAITING_PDU"
+      },
+      {
+        "at": "2026-08-11T17:07:28.951278+00:00",
+        "stage": "PDU_SESSION_ACTIVE"
+      },
+      {
+        "at": "2026-08-11T17:07:28.958681+00:00",
+        "stage": "COMPLETED"
+      }
+    ],
+    "ue": {
+      "ue_id": 3,
+      "name": "ue-3",
+      "imsi": "460990000000003",
+      "dnn": "srsapn",
+      "configured_sst": 3,
+      "configured_sd": "000001",
+      "config_path": "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue3.conf",
+      "subscriber_registered": true,
+      "allowed_pairs": [
+        {
+          "sst": 1,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 2,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        },
+        {
+          "sst": 3,
+          "sd": "000001",
+          "dnns": [
+            "srsapn"
+          ]
+        }
+      ],
+      "allowed_slice_types": [
+        "embb",
+        "urllc",
+        "mmtc"
+      ],
+      "inventory_error": null
+    },
+    "decision": {
+      "requirements": {
+        "min_throughput_mbps": 0.2,
+        "max_latency_ms": 200.0,
+        "max_jitter_ms": 100.0,
+        "max_packet_loss_percent": 5.0,
+        "min_reliability_percent": 95.0,
+        "message_rate_per_second": 1.0
+      },
+      "selected_slice": {
+        "label": "mMTC",
+        "sst": 3,
+        "sd": "000001",
+        "namespace": "slice-3",
+        "selection_cost": 1,
+        "capabilities": {
+          "max_throughput_mbps": 2.0,
+          "latency_ms": 200.0,
+          "jitter_ms": 100.0,
+          "packet_loss_percent": 5.0,
+          "reliability_percent": 95.0
+        },
+        "slice_type": "mmtc"
+      },
+      "evaluations": [
+        {
+          "slice_type": "embb",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 2
+        },
+        {
+          "slice_type": "urllc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 3
+        },
+        {
+          "slice_type": "mmtc",
+          "eligible": true,
+          "checks": {
+            "throughput": true,
+            "latency": true,
+            "jitter": true,
+            "packet_loss": true,
+            "reliability": true
+          },
+          "selection_cost": 1
+        }
+      ],
+      "reasons": [
+        "mMTC supports 0.200 Mbps required throughput",
+        "mMTC achievable latency 200.000 ms satisfies maximum 200.000 ms",
+        "Lowest policy cost among eligible profiles: 1"
+      ]
+    },
+    "slice_result": {
+      "action": "REUSED",
+      "slice": {
+        "intent_id": "web-mmtc-1786461881-fa21302b",
+        "nssi_id": "ce4a2bc9-9062-4590-9d82-22fc17130c01",
+        "sd": "000001",
+        "slice_type": "mmtc",
+        "sst": 3,
+        "status": "READY",
+        "namespace": "slice-4"
+      },
+      "health": {
+        "operational": true,
+        "infrastructure_ready": true,
+        "pfcp_associated": true,
+        "components": {
+          "pcf": true,
+          "smf": true,
+          "upf": true
+        },
+        "pods": [
+          "6b9ce1fd-bc8e-4bba-a816-ade54262aupf-npaut-59ff794f9-2xrbg",
+          "704a5b9e-7322-4635-9211-18e2edbaapcf-ewhmp-d6d545d68-t5d8c",
+          "e0a4cc7a-d22d-4d3a-8d64-3c8d30885smf-eoisg-847b77f9b5-8rw6p"
+        ],
+        "endpoints": [
+          "pcf-svc",
+          "smf-metrics",
+          "smf-svc",
+          "upf-svc"
+        ]
+      }
+    },
+    "radio": {
+      "status": "CONNECTED",
+      "mode": "intent-direct",
+      "requested_count": 1,
+      "selected_ue_id": 3,
+      "target_sst": 3,
+      "target_sd": "000001",
+      "started_at": "2026-08-11T17:07:27.917030+00:00",
+      "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768",
+      "processes": [
+        {
+          "name": "gnb",
+          "pid": 1315824,
+          "pgid": 1315824,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768/gnb.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb",
+            "-c",
+            "/home/ubuntu/ran/srsRAN_project/build/apps/gnb/gnb1.yaml"
+          ]
+        },
+        {
+          "name": "ue3",
+          "pid": 1315855,
+          "pgid": 1315855,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768/ue3.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768/ue3.runtime.conf"
+          ],
+          "id": 3,
+          "ue": "ue-3",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768/ue3.runtime.conf",
+          "target_sst": 3,
+          "target_sd": "000001"
+        }
+      ],
+      "ues": [
+        {
+          "name": "ue3",
+          "pid": 1315855,
+          "pgid": 1315855,
+          "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768/ue3.log",
+          "command": [
+            "sudo",
+            "-n",
+            "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+            "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768/ue3.runtime.conf"
+          ],
+          "id": 3,
+          "ue": "ue-3",
+          "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768/ue3.runtime.conf",
+          "target_sst": 3,
+          "target_sd": "000001",
+          "status": "CONNECTED",
+          "ip": "10.45.3.2"
+        }
+      ],
+      "active_processes": 2
+    },
+    "attached_ue": {
+      "name": "ue3",
+      "pid": 1315855,
+      "pgid": 1315855,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768/ue3.log",
+      "command": [
+        "sudo",
+        "-n",
+        "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/srsue",
+        "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768/ue3.runtime.conf"
+      ],
+      "id": 3,
+      "ue": "ue-3",
+      "config": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768/ue3.runtime.conf",
+      "target_sst": 3,
+      "target_sd": "000001",
+      "status": "CONNECTED",
+      "ip": "10.45.3.2"
+    },
+    "completed_at": "2026-08-11T17:07:28.957450+00:00",
+    "verification": {
+      "attach": true,
+      "pdu_session": true,
+      "ip_assigned": "10.45.3.2"
+    }
+  }
+}

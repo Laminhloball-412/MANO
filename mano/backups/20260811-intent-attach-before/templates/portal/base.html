@@ -1,0 +1,36 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ANSA UE Portal{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'portal/app.css' %}">
+  <link rel="stylesheet" href="{% static 'portal/demo-control.css' %}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="{% url 'ue_management' %}">
+        <div class="brand-mark">A</div>
+        <div><strong>ANSA LAB</strong><small>5G SERVICE CONTROL</small></div>
+      </a>
+      <div class="prototype-label">DJANGO UX PROTOTYPE</div>
+      <nav>
+        <a class="nav-item {% if active == 'ues' %}active{% endif %}" href="{% url 'ue_management' %}"><b>01</b><span><strong>UE profiles</strong><small>Identity & slice access</small></span></a>
+        <a class="nav-item {% if active == 'lab' %}active{% endif %}" href="{% url 'service_lab' %}"><b>02</b><span><strong>Service lab</strong><small>Workload launcher</small></span></a>
+        <a class="nav-item {% if active == 'measurements' %}active{% endif %}" href="{% url 'measurements' %}"><b>03</b><span><strong>Measurements</strong><small>Pre-decision evidence</small></span></a>
+        <a class="nav-item {% if active == 'architecture' %}active{% endif %}" href="{% url 'architecture' %}"><b>04</b><span><strong>Architecture</strong><small>Integration boundary</small></span></a>
+      </nav>
+      <div class="sidebar-note"><i>i</i><p>This service is independent from the reference Free5GMANO WebUI and will integrate through explicit adapters.</p></div>
+    </aside>
+    <main class="workspace">
+      <div class="safety-banner"><strong>Demo control</strong><span>Radio actions use runtime copies and never overwrite the original gNB or UE configuration files.</span></div>
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="{% static 'portal/app.js' %}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends 'portal/base.html' %}
+{% block title %}Service Lab · ANSA{% endblock %}
+{% block content %}
+  {% include 'portal/_header.html' with page_title='Service lab' page_subtitle='Stage real application workloads first; automatic slice selection will be connected after measurement is reliable.' %}
+  <section class="panel lab-toolbar"><label>TARGET UE<select id="target-ue">{% for ue in profiles %}{% if ue.source == 'LAB CONFIG' %}<option value="{{ ue.name }}">{{ ue.name }} · {{ ue.imsi }}</option>{% endif %}{% endfor %}</select></label><label>DURATION<select id="workload-duration"><option value="30">30 seconds</option><option value="60" selected>60 seconds</option><option value="120">120 seconds</option></select></label><div><small>RADIO / WORKLOAD</small><strong id="lab-runtime-state" class="partial-text">Checking…</strong></div><button id="stop-workload" class="disconnect-button">Stop workload</button></section>
+  <section class="workload-grid">
+    <article class="workload-card embb"><b>01</b><p>HIGH-BANDWIDTH</p><h2>Video-like data stream</h2><span>A sustained HTTP stream travels through the selected UE PDU tunnel. Tunnel byte counters provide real throughput.</span><div><i>Throughput</i><i>RX/TX bytes</i><i>Packet rate</i></div><button class="workload-start" data-workload="video">Start eMBB stream</button></article>
+    <article class="workload-card urllc"><b>02</b><p>LOW-LATENCY</p><h2>Control loop</h2><span>Small periodic request/response probes travel through the UE namespace with an explicit deadline.</span><div><i>RTT</i><i>Jitter</i><i>Packet loss</i></div><button class="workload-start" data-workload="control">Start URLLC control</button></article>
+    <article class="workload-card mmtc"><b>03</b><p>SMALL PERIODIC DATA</p><h2>Sensor publisher</h2><span>Small JSON sensor messages are posted through the PDU tunnel and measured at the receiver.</span><div><i>Message rate</i><i>Payload</i><i>Delivery</i></div><button class="workload-start" data-workload="sensor">Start mMTC sensor</button></article>
+  </section>
+  <section class="panel contract"><div><p class="overline">REAL DATA PATH</p><h2>Every value starts from packets inside the connected UE</h2></div><div><span><b>1</b>Run inside UE netns</span><span><b>2</b>Traverse the PDU tunnel</span><span><b>3</b>Measure counters and responses</span><span><b>4</b>Prometheus scrapes every 2s</span></div></section>
+{% endblock %}

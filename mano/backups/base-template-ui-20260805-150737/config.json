@@ -1,0 +1,79 @@
+{
+  "free5gmano_url": "http://192.168.180.35:30088",
+  "nfvo_url": "http://192.168.180.35:8000",
+  "nfvo_type": "kube5gnfvo",
+  "namespace_prefix": "slice-",
+  "max_slots": 10,
+  "state_file": "state/intent-flow-state.json",
+  "output_dir": "runs",
+  "http_timeout_seconds": 60,
+  "instance_detection_timeout_seconds": 60,
+  "pod_ready_timeout_seconds": 240,
+  "delete_timeout_seconds": 120,
+  "ovs_source_namespace": "default",
+  "network_attachment": "ovs-net",
+  "free5gmano_namespace": "default",
+  "free5gmano_deployment": "deployment/free5gmano",
+  "monitoring_sync_enabled": true,
+  "monitoring_namespace": "monitoring",
+  "shared_amf_sync_enabled": true,
+  "shared_amf_namespace": "share",
+  "shared_amf_configmap": "open5gs-amf",
+  "shared_amf_config_key": "open5gs-amf",
+  "shared_amf_deployment": "7ef97a96-d17e-4f21-86d3-af2532ea1amf-lqopz",
+  "shared_amf_baseline_snssai": [],
+  "profiles": {
+    "embb": {
+      "source_vnf_template_id": "b19b5ad3-ea5b-4aa6-ab0c-dc1421c2c383",
+      "source_nsd_template_id": "04b0b75f-7b5c-422e-873b-eb9b6297e534",
+      "nrm_template_id": "ea53e349-5715-450b-8c69-46af30885e1a",
+      "sst": 1,
+      "ipv4_subnet": "10.45.{slot}.0/24",
+      "ipv4_gateway": "10.45.{slot}.1",
+      "ipv6_subnet": "2001:db8:{slot}::/48",
+      "ipv6_gateway": "2001:db8:{slot}::1",
+      "nrm": {
+        "service_type": "eMBB",
+        "characteristics": "Slice suitable for enhanced Mobile Broadband."
+      }
+    },
+    "urllc": {
+      "source_vnf_template_id": "b19b5ad3-ea5b-4aa6-ab0c-dc1421c2c383",
+      "source_nsd_template_id": "04b0b75f-7b5c-422e-873b-eb9b6297e534",
+      "nrm_template_id": "086483a5-f002-452c-bfbf-80b88bec8b9a",
+      "sst": 2,
+      "ipv4_subnet": "10.45.{slot}.0/24",
+      "ipv4_gateway": "10.45.{slot}.1",
+      "ipv6_subnet": "2001:db8:{slot}::/48",
+      "ipv6_gateway": "2001:db8:{slot}::1",
+      "nrm": {
+        "service_type": "URLLC",
+        "characteristics": "Slice suitable for ultra-reliable low-latency communications."
+      }
+    },
+    "mmtc": {
+      "source_vnf_template_id": "b19b5ad3-ea5b-4aa6-ab0c-dc1421c2c383",
+      "source_nsd_template_id": "04b0b75f-7b5c-422e-873b-eb9b6297e534",
+      "nrm_template_id": "ea53e349-5715-450b-8c69-46af30885e1a",
+      "sst": 3,
+      "ipv4_subnet": "10.45.{slot}.0/24",
+      "ipv4_gateway": "10.45.{slot}.1",
+      "ipv6_subnet": "2001:db8:{slot}::/48",
+      "ipv6_gateway": "2001:db8:{slot}::1",
+      "nrm": {
+        "service_type": "mMTC",
+        "characteristics": "Slice suitable for massive Machine Type Communications.",
+        "performance_overrides": {
+          "expDataRateDL": "1 Mbps",
+          "expDataRateUL": "1 Mbps",
+          "areaTrafficCapDL": "10 Mbps",
+          "areaTrafficCapUL": "10 Mbps",
+          "userDensity": "1 000 000/km2",
+          "activityFactor": "1%",
+          "uESpeed": "Stationary and low mobility",
+          "coverage": "Full network"
+        }
+      }
+    }
+  }
+}

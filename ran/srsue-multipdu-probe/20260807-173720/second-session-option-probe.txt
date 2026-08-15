@@ -1,0 +1,3 @@
+Active RF plugins: libsrsran_rf_zmq.so
+Inactive RF plugins: 
+unrecognised option '--nas.apn2=srsapn'

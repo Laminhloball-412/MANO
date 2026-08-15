@@ -1,0 +1,22 @@
+{
+  "ues": {
+    "ue-1": {
+      "active": 0,
+      "status": "COMPLETED",
+      "workload": "sensor",
+      "duration_seconds": 10,
+      "worker_pid": 2025034,
+      "worker_pgid": 2025034,
+      "log": "/home/ubuntu/mano/ue-service-portal/runtime/run-20260731-214206/ue-1-sensor.workload.log",
+      "throughput_bps": 0,
+      "rtt_ms": 76.74844444444444,
+      "jitter_ms": 10.489786684740448,
+      "packet_loss_ratio": 0.0,
+      "packet_size_bytes": 57,
+      "message_rate": 1,
+      "rx_bytes": 34921334,
+      "tx_bytes": 607624,
+      "updated_at": "2026-07-31T14:43:49.983344+00:00"
+    }
+  }
+}

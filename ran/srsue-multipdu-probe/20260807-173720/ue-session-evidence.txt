@@ -1,0 +1,2 @@
+19:RRC Connected
+20:PDU Session Establishment successful. IP: 10.45.0.23

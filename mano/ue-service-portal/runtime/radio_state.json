@@ -1,0 +1,13 @@
+{
+  "status": "DISCONNECTED",
+  "mode": "intent-direct",
+  "requested_count": 1,
+  "selected_ue_id": 3,
+  "target_sst": 3,
+  "target_sd": "000001",
+  "started_at": "2026-08-11T17:07:27.917030+00:00",
+  "run_dir": "/home/ubuntu/mano/ue-service-portal/runtime/intent-20260812-000722-731768",
+  "processes": [],
+  "ues": [],
+  "stopped_at": "2026-08-11T17:08:29.626145+00:00"
+}

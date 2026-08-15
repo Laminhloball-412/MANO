@@ -1,0 +1,13 @@
+{% extends 'portal/base.html' %}
+{% block title %}Architecture · ANSA{% endblock %}
+{% block content %}
+  {% include 'portal/_header.html' with page_title='Integration boundary' page_subtitle='A separate experience layer keeps UE automation independent from the reference Free5GMANO WebUI.' %}
+  <section class="architecture-flow">
+    <article><b>01</b><h2>UE UX</h2><p>Profiles, allowed slices, workload controls</p></article><i>→</i>
+    <article><b>02</b><h2>UE API</h2><p>Provisioning, validation, job lifecycle</p></article><i>→</i>
+    <article><b>03</b><h2>Workload runner</h2><p>Video, UDP control, MQTT sensor</p></article><i>→</i>
+    <article><b>04</b><h2>Telemetry</h2><p>Exporter and Prometheus windows</p></article><i>→</i>
+    <article><b>05</b><h2>Policy</h2><p>Keep, reuse, create, or reject</p></article>
+  </section>
+  <section class="panel roadmap"><p class="overline">RECOMMENDED DELIVERY ORDER</p><div><article><b>NOW</b><h3>UX and API contracts</h3><p>Confirm identifiers, state labels and multi-slice behavior.</p></article><article><b>NEXT</b><h3>Provisioning backend</h3><p>Subscriber, UE config, rollback and audit.</p></article><article><b>THEN</b><h3>Real workload runner</h3><p>Execute through PDU and export measured evidence.</p></article><article><b>LAST</b><h3>Automatic policy</h3><p>Enable classification after metrics are deterministic.</p></article></div></section>
+{% endblock %}

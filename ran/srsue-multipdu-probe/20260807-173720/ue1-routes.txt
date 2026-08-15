@@ -1,0 +1,1 @@
+10.45.0.0/24 dev tun_srsue1 proto kernel scope link src 10.45.0.23 
