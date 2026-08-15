@@ -327,6 +327,41 @@ button {
   color: var(--text);
 }
 
+/* ========================================= */
+/* TABS CHO MULTI-UE (Thêm mới)              */
+/* ========================================= */
+.ue-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  flex: 1;
+  background: rgba(2, 6, 23, 0.4);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 10px 0;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.tab-btn.active {
+  background: var(--surface-light);
+  color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+}
+/* ========================================= */
+
 .action-stack {
   display: grid;
   gap: 12px;
@@ -748,4 +783,3 @@ button {
     min-height: 240px;
   }
 }
-

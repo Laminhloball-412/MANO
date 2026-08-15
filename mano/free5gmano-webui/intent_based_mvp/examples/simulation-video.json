@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "input_source": "prometheus_simulation",
+  "ue": {"ue_id": 1},
+  "service": {"name": "video_streaming", "category": "video"},
+  "measurement_window": {
+    "seconds": 30,
+    "samples": 30,
+    "aggregation": "avg_and_p95"
+  },
+  "observed_kpis": {
+    "throughput_mbps_avg": 35,
+    "latency_ms_p95": 80,
+    "jitter_ms_p95": 12,
+    "packet_loss_percent_avg": 0.5,
+    "reliability_percent_window": 99.5,
+    "message_rate_per_second_avg": 30
+  }
+}

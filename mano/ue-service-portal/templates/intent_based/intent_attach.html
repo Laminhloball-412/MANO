@@ -1,0 +1,50 @@
+{% extends "portal/base.html" %}
+{% load static %}
+{% block title %}Intent-based UE Attach{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'intent_based/intent_attach.css' %}">{% endblock %}
+{% block content %}
+<section class="intent-page">
+  <header class="intent-header">
+    <div><p class="eyebrow">INTENT-BASED SLICE SELECTION</p><h1>QoS requirement → Slice → UE attach</h1></div>
+    <span class="mode-pill">Simulation input · live orchestration</span>
+  </header>
+  <p class="lead">The values below describe what the application needs. They are not measured KPIs. The engine selects one fixed slice, validates the subscriber, reuses or creates the slice, then attaches the selected UE.</p>
+
+  <div class="intent-grid">
+    <form id="intent-form" class="intent-card">
+      <h2>1. Service intent</h2>
+      <label>Registered UE<select id="ue-id" required><option value="">Loading subscribers…</option></select></label>
+      <label>Service name<input id="service-name" value="video_streaming" required></label>
+      <div class="presets">
+        <button type="button" data-preset="video">Video</button>
+        <button type="button" data-preset="control">Robot control</button>
+        <button type="button" data-preset="sensor">IoT sensor</button>
+      </div>
+      <div class="qos-grid">
+        <label>Min throughput (Mbps)<input id="throughput" type="number" min="0" step="0.01" required></label>
+        <label>Max latency (ms)<input id="latency" type="number" min="0" step="0.01" required></label>
+        <label>Max jitter (ms)<input id="jitter" type="number" min="0" step="0.01" required></label>
+        <label>Max packet loss (%)<input id="loss" type="number" min="0" max="100" step="0.001" required></label>
+        <label>Min reliability (%)<input id="reliability" type="number" min="0" max="100" step="0.001" required></label>
+        <label>Message rate (/second)<input id="message-rate" type="number" min="0" step="1" required></label>
+      </div>
+      <button class="primary-action" type="submit">Decide and attach UE</button>
+      <p id="form-error" class="error-text"></p>
+    </form>
+
+    <section class="intent-card result-card">
+      <h2>2. Automated execution</h2>
+      <div class="status-line"><span id="job-status" class="status-badge idle">IDLE</span><strong id="job-stage">Waiting for an intent</strong></div>
+      <ol id="event-list" class="event-list"><li>Submit the form to start.</li></ol>
+      <div id="decision-result" class="result-panel hidden"></div>
+    </section>
+  </div>
+
+  <section class="intent-card flow-card">
+    <h2>Execution contract</h2>
+    <div class="flow-strip"><span>Validate UE + subscriber</span><i>→</i><span>Classify QoS intent</span><i>→</i><span>Reuse/create slice</span><i>→</i><span>Render runtime config</span><i>→</i><span>Restart gNB + attach</span><i>→</i><span>Verify PDU + assigned IP</span></div>
+    <p>Original <code>ue1.conf</code>, <code>ue2.conf</code>, and <code>ue3.conf</code> are never overwritten.</p>
+  </section>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{% static 'intent_based/intent_attach.js' %}"></script>{% endblock %}

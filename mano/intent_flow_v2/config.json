@@ -6,6 +6,12 @@
   "max_slots": 10,
   "state_file": "state/intent-flow-state.json",
   "output_dir": "runs",
+  "base_template_dir": "base_templates",
+  "local_base_templates": {
+    "vnf_zip": "base_templates/default/VNF-source.zip",
+    "nsd_zip": "base_templates/default/NSD-source.zip",
+    "nrm_zip": "base_templates/default/NRM-source.zip"
+  },
   "http_timeout_seconds": 60,
   "instance_detection_timeout_seconds": 60,
   "pod_ready_timeout_seconds": 240,

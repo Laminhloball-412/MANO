@@ -1,0 +1,65 @@
+{% extends 'portal/base.html' %}
+{% block title %}UE Profiles · ANSA{% endblock %}
+{% block content %}
+  {% include 'portal/_header.html' with page_title='UE profiles' page_subtitle='Create sequential UE identities, define allowed slices, and choose the S-NSSAI requested at attach time.' %}
+
+  <section class="stats-grid">
+    <article class="stat-card"><small>UE PROFILES</small><strong>{{ profiles|length|stringformat:'02d' }}</strong><span>Read from lab configs and portal drafts</span></article>
+    <article class="stat-card"><small>ACTIVE SLICE TYPES</small><strong>03</strong><span>eMBB · URLLC · mMTC</span></article>
+    <article class="stat-card accent"><small>NEXT IDENTITY</small><strong>ue-{{ next_id }}</strong><span>IMSI {{ next_imsi }}</span></article>
+  </section>
+
+  <section class="panel radio-control" id="radio-control">
+    <div class="radio-summary"><span class="radio-light" id="radio-light"></span><div><p>Radio session</p><h2 id="radio-state">Checking…</h2><small id="radio-detail">Reading gNB and UE runtime state</small></div></div>
+    <label>Number of UEs to connect<select id="radio-ue-count"><option value="1">1 UE · direct ZMQ</option><option value="2">2 UEs · GNU Radio relay</option><option value="3">3 UEs · GNU Radio relay</option></select></label>
+    <div class="radio-actions"><button id="connect-radio" class="connect-button">Connect UE(s)</button><button id="disconnect-radio" class="disconnect-button">Disconnect</button></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading"><div><p class="overline">IDENTITY INVENTORY</p><h2>Managed UE profiles</h2></div><button id="open-add-ue" class="primary-button">＋ Add UE</button></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>UE</th><th>SUPI / IMSI</th><th>Requested slice</th><th>Allowed slices</th><th>DNN</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+      {% for ue in profiles %}
+        <tr class="ue-row" data-ue="{{ ue.name }}">
+          <td><div class="ue-cell"><b>{{ ue.id|stringformat:'02d' }}</b><span><strong>{{ ue.name }}</strong><small>{{ ue.source }}</small></span></div></td>
+          <td class="mono">{{ ue.imsi }}</td>
+          <td><span class="slice-badge slice-{{ ue.requested_slice }}">{{ ue.requested_slice|upper }} · {{ ue.requested_sst }}/{{ ue.requested_sd }}</span></td>
+          <td><div class="allowed-list">{% for item in ue.allowed_slices %}<span>{{ item|upper }}</span>{% endfor %}</div></td>
+          <td class="mono">{{ ue.dnn }}</td>
+          <td><span id="ue-status-{{ ue.id }}" class="status status-{{ ue.status|lower }}">{{ ue.status }}</span></td>
+          <td>{% if ue.source == 'PORTAL DRAFT' %}<button class="delete-ue-button" data-ue-id="{{ ue.id }}">Delete</button>{% else %}<button class="delete-ue-button" disabled title="Only portal-created profiles can be removed safely">Protected</button>{% endif %}</td>
+        </tr>
+      {% empty %}<tr><td colspan="7">No UE profiles found.</td></tr>{% endfor %}
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="detail-grid">
+    <article class="panel info-panel"><p class="overline">MULTI-SLICE RULE</p><h2>Allowed is not the same as active</h2><p>A subscriber may be permitted to use several S-NSSAIs, but the current UE attach and PDU session still request one primary S-NSSAI.</p><div class="mini-flow"><span>Allowed NSSAI</span><b>→</b><span>Requested NSSAI</span><b>→</b><span>PDU session</span></div></article>
+    <article class="panel info-panel"><p class="overline">SAFE PROVISIONING</p><h2>One action, four controlled steps</h2><ol><li>Reserve the next free UE identity.</li><li>Register subscriber and allowed slices.</li><li>Generate UE config and namespace.</li><li>Return evidence and rollback details.</li></ol></article>
+  </section>
+
+  <div id="add-ue-modal" class="modal-backdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="add-title">
+      <header><div><p class="overline">NEW UE PROFILE</p><h2 id="add-title">Add ue-{{ next_id }}</h2></div><button id="close-add-ue" class="icon-button">×</button></header>
+      <form id="add-ue-form">
+        <div class="form-grid">
+          <label>UE name<input value="ue-{{ next_id }}" readonly></label>
+          <label>SUPI / IMSI<input value="{{ next_imsi }}" readonly class="mono"></label>
+          <label>DNN<input id="draft-dnn" value="srsapn" required></label>
+          <label>Requested slice<select id="draft-requested"><option value="embb">eMBB · SST 1</option></select></label>
+        </div>
+        <fieldset><legend>Allowed slices</legend><p>Select every slice this subscriber may use. One of them is requested for the next attach.</p>
+          <div class="slice-options">
+            <label class="slice-option selected"><input type="checkbox" name="allowed" value="embb" checked><span><strong>eMBB</strong><small>SST 1 · SD 000001</small></span></label>
+            <label class="slice-option"><input type="checkbox" name="allowed" value="urllc"><span><strong>URLLC</strong><small>SST 2 · SD 000001</small></span></label>
+            <label class="slice-option"><input type="checkbox" name="allowed" value="mmtc"><span><strong>mMTC</strong><small>SST 3 · SD 000001</small></span></label>
+          </div>
+        </fieldset>
+        <div class="provision-plan"><strong>This version saves a UI draft only.</strong><span>Subscriber DB remains unchanged</span><span>No UE config is generated</span><span>No namespace is created</span><span>No UE process is started</span></div>
+        <footer><button type="button" id="cancel-add-ue" class="secondary-button">Cancel</button><button type="submit" class="primary-button">Save UI draft</button></footer>
+      </form>
+    </section>
+  </div>
+{% endblock %}

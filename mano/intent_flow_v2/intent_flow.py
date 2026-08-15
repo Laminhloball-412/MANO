@@ -8,6 +8,7 @@ import copy
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -21,7 +22,12 @@ from urllib.parse import urlparse
 
 import requests
 
-from renderer import clean_failed_run, render_nrm_package, render_packages
+from renderer import (
+    clean_failed_run,
+    render_nrm_package,
+    render_packages,
+    validate_source_packages,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -596,6 +602,15 @@ class Orchestrator:
         raise RuntimeError(f"No free SD remains for SST {sst:02d}")
 
     def validate_sources(self, plan: Plan) -> None:
+        local = self.local_base_template_paths()
+        if local:
+            self._validate_base_template_files(
+                plan.slice_type,
+                vnf_zip=local["VNF"],
+                nsd_zip=local["NSD"],
+                nrm_zip=local["NRM"],
+            )
+            return
         expected = {
             plan.source_vnf: "VNF",
             plan.source_nsd: "NSD",
@@ -612,6 +627,342 @@ class Orchestrator:
                 raise RuntimeError(
                     f"{template_id}: operationStatus={detail.get('operationStatus')}"
                 )
+
+    def local_base_template_paths(self) -> dict[str, Path] | None:
+        configured = self.config.get("local_base_templates")
+        if not configured:
+            return None
+        keys = {"VNF": "vnf_zip", "NSD": "nsd_zip", "NRM": "nrm_zip"}
+        paths: dict[str, Path] = {}
+        for kind, key in keys.items():
+            value = configured.get(key)
+            if not value:
+                raise ValueError(f"local_base_templates.{key} is required")
+            path = Path(value)
+            if not path.is_absolute():
+                path = ROOT / path
+            path = path.resolve()
+            if not path.is_file():
+                raise ValueError(f"Local {kind} base template is missing: {path}")
+            paths[kind] = path
+        return paths
+
+    def materialize_source_archives(
+        self, plan: Plan, destination: Path
+    ) -> tuple[Path, Path, Path]:
+        local = self.local_base_template_paths()
+        if not local:
+            return (
+                self.api.download_generic(
+                    plan.source_vnf, destination / "VNF-source.zip"
+                ),
+                self.api.download_generic(
+                    plan.source_nsd, destination / "NSD-source.zip"
+                ),
+                self.api.download_generic(
+                    plan.nrm, destination / "NRM-source.zip"
+                ),
+            )
+        destination.mkdir(parents=True, exist_ok=True)
+        outputs = {
+            kind: destination / f"{kind}-source.zip"
+            for kind in ("VNF", "NSD", "NRM")
+        }
+        for kind, source in local.items():
+            shutil.copyfile(source, outputs[kind])
+        return outputs["VNF"], outputs["NSD"], outputs["NRM"]
+
+    def _validate_base_template_files(
+        self,
+        slice_type: str,
+        *,
+        vnf_zip: Path,
+        nsd_zip: Path,
+        nrm_zip: Path,
+    ) -> dict[str, Any]:
+        if slice_type not in self.config["profiles"]:
+            raise ValueError(f"Unknown profile: {slice_type}")
+        profile = self.config["profiles"][slice_type]
+        source_match = validate_source_packages(
+            nsd_zip=nsd_zip,
+            vnf_zip=vnf_zip,
+        )
+        with tempfile.TemporaryDirectory(prefix="auto-slice-base-check-") as temp:
+            root = Path(temp)
+            manifest = render_packages(
+                nsd_zip=nsd_zip,
+                vnf_zip=vnf_zip,
+                namespace="slice-999",
+                slot=999,
+                slice_type=slice_type,
+                sst=int(profile["sst"]),
+                sd="000001",
+                ipv4_subnet="10.45.99.0/24",
+                ipv4_gateway="10.45.99.1",
+                ipv6_subnet="2001:db8:99::/48",
+                ipv6_gateway="2001:db8:99::1",
+                output_root=root / "rendered",
+            )
+            nrm_profile = profile.get("nrm", {})
+            nrm_manifest = render_nrm_package(
+                nrm_zip=nrm_zip,
+                run_dir=Path(manifest["outputs"]["run_dir"]),
+                namespace="slice-999",
+                sst=int(profile["sst"]),
+                sd="000001",
+                service_type=nrm_profile.get("service_type", slice_type),
+                characteristics=nrm_profile.get(
+                    "characteristics", f"Base {slice_type} template"
+                ),
+                performance_overrides=nrm_profile.get("performance_overrides"),
+            )
+        return {
+            "status": "VALID",
+            "profile": slice_type,
+            "source_match": source_match,
+            "components": sorted(
+                item.get("component") or "unknown"
+                for item in manifest["descriptors"]["vnf"]
+            ),
+            "nrm_sha256": nrm_manifest["sha256"],
+        }
+
+    def _write_profile_sources(
+        self,
+        slice_type: str,
+        *,
+        vnf_template_id: str,
+        nsd_template_id: str,
+        nrm_template_id: str,
+    ) -> None:
+        lock_path = self.config_path.with_suffix(self.config_path.suffix + ".lock")
+        deadline = time.monotonic() + 30
+        while True:
+            try:
+                descriptor = os.open(
+                    lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY
+                )
+                os.write(descriptor, f"{os.getpid()} {now()}".encode())
+                os.close(descriptor)
+                break
+            except FileExistsError:
+                if lock_path.exists() and time.time() - lock_path.stat().st_mtime > 600:
+                    lock_path.unlink(missing_ok=True)
+                    continue
+                if time.monotonic() >= deadline:
+                    raise TimeoutError(f"Config lock is busy: {lock_path}")
+                time.sleep(0.2)
+        try:
+            current = load_json(self.config_path)
+            if slice_type not in current.get("profiles", {}):
+                raise ValueError(f"Unknown profile: {slice_type}")
+            profile = current["profiles"][slice_type]
+            profile["source_vnf_template_id"] = vnf_template_id
+            profile["source_nsd_template_id"] = nsd_template_id
+            profile["nrm_template_id"] = nrm_template_id
+            temporary = self.config_path.with_suffix(self.config_path.suffix + ".tmp")
+            temporary.write_text(dump(current) + "\n", encoding="utf-8")
+            os.replace(temporary, self.config_path)
+            self.config = current
+        finally:
+            lock_path.unlink(missing_ok=True)
+
+    def validate_base_template_ids(
+        self,
+        slice_type: str,
+        *,
+        vnf_template_id: str,
+        nsd_template_id: str,
+        nrm_template_id: str,
+    ) -> dict[str, Any]:
+        selected = {
+            "VNF": vnf_template_id,
+            "NSD": nsd_template_id,
+            "NRM": nrm_template_id,
+        }
+        with tempfile.TemporaryDirectory(prefix="auto-slice-source-") as temp:
+            root = Path(temp)
+            paths: dict[str, Path] = {}
+            details: dict[str, dict[str, Any]] = {}
+            for kind, template_id in selected.items():
+                detail = self.api.generic_template(template_id)
+                if detail.get("templateType") != kind:
+                    raise ValueError(
+                        f"{template_id}: expected {kind}, got {detail.get('templateType')}"
+                    )
+                if detail.get("operationStatus") != "UPLOAD":
+                    raise ValueError(
+                        f"{template_id}: operationStatus={detail.get('operationStatus')}"
+                    )
+                paths[kind] = self.api.download_generic(
+                    template_id, root / f"{kind}.zip"
+                )
+                details[kind] = detail
+            validation = self._validate_base_template_files(
+                slice_type,
+                vnf_zip=paths["VNF"],
+                nsd_zip=paths["NSD"],
+                nrm_zip=paths["NRM"],
+            )
+        validation["templates"] = {
+            kind.lower(): {
+                "template_id": selected[kind],
+                "name": details[kind].get("name"),
+            }
+            for kind in ("VNF", "NSD", "NRM")
+        }
+        return validation
+
+    def set_base_templates(
+        self,
+        slice_type: str,
+        *,
+        vnf_template_id: str,
+        nsd_template_id: str,
+        nrm_template_id: str,
+    ) -> dict[str, Any]:
+        validation = self.validate_base_template_ids(
+            slice_type,
+            vnf_template_id=vnf_template_id,
+            nsd_template_id=nsd_template_id,
+            nrm_template_id=nrm_template_id,
+        )
+        self._write_profile_sources(
+            slice_type,
+            vnf_template_id=vnf_template_id,
+            nsd_template_id=nsd_template_id,
+            nrm_template_id=nrm_template_id,
+        )
+        validation["activated"] = True
+        return validation
+
+    def template_catalog(self) -> dict[str, Any]:
+        templates = self.api.generic_templates()
+        catalog: dict[str, list[dict[str, Any]]] = {
+            "VNF": [], "NSD": [], "NRM": []
+        }
+        for item in templates:
+            kind = item.get("templateType")
+            if kind not in catalog or item.get("operationStatus") != "UPLOAD":
+                continue
+            catalog[kind].append({
+                "template_id": item.get("templateId"),
+                "name": item.get("name") or "Unnamed",
+                "description": item.get("description") or "",
+            })
+        for values in catalog.values():
+            values.sort(key=lambda item: (item["name"].lower(), item["template_id"]))
+        available_ids = {
+            item["template_id"] for values in catalog.values() for item in values
+        }
+        profiles = {}
+        storage = ROOT / self.config.get("base_template_dir", "base_templates")
+        for name, profile in self.config["profiles"].items():
+            selected = {
+                "vnf_template_id": profile.get("source_vnf_template_id"),
+                "nsd_template_id": profile.get("source_nsd_template_id"),
+                "nrm_template_id": profile.get("nrm_template_id"),
+            }
+            profiles[name] = {
+                **selected,
+                "stored_bundle": all(
+                    (storage / name / f"{kind}-source.zip").is_file()
+                    for kind in ("VNF", "NSD", "NRM")
+                ),
+                "status": (
+                    "AVAILABLE"
+                    if all(value in available_ids for value in selected.values())
+                    else "MISSING"
+                ),
+            }
+        return {"templates": catalog, "profiles": profiles}
+
+    def restore_base_templates(self, slice_type: str) -> dict[str, Any]:
+        storage = ROOT / self.config.get("base_template_dir", "base_templates")
+        profile_dir = storage / slice_type
+        paths = {
+            kind: profile_dir / f"{kind}-source.zip"
+            for kind in ("VNF", "NSD", "NRM")
+        }
+        missing = [kind for kind, path in paths.items() if not path.is_file()]
+        if missing:
+            raise ValueError(
+                f"No complete stored bundle for {slice_type}: missing {missing}"
+            )
+        return self.install_base_templates(
+            slice_type,
+            vnf_zip=paths["VNF"],
+            nsd_zip=paths["NSD"],
+            nrm_zip=paths["NRM"],
+        )
+
+    def install_base_templates(
+        self,
+        slice_type: str,
+        *,
+        vnf_zip: Path,
+        nsd_zip: Path,
+        nrm_zip: Path,
+    ) -> dict[str, Any]:
+        validation = self._validate_base_template_files(
+            slice_type,
+            vnf_zip=vnf_zip,
+            nsd_zip=nsd_zip,
+            nrm_zip=nrm_zip,
+        )
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+        storage = ROOT / self.config.get("base_template_dir", "base_templates")
+        profile_dir = storage / slice_type
+        profile_dir.mkdir(parents=True, exist_ok=True)
+        stored = {
+            "VNF": profile_dir / "VNF-source.zip",
+            "NSD": profile_dir / "NSD-source.zip",
+            "NRM": profile_dir / "NRM-source.zip",
+        }
+        for kind, source in (("VNF", vnf_zip), ("NSD", nsd_zip), ("NRM", nrm_zip)):
+            temporary = stored[kind].with_suffix(".zip.tmp")
+            shutil.copyfile(source, temporary)
+            os.replace(temporary, stored[kind])
+
+        nfvo_type = self.config.get("nfvo_type", "kube5gnfvo")
+        created_ids: list[str] = []
+        ids: dict[str, str] = {}
+        try:
+            for kind in ("VNF", "NSD", "NRM"):
+                created = self.api.create_generic(
+                    kind,
+                    f"base-{slice_type}-{kind.lower()}-{stamp}",
+                    f"AUTO_SLICE_BASE:{slice_type}:{stamp}:PROTECTED",
+                    nfvo_type,
+                )
+                template_id = created["templateId"]
+                created_ids.append(template_id)
+                self.api.upload_generic(
+                    template_id, kind, stored[kind], nfvo_type
+                )
+                ids[kind] = template_id
+            self._write_profile_sources(
+                slice_type,
+                vnf_template_id=ids["VNF"],
+                nsd_template_id=ids["NSD"],
+                nrm_template_id=ids["NRM"],
+            )
+        except Exception:
+            for template_id in reversed(created_ids):
+                try:
+                    self.api.delete_generic(template_id)
+                except Exception:
+                    pass
+            raise
+        validation.update({
+            "activated": True,
+            "stored_at": str(profile_dir),
+            "templates": {
+                kind.lower(): {"template_id": ids[kind]}
+                for kind in ("VNF", "NSD", "NRM")
+            },
+        })
+        return validation
 
     def create_namespace(self, namespace: str) -> bool:
         existed = (
@@ -1180,14 +1531,8 @@ class Orchestrator:
                 record["status"] = "PREPARING"
                 work = self.output_root / plan.intent_id
                 source_dir = work / "source"
-                source_vnf = self.api.download_generic(
-                    plan.source_vnf, source_dir / "VNF-source.zip"
-                )
-                source_nsd = self.api.download_generic(
-                    plan.source_nsd, source_dir / "NSD-source.zip"
-                )
-                source_nrm = self.api.download_generic(
-                    plan.nrm, source_dir / "NRM-source.zip"
+                source_vnf, source_nsd, source_nrm = (
+                    self.materialize_source_archives(plan, source_dir)
                 )
                 manifest = render_packages(
                     nsd_zip=source_nsd,
@@ -1673,15 +2018,7 @@ class Orchestrator:
                 )
                 self.validate_sources(plan)
                 source = temporary / slice_type / "source"
-                vnf = self.api.download_generic(
-                    plan.source_vnf, source / "vnf.zip"
-                )
-                nsd = self.api.download_generic(
-                    plan.source_nsd, source / "nsd.zip"
-                )
-                nrm = self.api.download_generic(
-                    plan.nrm, source / "nrm.zip"
-                )
+                vnf, nsd, nrm = self.materialize_source_archives(plan, source)
                 manifest = render_packages(
                     nsd_zip=nsd,
                     vnf_zip=vnf,
@@ -1800,6 +2137,31 @@ def parser() -> argparse.ArgumentParser:
         "doctor",
         help="Read-only API/download/render validation for both profiles",
     )
+    commands.add_parser(
+        "template-catalog",
+        help="List uploaded templates and the active source IDs",
+    )
+    select_templates = commands.add_parser(
+        "set-base-templates",
+        help="Validate and activate an existing VNF/NSD/NRM source set",
+    )
+    select_templates.add_argument("profile", choices=("embb", "urllc", "mmtc"))
+    select_templates.add_argument("--vnf", required=True)
+    select_templates.add_argument("--nsd", required=True)
+    select_templates.add_argument("--nrm", required=True)
+    install_templates = commands.add_parser(
+        "install-base-templates",
+        help="Validate, upload, persist, and activate a VNF/NSD/NRM source set",
+    )
+    install_templates.add_argument("profile", choices=("embb", "urllc", "mmtc"))
+    install_templates.add_argument("--vnf", type=Path, required=True)
+    install_templates.add_argument("--nsd", type=Path, required=True)
+    install_templates.add_argument("--nrm", type=Path, required=True)
+    restore_templates = commands.add_parser(
+        "restore-base-templates",
+        help="Re-upload and activate the persisted source bundle",
+    )
+    restore_templates.add_argument("profile", choices=("embb", "urllc", "mmtc"))
     return result
 
 
@@ -1832,6 +2194,24 @@ def main() -> int:
             output = orchestrator.web_status()
         elif args.command == "sync-monitoring":
             output = orchestrator.sync_monitoring(orchestrator.state.load())
+        elif args.command == "template-catalog":
+            output = orchestrator.template_catalog()
+        elif args.command == "set-base-templates":
+            output = orchestrator.set_base_templates(
+                args.profile,
+                vnf_template_id=args.vnf,
+                nsd_template_id=args.nsd,
+                nrm_template_id=args.nrm,
+            )
+        elif args.command == "install-base-templates":
+            output = orchestrator.install_base_templates(
+                args.profile,
+                vnf_zip=args.vnf.resolve(),
+                nsd_zip=args.nsd.resolve(),
+                nrm_zip=args.nrm.resolve(),
+            )
+        elif args.command == "restore-base-templates":
+            output = orchestrator.restore_base_templates(args.profile)
         else:
             output = orchestrator.doctor()
         print(dump(output))

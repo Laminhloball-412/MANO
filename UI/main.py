@@ -5,6 +5,7 @@ import signal
 import re
 import os
 import queue
+import time
 
 app = Flask(__name__)
 
@@ -13,25 +14,46 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 # ── Config ────────────────────────────────────────────────────
-SRSUE_DIR  = "/home/ubuntu/ran/srsRAN_4G/build/srsue/src"
-SRSUE_BIN  = "./srsue"
-UE_CONF    = "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/uetest.conf"
-NETNS_NAME = "ue1"
+SRSUE_DIR   = "/home/ubuntu/ran/srsRAN_4G/build/srsue/src"
+SRSUE_BIN   = "./srsue"
+
+GNB_DIR     = "/home/ubuntu/ran/srsRAN_project/build/apps/gnb"
+GNB_BIN     = "./gnb"
+GNB_CONF    = "gnb1.yaml"
+
+SCENARIO_DIR = "/home/ubuntu/ran"
+SCENARIO_BIN = "python3"
+SCENARIO_FILE = "multi_ue_scenario.py"
+
+# UE config files — ue1.conf, ue2.conf, ue3.conf
+UE_CONF_TEMPLATE = "/home/ubuntu/ran/srsRAN_4G/build/srsue/src/ue{}.conf"
+
+MAX_UES = 3
+NETNS_PREFIX = "ue"  # ue1, ue2, ue3
+SST_NAMES = {1: "eMBB", 2: "URLLC", 3: "mMTC"}
 
 # ── State ─────────────────────────────────────────────────────
-ue_process  = None
-ue_starting = False
-ue_process_lock = threading.Lock()
-ue_logs     = []
-ue_status   = {"state": "disconnected", "ip": None}
-log_queue   = queue.Queue()
+running_processes = {
+    "ues":      {},    # {ue_id: subprocess.Popen}
+    "gnb":      None,  # subprocess.Popen
+    "scenario": None,  # subprocess.Popen
+}
 
-# ── Helpers ───────────────────────────────────────────────────
-def add_log(line):
-    ue_logs.append(line)
-    log_queue.put(line)
-    if len(ue_logs) > 200:
-        ue_logs.pop(0)
+ue_states = {}  # {ue_id: {state, ip, imsi, sst, sd, slice}}
+
+start_lock = threading.Lock()
+is_starting = False
+
+log_queue = queue.Queue()
+all_logs  = []
+
+# ── Log helpers ───────────────────────────────────────────────
+def add_log(prefix, line):
+    entry = f"{prefix} {line}"
+    all_logs.append(entry)
+    log_queue.put(entry)
+    if len(all_logs) > 500:
+        all_logs.pop(0)
 
 def clear_log_queue():
     while True:
@@ -41,6 +63,7 @@ def clear_log_queue():
             break
 
 
+# ── Config writer ─────────────────────────────────────────────
 def update_conf(key, value, content):
     pattern = rf'(?im)^\s*{key}\s*=.*'
     if re.search(pattern, content):
@@ -48,93 +71,96 @@ def update_conf(key, value, content):
     else:
         return re.sub(r'(?im)(\[usim\])', rf'\1\n{key}  = {value}', content)
 
-def read_ue_ip():
-    import time
+# ── Process runners ───────────────────────────────────────────
+def run_gnb():
+    proc = running_processes["gnb"]
+    if not proc: return
+    for line in proc.stdout:
+        line = line.strip()
+        if line: add_log("[gNB]", line)
+    add_log("[gNB]", "process ended")
 
-    command = [
-        "sudo", "ip", "netns", "exec", NETNS_NAME,
-        "ip", "-4", "-o", "addr", "show",
-        "dev", "tun_srsue1"
-    ]
+def run_scenario():
+    proc = running_processes["scenario"]
+    if not proc: return
+    for line in proc.stdout:
+        line = line.strip()
+        if line: add_log("[SCENARIO]", line)
+    add_log("[SCENARIO]", "process ended")
 
-    for _ in range(10):
-        try:
-            result = subprocess.run(
-                command,
-                capture_output=True,
-                text=True,
-                timeout=3
-            )
+def run_ue(ue_id: int):
+    prefix = f"[UE-{ue_id}]"
+    proc   = running_processes["ues"].get(ue_id)
+    if not proc: return
 
-            match = re.search(
-                r"\binet\s+(\d+(?:\.\d+){3})/",
-                result.stdout
-            )
+    for line in proc.stdout:
+        line = line.strip()
+        if not line: continue
+        add_log(prefix, line)
 
-            if result.returncode == 0 and match:
-                return match.group(1)
+        st = ue_states.get(ue_id, {})
+        if "Attaching UE" in line:
+            st["state"] = "attaching"
+        elif "Random Access Complete" in line:
+            st["state"] = "random_access"
+        elif "RRC Connected" in line:
+            st["state"] = "authenticating"
+        elif "PDU Session Establishment successful" in line:
+            m = re.search(r"IP:\s*(\d+\.\d+\.\d+\.\d+)", line)
+            st["state"] = "connected"
+            if m: st["ip"] = m.group(1)
+        elif "RRC NR reconfiguration successful" in line:
+            st["state"] = "connected"
+        elif "Received RRC Release" in line:
+            if st.get("state") != "connected":
+                st["state"] = "failed"
+                add_log(prefix, "[ERROR] RRC released before PDU session")
+        elif "Received RRC Release" in line and st.get("state") == "connected":
+            st["state"] = "disconnected"
+            st["ip"]    = None
+        ue_states[ue_id] = st
 
-        except (subprocess.TimeoutExpired, OSError):
-            pass
+    if ue_id in ue_states:
+        ue_states[ue_id]["state"] = "disconnected"
+        ue_states[ue_id]["ip"]    = None
+    add_log(prefix, "process ended")
 
-        time.sleep(0.25)
+# ── Core stop function (Dùng cho API /stop-scenario) ─────────────────
+def _stop_all():
+    add_log("[SYS]", "Stopping all processes...")
+    
+    # 1. Dùng sudo pkill để ép tắt bằng quyền root (thay vì proc.kill vô dụng)
+    subprocess.run(["sudo", "pkill", "-9", "-f", GNB_BIN], capture_output=True)
+    subprocess.run(["sudo", "pkill", "-9", "-f", SRSUE_BIN], capture_output=True)
+    subprocess.run(["sudo", "pkill", "-9", "-f", SCENARIO_FILE], capture_output=True)
+    
+    # 2. Xóa toàn bộ namespaces
+    subprocess.run(["sudo", "ip", "-all", "netns", "delete"], capture_output=True)
+    
+    # 3. Xóa sổ log và trạng thái
+    running_processes["scenario"] = None
+    running_processes["gnb"] = None
+    running_processes["ues"].clear()
+    ue_states.clear()
+    
+    add_log("[SYS]", "All network namespaces deleted. Ready for new scenario.")
 
-    return None
-
-def run_ue():
-    global ue_process, ue_status, ue_starting
-    try:
-        ue_process = subprocess.Popen(
-            ["sudo", SRSUE_BIN, "uetest.conf"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            cwd=SRSUE_DIR
-        )
-
-        with ue_process_lock:
-            ue_starting = False
-
-        for line in ue_process.stdout:
-            line = line.strip()
-            if not line:
-                continue
-            add_log(line)
-
-            if "Attaching UE" in line:
-                ue_status["state"] = "attaching"
-            elif "Random Access Complete" in line:
-                ue_status["state"] = "random_access"
-            elif "RRC Connected" in line:
-                ue_status["state"] = "authenticating"
-            elif "PDU Session Establishment successful" in line:
-                m = re.search(r"IP:\s*(\d+\.\d+\.\d+\.\d+)", line)
-                ue_status["state"] = "connected"
-
-                if m:
-                    ue_status["ip"] = m.group(1)
-                else:
-                    ue_status["ip"] = read_ue_ip()
-            elif "Received RRC Release" in line:
-                if ue_status["state"] != "connected":
-                    ue_status["state"] = "error"
-                    add_log(
-                        "[ERROR] RRC released before PDU session"
-                    )
-
-        ue_status["state"] = "disconnected"
-        ue_status["ip"] = None
-        add_log("[INFO] srsUE process ended")
-
-    except Exception as e:
-        with ue_process_lock:
-            ue_starting = False
-
-        add_log(f"[ERROR] {e}")
-        ue_status["state"] = "error"
+# ── Signal handler (Dùng khi bấm Ctrl+C ở Terminal) ──────────────────
+def signal_handler(sig, frame):
+    print("\n[INFO] Nhận tín hiệu tắt (Ctrl+C). Đang ép tắt hệ thống...")
+    
+    # Ép hệ điều hành dọn dẹp ngay lập tức (ẩn log rác bằng > /dev/null)
+    os.system(f"sudo pkill -9 -f {GNB_BIN} > /dev/null 2>&1")
+    os.system(f"sudo pkill -9 -f {SRSUE_BIN} > /dev/null 2>&1")
+    os.system(f"sudo pkill -9 -f {SCENARIO_FILE} > /dev/null 2>&1")
+    os.system("sudo ip -all netns delete > /dev/null 2>&1")
+    
+    print("[INFO] Đã dọn dẹp xong. Tạm biệt!")
+    
+    # Tử hình chính tiến trình Python này để thoát ngay lập tức khỏi Flask
+    os.kill(os.getpid(), signal.SIGKILL)
 
 # ── Routes ────────────────────────────────────────────────────
-
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -142,151 +168,166 @@ def index():
 @app.route("/save-config", methods=["POST"])
 def save_config():
     data = request.json or {}
-    k    = data.get("k", "").strip()
-    opc  = data.get("opc", "").strip()
+    k    = data.get("k",    "").strip()
+    opc  = data.get("opc",  "").strip()
     imei = data.get("imei", "").strip()
-    apn  = data.get("apn", "").strip()
-    sd   = data.get("sd", "").strip()
-    sst  = data.get("sst", "").strip()
+    apn  = data.get("apn",  "").strip()
+    sd   = data.get("sd",   "").strip()
+    sst  = data.get("sst",  "").strip()
     imsi = data.get("imsi", "").strip()
+    num_ues = int(data.get("num_ues", 1))
+
     if not all([k, opc, imei, apn, sd, sst, imsi]):
         return jsonify({"success": False, "error": "All fields are required"}), 400
 
-    if not os.path.exists(UE_CONF):
-        return jsonify({"success": False, "error": f"Config file not found: {UE_CONF}"}), 404
+    saved, errors = [], []
+    for i in range(1, num_ues + 1):
+        conf_path = UE_CONF_TEMPLATE.format(i)
+        if not os.path.exists(conf_path):
+            errors.append(f"ue{i}.conf not found")
+            continue
+        try:
+            with open(conf_path, "r") as f: content = f.read()
+            imsi_i = str(int(imsi) + (i - 1))
+            content = update_conf("k",    k,      content)
+            content = update_conf("opc",  opc,    content)
+            content = update_conf("imei", imei,   content)
+            content = update_conf("imsi", imsi_i, content)
+            
+            apn_pattern = r'(?im)^\s*apn\s*=.*'
+            if re.search(apn_pattern, content):
+                content = re.sub(apn_pattern, f"apn  = {apn}", content)
+            else:
+                content = re.sub(r'(?im)(\[nas\])', rf'\1\napn  = {apn}', content)
+                
+            content = update_conf("nssai-sst", sst, content)
+            content = update_conf("nssai-sd",  sd,  content)
 
-    try:
-        with open(UE_CONF, "r") as f:
-            content = f.read()
+            with open(conf_path, "w") as f: f.write(content)
+            saved.append(f"ue{i}.conf")
+        except Exception as e:
+            errors.append(f"ue{i}.conf: {str(e)}")
 
-        content = update_conf("k",    k,   content)
-        content = update_conf("opc",  opc, content)
-        content = update_conf("imei", imei, content)
-        content = update_conf("imsi", imsi, content)
-        # APN is in [nas] section
-        apn_pattern = r'(?im)^\s*apn\s*=.*'
-        if re.search(apn_pattern, content):
-            content = re.sub(apn_pattern, f"apn  = {apn}", content)
-        else:
-            content = re.sub(r'(?im)(\[nas\])', rf'\1\napn  = {apn}', content)
-        content = update_conf("nssai-sst", sst, content)
-        content = update_conf("nssai-sd",  sd,  content)
-        with open(UE_CONF, "w") as f:
-            f.write(content)
-
-        return jsonify({"success": True, "message": "Config saved to uetest.conf"})
-
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+    if errors: return jsonify({"success": False, "error": "; ".join(errors)}), 500
+    return jsonify({"success": True, "message": f"Config saved to: {', '.join(saved)}"})
 
 
 @app.route("/attach", methods=["POST"])
 def attach():
-    global ue_process, ue_logs, ue_status, ue_starting
+    global is_starting
+    data    = request.json or {}
+    num_ues = int(data.get("num_ues", 3)) # Mặc định chạy 3 UEs
 
-    with ue_process_lock:
-        process_running = (
-            ue_process is not None
-            and ue_process.poll() is None
-        )
+    with start_lock:
+        gnb_running = (running_processes["gnb"] is not None and running_processes["gnb"].poll() is None)
+        if is_starting or gnb_running:
+            return jsonify({"success": False, "error": "Scenario đang chạy"}), 409
+        is_starting = True
 
-        if ue_starting or process_running:
-            return jsonify(
-                {
-                    "success": False,
-                    "error": "UE already running"
-                }
-            ), 409
-
-        ue_starting = True
-
-    ue_logs = []
-    clear_log_queue()
-    ue_status = {"state": "attaching", "ip": None}
-# ── Cleanup từ lần trước ──────────────────────────
-    add_log("[INFO] Cleaning up previous session...")
-
-    # Xóa tun interface cũ bên trong namespace
-    subprocess.run(
-        ["sudo", "ip", "netns", "exec", NETNS_NAME,
-         "ip", "link", "delete", "tun_srsue1"],
-        capture_output=True, text=True
-    )
-
-    # Xóa namespace cũ
-    subprocess.run(
-        ["sudo", "ip", "netns", "delete", NETNS_NAME],
-        capture_output=True, text=True
-    )
-
-    # Đợi một chút để ZMQ ports giải phóng
-    import time
-    time.sleep(1)
-    # Step 1: create network namespace
-    add_log(f"[INFO] Creating network namespace: {NETNS_NAME}")
-    ns_result = subprocess.run(
-        ["sudo", "ip", "netns", "add", NETNS_NAME],
-        capture_output=True, text=True
-    )
-    if ns_result.returncode != 0 and "File exists" not in ns_result.stderr:
-        add_log(f"[WARN] netns: {ns_result.stderr.strip()}")
-    else:
-        add_log(f"[OK] Network namespace '{NETNS_NAME}' ready")
-
-    # Step 2: start srsUE in background
-    add_log("[INFO] Starting srsUE...")
-    threading.Thread(target=run_ue, daemon=True).start()
-
-    return jsonify({"success": True, "message": "Attaching UE..."})
-
-
-@app.route("/detach", methods=["POST"])
-def detach():
-    global ue_process, ue_status
-
-    if ue_process and ue_process.poll() is None:
-        ue_process.send_signal(signal.SIGTERM)
-        add_log("[INFO] UE detaching...")
-
-        # Đợi tối đa 5 giây cho process kết thúc
+    def start_sequence():
+        global is_starting
         try:
-            ue_process.wait(timeout=5)
-            add_log("[OK] UE stopped cleanly")
-        except subprocess.TimeoutExpired:
-            # Force kill nếu không dừng được
-            ue_process.kill()
-            ue_process.wait()
-            add_log("[WARN] Force killed srsUE")
+            _stop_all()
+            all_logs.clear()
+            clear_log_queue()
 
-    ue_status["state"] = "disconnected"
-    ue_status["ip"]    = None
-    return jsonify({"success": True, "message": "UE detached"})
+            # 1. Tạo netns
+            for i in range(1, num_ues + 1):
+                netns = f"{NETNS_PREFIX}{i}"
+                subprocess.run(["sudo", "ip", "netns", "add", netns], capture_output=True)
+                add_log("[SYS]", f"netns {netns} ready")
+
+            # 2. Khởi động gNB
+            add_log("[gNB]", f"Starting: sudo {GNB_BIN} -c {GNB_CONF}")
+            gnb_proc = subprocess.Popen(
+                ["sudo", GNB_BIN, "-c", GNB_CONF],
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=GNB_DIR
+            )
+            running_processes["gnb"] = gnb_proc
+            threading.Thread(target=run_gnb, daemon=True).start()
+            
+            add_log("[SYS]", "Waiting 3s for gNB to connect to AMF...")
+            time.sleep(3)
+
+            # 3. Khởi động các srsUE
+            for i in range(1, num_ues + 1):
+                conf_name = f"ue{i}.conf"
+                add_log(f"[UE-{i}]", f"Starting: sudo {SRSUE_BIN} {conf_name}")
+                proc = subprocess.Popen(
+                    ["sudo", SRSUE_BIN, conf_name],
+                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=SRSUE_DIR
+                )
+                running_processes["ues"][i] = proc
+                ue_states[i] = {"state": "attaching", "ip": None}
+                threading.Thread(target=run_ue, args=(i,), daemon=True).start()
+                time.sleep(0.5)
+
+            # 4. Chạy Scenario
+            scenario_path = os.path.join(SCENARIO_DIR, SCENARIO_FILE)
+            if os.path.exists(scenario_path):
+                add_log("[SCENARIO]", f"Starting: sudo  {SCENARIO_FILE}")
+                scenario_proc = subprocess.Popen(
+                    ["sudo",SCENARIO_BIN, SCENARIO_FILE],
+                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=SCENARIO_DIR
+                )
+                running_processes["scenario"] = scenario_proc
+                threading.Thread(target=run_scenario, daemon=True).start()
+            
+            add_log("[SYS]", f"Scenario started: {num_ues} UE(s) running")
+        finally:
+            with start_lock: is_starting = False
+
+    threading.Thread(target=start_sequence, daemon=True).start()
+    return jsonify({"success": True})
+
+
+@app.route("/detach/<int:ue_id>", methods=["POST"])
+def detach_ue(ue_id):
+    netns = f"{NETNS_PREFIX}{ue_id}"
+    tun_name = f"tun_srsue{ue_id}" # Đã sửa thành biến động để không bị lỗi
+    
+    result = subprocess.run(
+        ["sudo", "ip", "netns", "exec", netns, "ip", "link", "set", tun_name, "down"],
+        capture_output=True, text=True
+    )
+    if result.returncode == 0:
+        if ue_id in ue_states:
+            ue_states[ue_id]["state"] = "disconnected"
+            ue_states[ue_id]["ip"]    = None
+        add_log(f"[UE-{ue_id}]", "Interface down — soft detached")
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "error": result.stderr.strip()}), 500
+
+
+@app.route("/stop-scenario", methods=["POST"])
+def stop_scenario():
+    _stop_all()
+    return jsonify({"success": True, "message": "All stopped and cleaned up"})
 
 
 @app.route("/status")
 def status():
-    return jsonify(ue_status)
-
-
-@app.route("/logs")
-def logs():
-    return jsonify({"logs": ue_logs[-50:]})
-
+    return jsonify({
+        "ues": ue_states,
+        "gnb": "running" if (running_processes["gnb"] and running_processes["gnb"].poll() is None) else "stopped",
+        "scenario": "running" if (running_processes["scenario"] and running_processes["scenario"].poll() is None) else "stopped",
+    })
 
 @app.route("/logs/stream")
 def logs_stream():
-    """Server-Sent Events for live log streaming"""
     def generate():
+        for line in list(all_logs): yield f"data: {line}\n\n"
         while True:
             try:
                 line = log_queue.get(timeout=30)
                 yield f"data: {line}\n\n"
             except queue.Empty:
                 yield "data: [PING]\n\n"
-
     return Response(generate(), mimetype="text/event-stream")
 
-
 if __name__ == "__main__":
-    print("5G UE Web Manager running at http://0.0.0.0:5000")
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    print("5G Multi-UE Manager running at http://0.0.0.0:5000")
+    app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)

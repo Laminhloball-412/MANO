@@ -1,0 +1,26 @@
+[Unit]
+Description=ANSA UE and Service Django Portal
+Wants=network-online.target
+After=network-online.target free5gmano-webui.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/mano/ue-service-portal
+Environment=HOME=/home/ubuntu
+Environment=PYTHONUNBUFFERED=1
+Environment=UE_CONFIG_DIR=/home/ubuntu/ran/srsRAN_4G/build/srsue/src
+Environment=UE_DRAFT_REGISTRY=/home/ubuntu/mano/ue-service-portal/data/ue_drafts.json
+Environment=UE_PROVISIONING_ENABLED=0
+Environment=WORKLOAD_RUNNER_ENABLED=0
+ExecStart=/home/ubuntu/mano/free5gmano-webui/.venv/bin/python manage.py runserver 0.0.0.0:8890 --noreload
+Restart=always
+RestartSec=3
+TimeoutStopSec=15
+KillSignal=SIGINT
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

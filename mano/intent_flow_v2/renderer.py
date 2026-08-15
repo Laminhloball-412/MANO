@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import shutil
+import tempfile
 import uuid
 import zipfile
 from pathlib import Path
@@ -17,8 +18,8 @@ SLICE_FQDN_RE = re.compile(
     r"\b([a-z0-9-]+-svc)\.slice-[A-Za-z0-9-]+\.svc\.cluster\.local\b",
     re.IGNORECASE,
 )
-IPV4_SUBNET_RE = re.compile(r"\b10\.45\.\d+\.0/24\b")
-IPV4_GATEWAY_RE = re.compile(r"\b10\.45\.\d+\.1(?:/24)?\b")
+IPV4_SUBNET_RE = re.compile(r"\b10\.45\.\d+\.0/(?:16|24)\b")
+IPV4_GATEWAY_RE = re.compile(r"\b10\.45\.\d+\.1(?:/(?:16|24))?\b")
 IPV6_SUBNET_RE = re.compile(r"\b2001:db8:[0-9a-fA-F:]+/(?:48|64)\b")
 IPV6_GATEWAY_RE = re.compile(r"\b2001:db8:[0-9a-fA-F:]+::1\b")
 SST_RE = re.compile(r"(?m)^(\s*-\s*sst:\s*)\d+\s*$")
@@ -32,6 +33,11 @@ PFCP_SERVER_RE = re.compile(
     r"\s{4}server:\s*\n)"
     r"\s{6}-\s+(?:address:\s*0\.0\.0\.0|dev:\s*eth0)\s*\n"
     r"(?:\s{8}advertise:\s*[^\r\n]+\s*\n)?"
+)
+GTPU_SERVER_RE = re.compile(
+    r"(?m)^(\s{2}gtpu:\s*\n"
+    r"\s{4}server:\s*\n)"
+    r"\s{6}-\s+(?:address:\s*0\.0\.0\.0|dev:\s*eth0)\s*\n"
 )
 
 
@@ -76,6 +82,60 @@ def _nsd_definition(nsd_root: Path) -> Path:
     return matches[0]
 
 
+def validate_source_packages(*, nsd_zip: Path, vnf_zip: Path) -> dict[str, Any]:
+    """Validate that an NSD references exactly the VNF IDs in a source bundle."""
+    try:
+        with zipfile.ZipFile(vnf_zip) as archive:
+            with tempfile.TemporaryDirectory(prefix="auto-slice-vnf-check-") as temp:
+                vnf_root = Path(temp)
+                _safe_extract(archive, vnf_root)
+                definitions = _definition_files(vnf_root)
+                vnf_ids = {
+                    match.group(2)
+                    for path in definitions
+                    if (match := DESCRIPTOR_ID_RE.search(_read(path)))
+                }
+    except zipfile.BadZipFile as error:
+        raise ValueError(f"Invalid VNF ZIP: {error}") from error
+    if not vnf_ids:
+        raise ValueError("VNF package has no descriptor_id entries")
+
+    try:
+        with zipfile.ZipFile(nsd_zip) as archive:
+            with tempfile.TemporaryDirectory(prefix="auto-slice-nsd-check-") as temp:
+                nsd_root = Path(temp)
+                _safe_extract(archive, nsd_root)
+                definition = _nsd_definition(nsd_root)
+                text = _read(definition)
+                nsd_match = DESCRIPTOR_ID_RE.search(text)
+                if not nsd_match:
+                    raise ValueError(f"NSD descriptor_id missing in {definition}")
+                nsd_id = nsd_match.group(2)
+                referenced_ids = {
+                    match.group(2) for match in VNFD_REF_RE.finditer(text)
+                }
+    except zipfile.BadZipFile as error:
+        raise ValueError(f"Invalid NSD ZIP: {error}") from error
+    if not referenced_ids:
+        raise ValueError("NSD package has no vnfd_id references")
+
+    missing = sorted(referenced_ids - vnf_ids)
+    unused = sorted(vnf_ids - referenced_ids)
+    if missing or unused:
+        details = []
+        if missing:
+            details.append(f"NSD references unknown VNF IDs: {missing}")
+        if unused:
+            details.append(f"VNF IDs not referenced by NSD: {unused}")
+        raise ValueError("; ".join(details))
+    return {
+        "nsd_descriptor_id": nsd_id,
+        "vnf_descriptor_ids": sorted(vnf_ids),
+        "nsd_vnfd_ids": sorted(referenced_ids),
+        "status": "MATCHED",
+    }
+
+
 def _patch_text(
     text: str,
     *,
@@ -97,7 +157,10 @@ def _patch_text(
     text = IPV4_SUBNET_RE.sub(ipv4_subnet, text)
 
     def replace_gateway(match: re.Match[str]) -> str:
-        suffix = "/24" if match.group(0).endswith("/24") else ""
+        # Definition commands can contain the gateway with a prefix while the
+        # Open5GS YAML contains the same gateway without one.  Preserve that
+        # distinction, but always use the prefix of the selected slice pool.
+        suffix = f"/{ipv4_subnet.rsplit('/', 1)[1]}" if "/" in match.group(0) else ""
         return f"{ipv4_gateway}{suffix}"
 
     text = IPV4_GATEWAY_RE.sub(replace_gateway, text)
@@ -129,6 +192,15 @@ def _ensure_pfcp_kubernetes_identity(
 
     if component in {"smf", "upf"}:
         text = PFCP_SERVER_RE.sub(
+            lambda match: f"{match.group(1)}      - dev: eth0\n",
+            text,
+            count=1,
+        )
+    if component == "upf":
+        # Binding GTP-U to 0.0.0.0 starts the socket, but Open5GS can then put
+        # an unusable/local address in the N2 tunnel information.  Resolving
+        # eth0 at pod start advertises the real routable pod IP to the gNB.
+        text = GTPU_SERVER_RE.sub(
             lambda match: f"{match.group(1)}      - dev: eth0\n",
             text,
             count=1,

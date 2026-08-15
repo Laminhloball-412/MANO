@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Intent-based UE slice input",
+  "type": "object",
+  "required": ["schema_version", "input_source", "ue", "service"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "input_source": {"enum": ["simulation", "prometheus_simulation", "prometheus"]},
+    "submitted_at": {"type": ["string", "null"], "format": "date-time"},
+    "ue": {"type": "object", "required": ["ue_id"], "properties": {"ue_id": {"type": "integer", "minimum": 1}, "imsi": {"type": "string"}}},
+    "service": {"type": "object", "required": ["name"], "properties": {"name": {"type": "string"}, "category": {"type": "string"}}},
+    "qos_requirements": {
+      "type": "object",
+      "required": ["min_throughput_mbps", "max_latency_ms", "max_jitter_ms", "max_packet_loss_percent", "min_reliability_percent", "message_rate_per_second"],
+      "properties": {
+        "min_throughput_mbps": {"type": "number", "minimum": 0},
+        "max_latency_ms": {"type": "number", "minimum": 0},
+        "max_jitter_ms": {"type": "number", "minimum": 0},
+        "max_packet_loss_percent": {"type": "number", "minimum": 0, "maximum": 100},
+        "min_reliability_percent": {"type": "number", "minimum": 0, "maximum": 100},
+        "message_rate_per_second": {"type": "number", "minimum": 0}
+      }
+    },
+    "measurement_window": {"type": "object"},
+    "observed_kpis": {
+      "type": "object",
+      "required": ["throughput_mbps_avg", "latency_ms_p95", "jitter_ms_p95", "packet_loss_percent_avg", "reliability_percent_window", "message_rate_per_second_avg"],
+      "properties": {
+        "throughput_mbps_avg": {"type": "number", "minimum": 0},
+        "latency_ms_p95": {"type": "number", "minimum": 0},
+        "jitter_ms_p95": {"type": "number", "minimum": 0},
+        "packet_loss_percent_avg": {"type": "number", "minimum": 0, "maximum": 100},
+        "reliability_percent_window": {"type": "number", "minimum": 0, "maximum": 100},
+        "message_rate_per_second_avg": {"type": "number", "minimum": 0}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"input_source": {"const": "prometheus_simulation"}}},
+      "then": {"required": ["measurement_window", "observed_kpis"]},
+      "else": {"required": ["qos_requirements"]}
+    }
+  ]
+}

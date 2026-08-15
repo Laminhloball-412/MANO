@@ -1,0 +1,2 @@
+.intent-mvp label{font-size:.82rem;font-weight:700;color:#4e5a70}.intent-mvp pre{background:#182033;color:#dbe7ff;border-radius:.5rem;padding:1rem;max-height:330px;overflow:auto}.intent-mvp .list-group-item{padding:.65rem 0}.intent-mvp .result-table th{width:38%;color:#6d7890}.intent-mvp .progress{height:.45rem}
+@media(max-width:768px){.intent-mvp .card-header{align-items:flex-start!important;gap:.75rem;flex-direction:column}.intent-mvp .card-header>div{flex-wrap:wrap;gap:.35rem}}

@@ -1,0 +1,23 @@
+{% extends 'portal/base.html' %}
+{% block title %}Live Measurements · ANSA{% endblock %}
+{% block content %}
+  {% include 'portal/_header.html' with page_title='Live service measurements' page_subtitle='Real workload evidence is scraped by Prometheus before any automatic slice decision is enabled.' %}
+  <section class="panel live-toolbar">
+    <label>UE to observe<select id="measurement-ue">{% for ue in profiles %}{% if ue.source == 'LAB CONFIG' %}<option value="{{ ue.name }}" {% if ue.name == selected_ue %}selected{% endif %}>{{ ue.name }} · {{ ue.imsi }}</option>{% endif %}{% endfor %}</select></label>
+    <div><small>DATA SOURCE</small><strong>Prometheus · 2s refresh</strong></div>
+    <div><small>WORKLOAD</small><strong id="live-workload">Idle</strong></div>
+    <div class="live-state"><i id="live-dot"></i><span><small>TELEMETRY</small><strong id="live-state">Waiting</strong></span></div>
+  </section>
+  <section class="metric-grid live-metrics">
+    <article><small>THROUGHPUT</small><strong id="metric-throughput">—</strong><span>Observed tunnel rate</span></article>
+    <article><small>RTT</small><strong id="metric-rtt">—</strong><span>End-to-end response</span></article>
+    <article><small>JITTER</small><strong id="metric-jitter">—</strong><span>Latency variation</span></article>
+    <article><small>PACKET LOSS</small><strong id="metric-loss">—</strong><span>Missing / transmitted</span></article>
+    <article><small>PACKET SIZE</small><strong id="metric-packet-size">—</strong><span>Application payload</span></article>
+    <article><small>MESSAGE RATE</small><strong id="metric-message-rate">—</strong><span>Application frequency</span></article>
+  </section>
+  <section class="decision-grid">
+    <article class="panel feature-panel"><div><p class="overline">LIVE FEATURE VECTOR</p><h2>Values available to the future classifier</h2></div><pre id="live-feature-vector">Waiting for Prometheus samples…</pre></article>
+    <article class="panel classifier-panel"><p class="overline">CLASSIFIER GATE</p><b>?</b><h2>Automatic decision disabled</h2><p>Measurements are real; the policy step remains intentionally disabled until thresholds and rollback behavior are approved.</p><div><span>Current phase</span><strong>Observe only</strong></div></article>
+  </section>
+{% endblock %}

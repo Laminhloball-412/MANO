@@ -12,6 +12,33 @@
     href="{{ url_for('static', filename='css/app.css') }}"
   >
 
+  <!-- Thêm CSS trực tiếp cho các nút Tab để bạn không phải sửa file app.css -->
+  <style>
+    .ue-tabs {
+      display: flex; 
+      gap: 8px; 
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: rgba(2, 6, 23, 0.4);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 10px 0;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      background: var(--surface-light);
+      color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+  </style>
+
   <script
     defer
     src="{{ url_for('static', filename='js/app.js') }}">
@@ -35,15 +62,22 @@
 
     <main class="app-content">
 
-      <!-- HOME -->
+      <!-- ================= HOME ================= -->
       <section id="screen-home" class="screen active">
+        
+        <!-- THANH CHỌN UE Ở MÀN HÌNH HOME -->
+        <div class="ue-tabs">
+          <button id="home-tab-1" class="tab-btn active" onclick="switchHomeUE(1)">UE 1</button>
+          <button id="home-tab-2" class="tab-btn" onclick="switchHomeUE(2)">UE 2</button>
+          <button id="home-tab-3" class="tab-btn" onclick="switchHomeUE(3)">UE 3</button>
+        </div>
+
         <article class="card status-card">
           <div class="card-heading">
             <div>
               <p class="section-label">CURRENT SESSION</p>
               <h2>UE connection</h2>
             </div>
-
             <div class="signal-icon" aria-hidden="true">⌁</div>
           </div>
 
@@ -106,17 +140,17 @@
         <div class="action-stack">
           <button id="attach-btn" class="button button-primary" type="button" onclick="attachUE()">
             <span>▶</span>
-            Attach UE
+            Start Multi-UE Lab
           </button>
 
           <button id="detach-btn" class="button button-danger" type="button" onclick="detachUE()">
             <span>■</span>
-            Detach UE
+            Stop Lab
           </button>
         </div>
       </section>
 
-      <!-- CONFIG -->
+      <!-- ================= CONFIG ================= -->
       <section id="screen-config" class="screen">
         <div class="screen-heading">
           <p class="section-label">SUBSCRIBER PROFILE</p>
@@ -126,78 +160,39 @@
 
         <article class="card">
           <div class="form-field">
-            <label for="imsi">IMSI</label>
-            <input
-              id="imsi"
-              type="text"
-              inputmode="numeric"
-              autocomplete="off"
-              placeholder="Enter IMSI"
-            >
+            <label for="imsi">IMSI (Start value)</label>
+            <input id="imsi" type="text" inputmode="numeric" autocomplete="off" placeholder="Enter IMSI">
           </div>
 
           <div class="form-field">
             <label for="k">Authentication key (K)</label>
-            <input
-              id="k"
-              type="password"
-              autocomplete="new-password"
-              placeholder="32 hexadecimal characters"
-            >
+            <input id="k" type="password" autocomplete="new-password" placeholder="32 hexadecimal characters">
           </div>
 
           <div class="form-field">
             <label for="opc">Operator key (OPc)</label>
-            <input
-              id="opc"
-              type="password"
-              autocomplete="new-password"
-              placeholder="32 hexadecimal characters"
-            >
+            <input id="opc" type="password" autocomplete="new-password" placeholder="32 hexadecimal characters">
           </div>
 
           <div class="form-field">
             <label for="imei">IMEI</label>
-            <input
-              id="imei"
-              type="text"
-              inputmode="numeric"
-              autocomplete="off"
-              placeholder="Enter IMEI"
-            >
+            <input id="imei" type="text" inputmode="numeric" autocomplete="off" placeholder="Enter IMEI">
           </div>
 
           <div class="form-field">
             <label for="apn">APN / DNN</label>
-            <input
-              id="apn"
-              type="text"
-              autocomplete="off"
-              placeholder="Example: srsapn"
-            >
+            <input id="apn" type="text" autocomplete="off" placeholder="Example: srsapn">
           </div>
 
           <div class="form-row">
             <div class="form-field">
               <label for="sst">SST</label>
-              <input
-                id="sst"
-                type="number"
-                inputmode="numeric"
-                min="0"
-                max="255"
-                placeholder="1"
-              >
+              <input id="sst" type="number" inputmode="numeric" min="0" max="255" placeholder="1">
             </div>
 
             <div class="form-field">
               <label for="sd">SD</label>
-              <input
-                id="sd"
-                type="text"
-                autocomplete="off"
-                placeholder="000001"
-              >
+              <input id="sd" type="text" autocomplete="off" placeholder="000001">
             </div>
           </div>
 
@@ -207,7 +202,7 @@
         </article>
       </section>
 
-      <!-- LOGS -->
+      <!-- ================= LOGS ================= -->
       <section id="screen-logs" class="screen">
         <div class="screen-heading logs-heading">
           <div>
@@ -220,15 +215,19 @@
           </button>
         </div>
 
+        <!-- THANH CHỌN UE Ở MÀN HÌNH LOGS -->
+        <div class="ue-tabs">
+          <button id="log-tab-1" class="tab-btn active" onclick="switchLogUE(1)">UE 1</button>
+          <button id="log-tab-2" class="tab-btn" onclick="switchLogUE(2)">UE 2</button>
+          <button id="log-tab-3" class="tab-btn" onclick="switchLogUE(3)">UE 3</button>
+        </div>
+
         <article class="terminal-card">
           <div class="terminal-toolbar">
             <div class="terminal-dots" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
+              <span></span><span></span><span></span>
             </div>
-
-            <span>Live terminal</span>
+            <span id="log-title">Live terminal (UE 1)</span>
           </div>
 
           <div id="terminal" class="terminal" aria-live="polite">
@@ -237,7 +236,7 @@
         </article>
       </section>
 
-      <!-- ABOUT -->
+      <!-- ================= ABOUT ================= -->
       <section id="screen-about" class="screen">
         <div class="screen-heading">
           <p class="section-label">SYSTEM INFORMATION</p>
@@ -249,7 +248,7 @@
           <h3>5G UE Control</h3>
           <p>
             Mobile-first control interface for configuring, attaching and
-            monitoring an srsUE instance in the laboratory.
+            monitoring multiple srsUE instances.
           </p>
 
           <dl class="about-list">
@@ -271,6 +270,7 @@
 
     </main>
 
+    <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG GIỮ NGUYÊN 4 MÀN HÌNH -->
     <nav class="bottom-nav" aria-label="Main navigation">
       <button class="nav-item active" type="button" data-target="home">
         <span class="nav-icon">⌂</span>

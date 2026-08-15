@@ -122,12 +122,33 @@ def auto_slice_create(request):
         slice_type = str(payload.get('slice_type', '')).lower()
         if slice_type not in {'embb', 'urllc', 'mmtc'}:
             raise ValueError('slice_type must be embb, urllc, or mmtc')
+        expected_sst = {'embb': 1, 'urllc': 2, 'mmtc': 3}[slice_type]
+        requested_sst = payload.get('sst')
+        requested_sd = payload.get('sd')
+        if requested_sst is not None and int(requested_sst) != expected_sst:
+            raise ValueError(
+                'sst {} does not match the fixed {} profile (SST {})'.format(
+                    requested_sst, slice_type, expected_sst
+                )
+            )
+        if requested_sd is not None:
+            requested_sd = str(requested_sd).strip().upper()
+            if len(requested_sd) != 6:
+                raise ValueError('sd must contain exactly 6 hexadecimal characters')
+            try:
+                int(requested_sd, 16)
+            except ValueError:
+                raise ValueError('sd must contain exactly 6 hexadecimal characters')
         intent = {
             'intent_id': (
                 f'web-{slice_type}-{int(time.time())}-{uuid.uuid4().hex[:8]}'
             ),
             'slice_type': slice_type,
         }
+        if requested_sst is not None:
+            intent['sst'] = expected_sst
+        if requested_sd is not None:
+            intent['sd'] = requested_sd
         with tempfile.NamedTemporaryFile(
             mode='w',
             suffix='.json',
@@ -165,7 +186,7 @@ def auto_slice_delete(request):
             raise ValueError('Missing slice target')
         result = _run_auto_slice([
             'delete', target, '--execute', '--force-fallback',
-            '--force-db-detach', '--purge-namespace', '--cleanup-templates',
+            '--purge-namespace', '--cleanup-templates',
         ])
         return JsonResponse({'ok': True, 'data': result})
     except (

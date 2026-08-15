@@ -71,6 +71,17 @@ Các file WebUI runtime:
 - `static/js/nm_js/auto_slice.js`: gọi API, refresh, create và delete.
 - `ui_route/views.py`: thêm API status/create/delete gọi external orchestrator.
 - `ui_route/urls.py`: route `/Auto_Slice/` và `/api/auto-slice/...`.
+
+## Local base descriptors
+
+Giao diện `/Auto_Slice/` chỉ có ba thao tác tạo eMBB, URLLC và mMTC. Flow đọc
+ba ZIP nguồn cố định từ `base_templates/default/` trên máy MANO, vì vậy không
+phụ thuộc UUID của GenericTemplate mẫu trong database Free5GMANO.
+
+Trước mỗi lần tạo slice, hệ thống kiểm tra toàn bộ `vnfd_id` trong NSD phải
+khớp chính xác với các `descriptor_id` trong VNF, sau đó render thử VNF/NSD/NRM.
+Nếu nguồn sai hoặc thiếu thì việc tạo dừng trước mọi thao tác ghi. Các ZIP nguồn
+không thuộc resource của một slice nên thao tác Delete Slice không xóa chúng.
 - `ui_templates/bar.html`: thêm mục Auto Slice ở sidebar.
 
 ## Flow Create

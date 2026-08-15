@@ -13,6 +13,10 @@
     alert.textContent = message;
   }
 
+  function errorMessage(error) {
+    return (error.response && error.response.data && error.response.data.error) || error.message;
+  }
+
   function setBusy(busy) {
     document.querySelectorAll(".auto-create").forEach(function (button) {
       button.disabled = busy;
@@ -21,10 +25,10 @@
 
   function renderStatus(data) {
     (data.profiles || []).forEach(function (profile) {
-      var element = document.getElementById("sd-" + profile.slice_type);
-      if (element) element.textContent = profile.next_sd;
-      var namespaceElement = document.getElementById("ns-" + profile.slice_type);
-      if (namespaceElement) namespaceElement.textContent = profile.next_namespace;
+      var sd = document.getElementById("sd-" + profile.slice_type);
+      var namespace = document.getElementById("ns-" + profile.slice_type);
+      if (sd) sd.textContent = profile.next_sd;
+      if (namespace) namespace.textContent = profile.next_namespace;
     });
 
     var rows = [];
@@ -64,49 +68,40 @@
     showAlert(
       (untracked || orphans.length) ? "warning" : "success",
       orphans.length
-        ? "Namespace mồ côi " + orphans.join(", ") + " sẽ được tự dọn khi slot đó được dùng lại."
+        ? "Orphan namespace(s): " + orphans.join(", ") + ". They will be cleaned when the slot is reused."
         : untracked
-        ? "Status loaded. Có " + untracked + " NSSI cũ không do Auto Slice quản lý; hệ thống vẫn dùng NRM của chúng khi chọn SD."
-        : "Ready. SD có thể trùng giữa các SST khác nhau."
+        ? "Status loaded. " + untracked + " legacy NSSI instance(s) are not tracked by Auto Slice."
+        : "Ready. Local base descriptors are available on the MANO host."
     );
   }
 
   window.loadAutoSliceStatus = function () {
     axios.get("/api/auto-slice/status/")
       .then(function (response) { renderStatus(response.data.data); })
-      .catch(function (error) {
-        showAlert("danger", (error.response && error.response.data.error) || error.message);
-      });
+      .catch(function (error) { showAlert("danger", errorMessage(error)); });
   };
 
   window.createAutoSlice = function (sliceType) {
-    if (!window.confirm("Create và allocate một slice " + sliceType.toUpperCase() + "?")) return;
+    if (!window.confirm("Create and allocate one " + sliceType.toUpperCase() + " slice?")) return;
     setBusy(true);
-    showAlert("info", "Đang render, upload và allocate " + sliceType.toUpperCase() + ". Vui lòng chờ...");
+    showAlert("info", "Rendering local descriptors, uploading, and allocating " + sliceType.toUpperCase() + "...");
     axios.post("/api/auto-slice/create/", {slice_type: sliceType})
       .then(function (response) {
         var result = response.data.data;
-        showAlert("success", "Đã tạo " + result.namespace + " · SST " + result.sst + " · SD " + result.sd);
+        showAlert("success", "Created " + result.namespace + " · SST " + result.sst + " · SD " + result.sd);
         window.loadAutoSliceStatus();
       })
-      .catch(function (error) {
-        showAlert("danger", (error.response && error.response.data.error) || error.message);
-      })
+      .catch(function (error) { showAlert("danger", errorMessage(error)); })
       .finally(function () { setBusy(false); });
   };
 
   window.deleteAutoSlice = function (target, namespace) {
-    if (!window.confirm("Delete " + namespace + " và cleanup các template do Auto Slice tạo?")) return;
+    if (!window.confirm("Delete " + namespace + " and its generated templates? Local base descriptors will be kept.")) return;
     setBusy(true);
-    showAlert("warning", "Đang delete " + namespace + "...");
+    showAlert("warning", "Deleting " + namespace + "...");
     axios.post("/api/auto-slice/delete/", {target: target})
-      .then(function () {
-        showAlert("success", "Đã delete " + namespace);
-        window.loadAutoSliceStatus();
-      })
-      .catch(function (error) {
-        showAlert("danger", (error.response && error.response.data.error) || error.message);
-      })
+      .then(function () { showAlert("success", "Deleted " + namespace); window.loadAutoSliceStatus(); })
+      .catch(function (error) { showAlert("danger", errorMessage(error)); })
       .finally(function () { setBusy(false); });
   };
 

@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "input_source": "prometheus",
+  "submitted_at": "2026-08-11T15:00:00Z",
+  "ue": {"ue_id": 1, "imsi": "460990000000001"},
+  "service": {"name": "video_streaming", "category": "video"},
+  "qos_requirements": {
+    "min_throughput_mbps": 20,
+    "max_latency_ms": 120,
+    "max_jitter_ms": 15,
+    "max_packet_loss_percent": 1,
+    "min_reliability_percent": 99,
+    "message_rate_per_second": 30
+  },
+  "measurement_window": {"seconds": 30, "samples": 30, "end": "2026-08-11T15:00:00Z"},
+  "observed_kpis": {
+    "throughput_mbps_avg": 18.7,
+    "throughput_mbps_p10": 16.2,
+    "latency_ms_p95": 134.5,
+    "jitter_ms_p95": 18.1,
+    "packet_loss_percent_avg": 1.2
+  }
+}
