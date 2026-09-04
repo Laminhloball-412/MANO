@@ -19,3 +19,6 @@
 **/*.log
 **/*.sqlite3
 **/media/
+
+# Isolated implementation worktrees
+.worktrees/
