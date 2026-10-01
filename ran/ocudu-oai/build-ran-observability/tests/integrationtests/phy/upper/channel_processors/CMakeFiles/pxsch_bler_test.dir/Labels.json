@@ -1,0 +1,18 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/integrationtests/phy/upper/channel_processors/pxsch_bler_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"phy",
+			"tsan",
+			"NO_MEMCHECK"
+		],
+		"name" : "pxsch_bler_test"
+	}
+}

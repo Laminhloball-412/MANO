@@ -162,8 +162,17 @@ static int parse_args(all_args_t* args, int argc, char* argv[])
     ("nas.eea",               bpo::value<string>(&args->stack.nas.eea)->default_value("0,1,2,3"),  "List of ciphering algorithms included in UE capabilities")
 
     ("slicing.enable",        bpo::value<bool>(&args->stack.nas_5g.enable_slicing)->default_value(false),  "enable slicing in the UE")
-    ("slicing.nssai-sst",     bpo::value<int>(&args->stack.nas_5g.nssai_sst)->default_value(1),  "sst of requested slice")
-    ("slicing.nssai-sd",      bpo::value<int>(&args->stack.nas_5g.nssai_sd)->default_value(1),  "sd of requested slice")
+    ("slicing.nssai-sst",
+   bpo::value<int>(&args->stack.nas_5g.nssai_sst)->default_value(1),
+   "NSSAI SST (Legacy single session)")
+    ("slicing.nssai-sd",
+   bpo::value<int>(&args->stack.nas_5g.nssai_sd)->default_value(0),
+   "NSSAI SD (Legacy single session)")
+    ("slicing.apn_list", bpo::value<string>(&args->stack.nas_5g.apn_list)->default_value(""), "Comma-separated APN list. Example: srsapn,internet")
+    ("slicing.apn_protocol_list", bpo::value<string>(&args->stack.nas_5g.apn_protocol_list)->default_value("ipv4"), "Comma-separated protocol list. Example: ipv4,ipv4")
+    ("slicing.nssai_sst_list", bpo::value<string>(&args->stack.nas_5g.nssai_sst_list)->default_value("1"), "Comma-separated SST list. Example: 1,2")
+    ("slicing.nssai_sd_list", bpo::value<string>(&args->stack.nas_5g.nssai_sd_list)->default_value("0"), "Comma-separated SD list. Example: 000001,000002")
+
 
     ("pcap.enable", bpo::value<string>(&args->stack.pkt_trace.enable)->default_value("none"), "Enable (MAC, MAC_NR, NAS) packet captures for wireshark")
     ("pcap.mac_filename", bpo::value<string>(&args->stack.pkt_trace.mac_pcap.filename)->default_value("/tmp/ue_mac.pcap"), "MAC layer capture filename")

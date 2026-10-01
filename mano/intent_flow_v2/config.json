@@ -22,12 +22,58 @@
   "free5gmano_deployment": "deployment/free5gmano",
   "monitoring_sync_enabled": true,
   "monitoring_namespace": "monitoring",
+  "monitoring_extra_scrape_jobs": [
+    {
+      "job_name": "ansa-session-orchestrator",
+      "scrape_interval": "5s",
+      "targets": [
+        "192.168.180.35:9105"
+      ]
+    },
+    {
+      "job_name": "ansa-intent-engine",
+      "scrape_interval": "5s",
+      "targets": [
+        "192.168.180.35:9106"
+      ]
+    },
+    {
+      "job_name": "lab-node-exporter",
+      "scrape_interval": "15s",
+      "targets": [
+        "192.168.180.35:9100"
+      ]
+    }
+  ],
   "shared_amf_sync_enabled": true,
   "shared_amf_namespace": "share",
   "shared_amf_configmap": "open5gs-amf",
   "shared_amf_config_key": "open5gs-amf",
   "shared_amf_deployment": "7ef97a96-d17e-4f21-86d3-af2532ea1amf-lqopz",
-  "shared_amf_baseline_snssai": [],
+  "shared_amf_baseline_snssai": [
+    {
+      "sst": 1,
+      "sd": "000001"
+    },
+    {
+      "sst": 2,
+      "sd": "000001"
+    },
+    {
+      "sst": 3,
+      "sd": "000001"
+    }
+  ],
+  "shared_nssf_enabled": true,
+  "shared_nssf_namespace": "share",
+  "shared_nssf_manifest": "shared_core/open5gs-nssf.yaml",
+  "shared_nssf_configmap": "open5gs-nssf",
+  "shared_nssf_config_key": "open5gs-nssf",
+  "shared_nssf_deployment": "open5gs-nssf",
+  "shared_nssf_service": "nssf-svc",
+  "shared_nrf_service_uri": "http://nrf-svc.share.svc.cluster.local:7777",
+  "core_registry_backup_dir": "runtime/core-config-backups",
+  "core_rollout_timeout_seconds": 120,
   "profiles": {
     "embb": {
       "source_vnf_template_id": "b19b5ad3-ea5b-4aa6-ab0c-dc1421c2c383",

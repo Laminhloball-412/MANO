@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/cg_scheduler/configured_grant_scheduler_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"sched"
+		],
+		"name" : "cg_scheduler_test"
+	}
+}

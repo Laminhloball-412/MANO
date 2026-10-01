@@ -1,0 +1,29 @@
+{
+  "listen": {"host": "0.0.0.0", "port": 9105},
+  "state_file": "/var/lib/ansa-session-orchestrator/state.json",
+  "intent_flow": "/home/ubuntu/mano/intent_flow_v2/intent_flow.py",
+  "prometheus_url": "http://127.0.0.1:30090",
+  "prometheus_wait_seconds": 12,
+  "stable_seconds": 15,
+  "drain_seconds": 3,
+  "ue_ids": [1, 2, 3],
+  "intent_state_file": "/var/lib/ansa-session-orchestrator/intents.json",
+  "intent_api": {"host": "0.0.0.0", "port": 9106, "url": "http://127.0.0.1:9106"},
+  "intent_poll_seconds": 1,
+  "max_metric_age_seconds": 30,
+  "slice_idle_timeout_seconds": 300,
+  "pdu_establish_timeout_seconds": 45,
+  "max_pdu_sessions_per_ue": 3,
+  "min_flow_samples": 2,
+  "min_observation_seconds": 3,
+  "qos_enforcement_enabled": true,
+  "qos_reconcile_seconds": 30,
+  "dry_run_deallocate": true,
+  "protected_namespaces": ["share", "slice-1"],
+  "profiles": {
+    "default": {"name": "default", "namespace": "slice-1", "sst": 1, "sd": "000001", "dnn": "srsapn", "gateway": "10.45.1.1", "pdu_session_id": 1, "tun_pattern": "oaitun_ue1", "service_class": "embb", "protected": true},
+    "embb": {"name": "embb", "namespace": "slice-1", "sst": 1, "sd": "000001", "dnn": "srsapn", "gateway": "10.45.1.1", "pdu_session_id": 1, "tun_pattern": "oaitun_ue1", "service_class": "embb", "protected": true, "min_throughput_mbps": 0.001, "capacity_mbps": 100, "max_pdu_sessions": 64, "max_message_rate_per_second": 2000, "baseline_rtt_ms": 85, "baseline_jitter_ms": 35, "baseline_loss_percent": 2, "five_qi": 8, "session_ambr_mbps": 100, "arp_priority": 8, "downlink_limit_mbps": 100, "benchmark_downlink_mbps": 11.19},
+    "urllc": {"name": "urllc", "namespace": "slice-2", "sst": 2, "sd": "000001", "dnn": "srsapn", "gateway": "10.45.2.1", "pdu_session_id": 2, "tun_pattern": "oaitun_ue1p2", "service_class": "urllc", "protected": false, "max_rtt_ms": 250, "max_jitter_ms": 100, "max_loss_percent": 5, "capacity_mbps": 5, "max_pdu_sessions": 32, "max_message_rate_per_second": 5000, "baseline_rtt_ms": 90, "baseline_jitter_ms": 40, "baseline_loss_percent": 0.5, "five_qi": 7, "session_ambr_mbps": 5, "arp_priority": 2, "downlink_limit_mbps": 5, "benchmark_downlink_mbps": 0},
+    "mmtc": {"name": "mmtc", "namespace": "slice-3", "sst": 3, "sd": "000001", "dnn": "srsapn", "gateway": "10.45.3.1", "pdu_session_id": 3, "tun_pattern": "oaitun_ue1p3", "service_class": "mmtc", "protected": false, "capacity_mbps": 1, "max_pdu_sessions": 1000, "max_message_rate_per_second": 10000, "baseline_rtt_ms": 65, "baseline_jitter_ms": 30, "baseline_loss_percent": 2, "five_qi": 9, "session_ambr_mbps": 1, "arp_priority": 12, "downlink_limit_mbps": 1, "benchmark_downlink_mbps": 1.03}
+  }
+}

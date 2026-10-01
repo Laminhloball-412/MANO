@@ -1,0 +1,9 @@
+interface=oaitun_ue1 ue_ip=10.45.1.25 gateway=10.45.1.1
+PING 10.45.1.1 (10.45.1.1) from 10.45.1.25 oaitun_ue1: 56(84) bytes of data.
+64 bytes from 10.45.1.1: icmp_seq=1 ttl=64 time=59.8 ms
+64 bytes from 10.45.1.1: icmp_seq=2 ttl=64 time=98.0 ms
+64 bytes from 10.45.1.1: icmp_seq=3 ttl=64 time=92.7 ms
+
+--- 10.45.1.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 59.844/83.512/98.024/16.878 ms

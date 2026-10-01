@@ -222,6 +222,9 @@ def render_packages(
     ipv6_subnet: str | None,
     ipv6_gateway: str | None,
     output_root: Path,
+    default_qos: dict[str, Any] | None = None,
+    service_qos: dict[str, Any] | None = None,
+    session_ambr_mbps: float | None = None,
 ) -> dict[str, Any]:
     run_id = uuid.uuid4().hex[:12]
     run_dir = output_root / f"{namespace}-{run_id}"
@@ -414,6 +417,17 @@ def render_packages(
             "ipv4_gateway": ipv4_gateway,
             "ipv6_subnet": ipv6_subnet,
             "ipv6_gateway": ipv6_gateway,
+        },
+        "qos": {
+            "default": default_qos,
+            "service": service_qos,
+            "session_ambr_mbps": session_ambr_mbps,
+            "core_policy_status": (
+                "DECLARED_NOT_ENFORCED"
+                if default_qos is not None or service_qos is not None
+                else "NOT_REQUESTED"
+            ),
+            "radio_status": "NOT_VERIFIED",
         },
         "descriptors": {
             "nsd": {"old_id": old_nsd_id, "new_id": new_nsd_id},

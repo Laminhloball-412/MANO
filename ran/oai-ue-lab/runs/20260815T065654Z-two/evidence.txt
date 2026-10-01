@@ -1,0 +1,57 @@
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/gnb.log:ocuduLog error - Invalid format string: "PRACH: {:s} {:s} {}"
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6190.914239 [NR_RRC] I create TASK_RRC_NRUE 
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6190.914247 [UTIL]   I threadCreate() for TASK_RRC_NRUE: creating thread (no affinity, default priority)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6190.914748 [SIM]    I will request PDU session ID 1, type 1, DNN srsapn, NSSAI 1.     1
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6190.914749 [SIM]    I will request PDU session ID 2, type 1, DNN srsapn, NSSAI 2.     1
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6190.916215 [UTIL]   I threadCreate() for SYNC__actor: creating thread (no affinity, default priority)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.341836 [NR_PHY] W Starting sync detection
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.341853 [PHY]    I [UE thread Synch] Running Initial Synch 
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.419548 [PHY]    W Initial sync: pbch not decoded, ssb index 0
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.498127 [PHY]    A Initial sync: pbch decoded sucessfully, ssb index 0
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.560421 [PHY]    W Initial sync: pbch not decoded, ssb index 0
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.562147 [PHY]    I [UE0] In synch, rx_offset 298 samples
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.562156 [PHY]    A Initial sync successful, PCI: 1
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.562167 [PHY]    I Got synch: hw_slot_offset 0, carrier off 0 Hz
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.562207 [NR_RRC] I [UE 0] BCCH update: phyCellID 0->1, arfcn_ssb 0->632256
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.580643 [PHY]    A UE synchronized! decoded_frame_rx=110 UE->init_sync_frame=1 trashed_frames=4
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.580666 [PHY]    I Resynchronizing RX by 298 samples
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.606439 [PHY]    E Frame 116, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.699256 [PHY]    E Frame 118, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.819323 [PHY]    E Frame 120, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6195.940715 [PHY]    E Frame 122, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6196.014126 [PHY]    E Frame 124, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6196.091369 [PHY]    E Frame 126, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6196.202812 [NR_RRC] A SIB1 decoded
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6196.341808 [NR_RRC] I [UE0][RAPROC] Logical Channel DL-CCCH (SRB0), Received NR_RRCSetup
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6196.342154 [NR_RRC] I State = NR_RRC_CONNECTED
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6196.342173 [NAS]    I Generate Initial NAS Message: Registration Request
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6196.342189 [NR_RRC] I [UE 0][RAPROC] Logical Channel UL-DCCH (SRB1), Generating RRCSetupComplete (bytes33)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.005276 [NAS]    I Generate Initial NAS Message: Registration Request
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.125898 [NR_RRC] I Received securityModeCommand (gNB 0)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.125969 [NR_RRC] I Receiving from SRB1 (DL-DCCH), Processing securityModeCommand
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.125972 [NR_RRC] I Security algorithm is set to nea0
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.125973 [NR_RRC] I Integrity protection algorithm is set to nia2
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.132442 [NR_RRC] I Receiving from SRB1 (DL-DCCH), encoding securityModeComplete, rrc_TransactionIdentifier: 1
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.209142 [NR_RRC] I Received Capability Enquiry (gNB 0)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.209270 [NR_RRC] I Receiving from SRB1 (DL-DCCH), Processing UECapabilityEnquiry
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.132423 [NR_RRC] I deriving kRRCenc, kRRCint from KgNB=4e 52 75 4b e1 cf d2 3d f8 42 3e f0 a8 90 c6 47 7f 36 54 9e be c8 ff de 2a 6c 89 b1 19 0f a0 f5 
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.132516 [NR_RRC] I securityModeComplete payload: 2a 00 00 00 00 00 00 00 90 43 00 34 bd 7a 00 00 
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.210368 [PHY]    I [RRC]UE NR Capability encoded, 343 bytes (2745 bits)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.210375 [NR_RRC] I UECapabilityInformation Encoded 2778 bits (348 bytes)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.296885 [NAS]    I [UE 0] Received NAS_DOWNLINK_DATA_IND type FGS_REGISTRATION_ACCEPT with length 49
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.296933 [NAS]    I Received Registration Accept with result 3GPP
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.296936 [NAS]    I SMS not allowed in 5GS Registration Result
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.296943 [NR_RRC] I 5G-GUTI: AMF pointer 0, AMF Set ID 1, 5G-TMSI 3221226959 
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.296971 [NAS]    I Send NAS_UPLINK_DATA_REQ message(RegistrationComplete)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.296973 [NAS]    I requested PDU session ID 1 type 1 NSSAI 1.1 DNN srsapn
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.296978 [NAS]    E PDU session ID 2 NSSAI 2.1: mismatch for allowed NSSAI. Couldn't request PDU session.
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.427838 [NR_RRC] W unknown message type 84
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.451220 [NR_RRC] I RRCReconfiguration includes radio Bearer Configuration
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.452908 [NR_RRC] I State = NR_RRC_CONNECTED
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.452927 [NR_RRC] I rrcReconfigurationComplete Encoded 10 bits (2 bytes)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.452929 [NR_RRC] I  Logical Channel UL-DCCH (SRB1), Generating RRCReconfigurationComplete (bytes 2)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.452945 [NAS]    I [UE 0] Received NAS_CONN_ESTABLI_CNF: errCode 1, length 69
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.453251 [NAS]    I Received PDU Session Establishment Accept, UE IPv4: 10.45.1.4
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.454697 [SDAP]   I UE 0 PDU session 1: cached QFI 1
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.454704 [SDAP]   I UE 0 PDU session 1: bringing TUN oaitun_ue1 up
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T065654Z-two/oai-ue.log:6197.462152 [OIP]    A TUN Interface oaitun_ue1 successfully configured, IPv4 10.45.1.4, IPv6 (null)

@@ -1,0 +1,139 @@
+{
+  "flow_id": "flow-1f722beb1128",
+  "state": "COMPLETED",
+  "intent": {
+    "service": "video",
+    "ue_id": 1,
+    "duration_seconds": 3,
+    "packet_size_bytes": 1200,
+    "message_rate_per_second": 30.0
+  },
+  "events": [
+    {
+      "at": "2026-08-20T05:24:16.424087+00:00",
+      "state": "DEFAULT_ACTIVE",
+      "detail": "default PDU remains active"
+    },
+    {
+      "at": "2026-08-20T05:24:16.424692+00:00",
+      "state": "OBSERVING",
+      "detail": "measuring real traffic on default PDU"
+    },
+    {
+      "at": "2026-08-20T05:24:22.672671+00:00",
+      "state": "DECIDING",
+      "detail": "selecting S-NSSAI/DNN from intent and observed metrics"
+    },
+    {
+      "at": "2026-08-20T05:24:22.679629+00:00",
+      "state": "COMPLETED",
+      "detail": "default PDU already satisfies selected profile"
+    }
+  ],
+  "source": {
+    "name": "default",
+    "namespace": "slice-1",
+    "sst": 1,
+    "sd": "000001",
+    "dnn": "srsapn",
+    "gateway": "10.45.1.1",
+    "pdu_session_id": 1,
+    "tun_pattern": "oaitun_ue1",
+    "service_class": "embb",
+    "protected": true,
+    "max_rtt_ms": 200.0,
+    "max_jitter_ms": 100.0,
+    "max_loss_percent": 5.0,
+    "min_throughput_mbps": 0.0,
+    "capacity_mbps": 10.0,
+    "max_pdu_sessions": 32,
+    "max_message_rate_per_second": 1000.0,
+    "baseline_rtt_ms": 150.0,
+    "baseline_jitter_ms": 75.0,
+    "baseline_loss_percent": 2.0
+  },
+  "target": {
+    "name": "embb",
+    "namespace": "slice-1",
+    "sst": 1,
+    "sd": "000001",
+    "dnn": "srsapn",
+    "gateway": "10.45.1.1",
+    "pdu_session_id": 1,
+    "tun_pattern": "oaitun_ue1",
+    "service_class": "embb",
+    "protected": true,
+    "max_rtt_ms": 200.0,
+    "max_jitter_ms": 100.0,
+    "max_loss_percent": 5.0,
+    "min_throughput_mbps": 0.001,
+    "capacity_mbps": 100,
+    "max_pdu_sessions": 64,
+    "max_message_rate_per_second": 2000,
+    "baseline_rtt_ms": 100,
+    "baseline_jitter_ms": 50,
+    "baseline_loss_percent": 2
+  },
+  "metrics": {
+    "throughput_mbps": 0.5564847911045973,
+    "rtt_ms": 85.234,
+    "jitter_ms": 37.96,
+    "loss_percent": 0.0,
+    "packet_size_bytes": 1200,
+    "message_rate_per_second": 28.32271941696851,
+    "samples": 90,
+    "interface": "oaitun_ue1",
+    "gateway": "10.45.1.1"
+  },
+  "slice_action": null,
+  "decision_reason": "explicit service intent requested embb; weighted capability/runtime score selected embb",
+  "decision_candidates": [
+    {
+      "profile": "embb",
+      "slice_id": "slice-1",
+      "sst": 1,
+      "sd": "000001",
+      "dnn": "srsapn",
+      "score": 81.61,
+      "reason": "eligible_intent_match",
+      "requirement_fit": 100.0,
+      "qos_headroom": 41.67,
+      "health_load": 80.99,
+      "intent_affinity": 100.0,
+      "eligible": true
+    },
+    {
+      "profile": "urllc",
+      "slice_id": "slice-2",
+      "sst": 2,
+      "sd": "000001",
+      "dnn": "srsapn",
+      "score": 71.94,
+      "reason": "eligible_cross_class",
+      "requirement_fit": 100.0,
+      "qos_headroom": 59.93,
+      "health_load": 84.77,
+      "intent_affinity": 0.0,
+      "eligible": true
+    },
+    {
+      "profile": "mmtc",
+      "slice_id": "slice-3",
+      "sst": 3,
+      "sd": "000001",
+      "dnn": "srsapn",
+      "score": 51.93,
+      "reason": "eligible_cross_class",
+      "requirement_fit": 75.0,
+      "qos_headroom": 19.8,
+      "health_load": 84.9,
+      "intent_affinity": 0.0,
+      "eligible": true
+    }
+  ],
+  "source_session_active": true,
+  "target_session_active": false,
+  "active_interface": "oaitun_ue1",
+  "old_session_released": false,
+  "error": null
+}

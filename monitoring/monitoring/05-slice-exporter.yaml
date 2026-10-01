@@ -61,7 +61,7 @@ spec:
       serviceAccountName: slice-exporter
       containers:
         - name: exporter
-          image: nguyen0105/open5gs-slice-exporter:v4
+          image: nguyen0105/open5gs-slice-exporter:v5
           ports:
             - containerPort: 8080
           env:

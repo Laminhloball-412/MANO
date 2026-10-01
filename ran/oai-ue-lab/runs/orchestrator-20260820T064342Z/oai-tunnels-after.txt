@@ -1,0 +1,2 @@
+oaitun_ue1       DOWN           10.45.1.44/24 
+oaitun_ue1p2     UNKNOWN        10.45.2.29/24 fe80::4357:6087:b2dd:ce03/64 

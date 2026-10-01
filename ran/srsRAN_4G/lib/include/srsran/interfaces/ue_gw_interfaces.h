@@ -63,6 +63,7 @@ public:
    * @param ip_pdu_delay_ms The PDU delay in ms
    */
   virtual void set_test_loop_mode(const test_loop_mode_state_t mode, const uint32_t ip_pdu_delay_ms = 0) = 0;
+  virtual void add_bearer_mapping(uint32_t lcid, uint8_t  pdu_session_id) = 0;
 };
 
 class gw_interface_rrc

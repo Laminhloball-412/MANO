@@ -14,8 +14,9 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-NM_URL = os.getenv('NM_URL', 'http://192.168.180.35:30088/')
-GRAFANA_BASE_URL = os.getenv('GRAFANA_BASE_URL', 'http://192.168.180.35:30030')
+NM_URL = os.getenv('NM_URL', 'http://127.0.0.1:30088/')
+GRAFANA_BASE_URL = os.getenv('GRAFANA_BASE_URL', 'http://127.0.0.1:30030')
+GRAFANA_PUBLIC_URL = os.getenv('GRAFANA_PUBLIC_URL', '/grafana')
 GRAFANA_DASHBOARD_UID = os.getenv('GRAFANA_DASHBOARD_UID', 'auto-slice-operations')
 GRAFANA_DASHBOARD_SLUG = os.getenv(
     'GRAFANA_DASHBOARD_SLUG',
@@ -34,7 +35,18 @@ SECRET_KEY = '$n!xx9v(a5n!6$-a)w5n2+5h-0sc#u9qzlbpe*q!oyuw-&k%m2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    value.strip()
+    for value in os.getenv('ALLOWED_HOSTS', '*').split(',')
+    if value.strip()
+]
+CSRF_TRUSTED_ORIGINS = [
+    value.strip()
+    for value in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+    if value.strip()
+]
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition

@@ -41,6 +41,8 @@ public:
   apn_types   apn_type = ipv4;
   std::string apn_user;
   std::string apn_pass;
+  int nssai_sst = 1;
+  int nssai_sd  = 0;
 };
 class nas_interface_rrc
 {

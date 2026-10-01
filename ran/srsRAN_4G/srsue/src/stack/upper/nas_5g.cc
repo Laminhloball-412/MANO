@@ -56,6 +56,7 @@ nas_5g::nas_5g(srslog::basic_logger& logger_, srsran::task_sched_handle task_sch
   t3511(task_sched_.get_unique_timer()),
   t3521(task_sched_.get_unique_timer()),
   reregistration_timer(task_sched_.get_unique_timer()),
+  pdu_session_timer(task_sched_.get_unique_timer()),
   registration_proc(this),
   state(logger_),
   pdu_session_establishment_proc(this, logger_)
@@ -66,12 +67,21 @@ nas_5g::nas_5g(srslog::basic_logger& logger_, srsran::task_sched_handle task_sch
   t3511.set(t3511_duration_ms, [this](uint32_t tid) { timer_expired(tid); });
   t3521.set(t3521_duration_ms, [this](uint32_t tid) { timer_expired(tid); });
   reregistration_timer.set(reregistration_timer_duration_ms, [this](uint32_t tid) { timer_expired(tid); });
+  pdu_session_timer.set(pdu_session_delay_ms, [this](uint32_t) {
+    if (running) {
+      trigger_pdu_session_est();
+    }
+  });
 }
 
-nas_5g::~nas_5g() {}
+nas_5g::~nas_5g()
+{
+  stop();
+}
 
 void nas_5g::stop()
 {
+  pdu_session_timer.stop();
   running = false;
 }
 
@@ -105,7 +115,8 @@ int nas_5g::init(usim_interface_nas*      usim_,
   }
 
   if (init_pdu_sessions(cfg.pdu_session_cfgs) != SRSRAN_SUCCESS) {
-    logger.warning("Failure while configuring pdu sessions");
+    logger.error("Failure while configuring PDU sessions");
+    return SRSRAN_ERROR;
   }
 
   running = true;
@@ -277,6 +288,7 @@ int nas_5g::send_registration_request()
 
   reg_req.ue_security_capability_present = true;
   fill_security_caps(reg_req.ue_security_capability);
+  
 
   if (initial_registration_request_stored.pack(pdu) != SRSASN_SUCCESS) {
     logger.error("Failed to pack registration request");
@@ -428,12 +440,31 @@ int nas_5g::send_security_mode_complete(const srsran::nas_5g::security_mode_comm
   modified_registration_request.capability_5gmm_present = true;
   modified_registration_request.update_type_5gs_present = true;
 
-  if (cfg.enable_slicing) {
-    s_nssai_t s_nssai{};
-    modified_registration_request.requested_nssai_present      = true;
-    set_nssai(s_nssai);
-    modified_registration_request.requested_nssai.s_nssai_list = {s_nssai};
-  }
+if (cfg.enable_slicing) {
+    modified_registration_request.requested_nssai_present = true;
+    modified_registration_request.requested_nssai.s_nssai_list.clear();
+
+    if (!cfg.pdu_session_cfgs.empty()) {
+        // Loop qua tất cả sessions thay vì chỉ [0]
+        for (auto& session : cfg.pdu_session_cfgs) {
+            s_nssai_t s_nssai{};
+            set_nssai(s_nssai, session);
+            modified_registration_request.requested_nssai
+                .s_nssai_list.push_back(s_nssai);
+            logger.info("Requested NSSAI: SST=%d SD=%d APN=%s",
+                        session.nssai_sst,
+                        session.nssai_sd,
+                        session.apn_name.c_str());
+        }
+    } else {
+        // Fallback nếu không có session config
+        s_nssai_t s_nssai{};
+        set_nssai(s_nssai);
+        modified_registration_request.requested_nssai
+            .s_nssai_list.push_back(s_nssai);
+    }
+}
+
   modified_registration_request.capability_5gmm.lpp       = 0;
   modified_registration_request.capability_5gmm.ho_attach = 0;
   modified_registration_request.capability_5gmm.s1_mode   = 0;
@@ -531,13 +562,25 @@ void nas_5g::release_proc_trans_id(uint32_t proc_id)
 
 void nas_5g::set_nssai(srsran::nas_5g::s_nssai_t& s_nssai)
 {
-  if (cfg.nssai_sd == 0) {
+    if (cfg.nssai_sd == 0) {
+        s_nssai.type = s_nssai_t::SST_type_::options::sst;
+    } else {
+        s_nssai.type = s_nssai_t::SST_type_::options::sst_and_sd;
+    }
+    s_nssai.sst = cfg.nssai_sst;
+    s_nssai.sd  = cfg.nssai_sd;
+}
+
+void nas_5g::set_nssai(srsran::nas_5g::s_nssai_t& s_nssai,
+                        const pdu_session_cfg_t&    session_cfg)
+{
+  if (session_cfg.nssai_sd == 0) {
     s_nssai.type = s_nssai_t::SST_type_::options::sst;
   } else {
     s_nssai.type = s_nssai_t::SST_type_::options::sst_and_sd;
   }
-  s_nssai.sst = cfg.nssai_sst;
-  s_nssai.sd  = cfg.nssai_sd;
+  s_nssai.sst = session_cfg.nssai_sst;
+  s_nssai.sd  = session_cfg.nssai_sd;
 }
 
 int nas_5g::send_pdu_session_establishment_request(uint32_t                 transaction_identity,
@@ -597,7 +640,7 @@ int nas_5g::send_pdu_session_establishment_request(uint32_t                 tran
 
   if (cfg.enable_slicing) {
     ul_nas_msg.s_nssai_present = true;
-    set_nssai(ul_nas_msg.s_nssai);
+    set_nssai(ul_nas_msg.s_nssai, pdu_session_cfg);
   }
   ul_nas_msg.dnn_present = true;
   ul_nas_msg.dnn.dnn_value.resize(pdu_session_cfg.apn_name.size() + 1);
@@ -1117,9 +1160,9 @@ int nas_5g::start_service_request()
 
 int nas_5g::reset_pdu_sessions()
 {
-  for (auto pdu_session : pdu_sessions) {
-    pdu_session.established    = false;
-    pdu_session.pdu_session_id = 0;
+  pdu_session_timer.stop();
+  for (auto& pdu_session : pdu_sessions) {
+    pdu_session.established = false;
   }
   return SRSRAN_SUCCESS;
 }
@@ -1244,22 +1287,48 @@ bool nas_5g::check_replayed_ue_security_capabilities(srsran::nas_5g::ue_security
 
 int nas_5g::trigger_pdu_session_est()
 {
-  if (unestablished_pdu_sessions() == true) {
+  if (!running) {
+    logger.debug("Ignoring PDU session trigger while NAS is stopping");
+    return SRSRAN_ERROR;
+  }
+  if (unestablished_pdu_sessions()) {
     pdu_session_cfg_t pdu_session_cfg;
     uint16_t          pdu_session_id;
-    get_unestablished_pdu_session(pdu_session_id, pdu_session_cfg);
+    if (get_unestablished_pdu_session(pdu_session_id, pdu_session_cfg) != SRSRAN_SUCCESS) {
+      logger.error("Could not find the next configured PDU session");
+      return SRSRAN_ERROR;
+    }
+    logger.info("Launching PDU session id=%u DNN=%s SST=%d SD=%06x",
+                pdu_session_id,
+                pdu_session_cfg.apn_name.c_str(),
+                pdu_session_cfg.nssai_sst,
+                pdu_session_cfg.nssai_sd);
     pdu_session_establishment_proc.launch(pdu_session_id, pdu_session_cfg);
+  } else {
+    logger.info("All configured PDU sessions are established");
   }
   return SRSRAN_SUCCESS;
 }
 
 int nas_5g::init_pdu_sessions(std::vector<pdu_session_cfg_t> pdu_session_cfgs)
 {
+  if (pdu_session_cfgs.empty() || pdu_session_cfgs.size() > pdu_sessions.size()) {
+    logger.error("Invalid PDU session count %zu (supported range: 1-%zu)",
+                 pdu_session_cfgs.size(),
+                 pdu_sessions.size());
+    return SRSRAN_ERROR;
+  }
+
+  for (auto& pdu_session : pdu_sessions) {
+    pdu_session = {};
+  }
+
   uint16_t i = 0;
-  for (auto pdu_session_cfg : pdu_session_cfgs) {
+  for (const auto& pdu_session_cfg : pdu_session_cfgs) {
     pdu_sessions[i].configured      = true;
     pdu_sessions[i].pdu_session_id  = i + 1;
     pdu_sessions[i].pdu_session_cfg = pdu_session_cfg;
+    ++i;
   }
   return SRSRAN_SUCCESS;
 }
@@ -1267,7 +1336,7 @@ int nas_5g::init_pdu_sessions(std::vector<pdu_session_cfg_t> pdu_session_cfgs)
 uint32_t nas_5g::num_of_est_pdu_sessions()
 {
   uint32_t i = 0;
-  for (auto pdu_session : pdu_sessions) {
+  for (const auto& pdu_session : pdu_sessions) {
     if (pdu_session.established == true) {
       i++;
     }
@@ -1277,17 +1346,19 @@ uint32_t nas_5g::num_of_est_pdu_sessions()
 
 int nas_5g::configure_pdu_session(uint16_t pdu_session_id)
 {
-  for (auto pdu_session : pdu_sessions) {
-    if (pdu_session.pdu_session_id == pdu_session_id) {
+  for (auto& pdu_session : pdu_sessions) {
+    if (pdu_session.configured && pdu_session.pdu_session_id == pdu_session_id) {
       pdu_session.established = true;
+      return SRSRAN_SUCCESS;
     }
   }
-  return SRSRAN_SUCCESS;
+  logger.error("Unknown PDU session id=%u", pdu_session_id);
+  return SRSRAN_ERROR;
 }
 
 bool nas_5g::unestablished_pdu_sessions()
 {
-  for (auto pdu_session : pdu_sessions) {
+  for (const auto& pdu_session : pdu_sessions) {
     if (pdu_session.configured == true && pdu_session.established == false) {
       return true;
     }
@@ -1297,13 +1368,14 @@ bool nas_5g::unestablished_pdu_sessions()
 
 int nas_5g::get_unestablished_pdu_session(uint16_t& pdu_session_id, pdu_session_cfg_t& pdu_session_cfg)
 {
-  for (auto pdu_session : pdu_sessions) {
+  for (const auto& pdu_session : pdu_sessions) {
     if (pdu_session.configured == true && pdu_session.established == false) {
       pdu_session_id  = pdu_session.pdu_session_id;
       pdu_session_cfg = pdu_session.pdu_session_cfg;
+      return SRSRAN_SUCCESS;
     }
   }
-  return SRSRAN_SUCCESS;
+  return SRSRAN_ERROR;
 }
 
 int nas_5g::add_pdu_session(uint16_t                      pdu_session_id,
@@ -1371,7 +1443,28 @@ int nas_5g::add_pdu_session(uint16_t                      pdu_session_id,
                     pdu_address.ipv6.data()[6],
                     pdu_address.ipv6.data()[7]);
   }
+  pdu_session_cfg_t* established_cfg = nullptr;
+  for (auto& session : pdu_sessions) {
+    if (session.configured && session.pdu_session_id == pdu_session_id) {
+      session.established = true;
+      established_cfg     = &session.pdu_session_cfg;
+      break;
+    }
+  }
+  if (established_cfg == nullptr) {
+    logger.error("Network accepted unknown PDU session id=%u", pdu_session_id);
+    gw->deactivate_eps_bearer(pdu_session_id);
+    return SRSRAN_ERROR;
+  }
+  logger.info("PDU session id=%u established DNN=%s SST=%d SD=%06x",
+              pdu_session_id,
+              established_cfg->apn_name.c_str(),
+              established_cfg->nssai_sst,
+              established_cfg->nssai_sd);
 
+  if (unestablished_pdu_sessions() && running) {
+    pdu_session_timer.run();
+  }
   return SRSRAN_SUCCESS;
 }
 

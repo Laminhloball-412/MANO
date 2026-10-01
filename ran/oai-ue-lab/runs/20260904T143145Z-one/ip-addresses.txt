@@ -1,0 +1,310 @@
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 promiscuity 0  allmulti 0 minmtu 0 maxmtu 0 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: ens3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether fa:16:3e:ee:23:9e brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 1500 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 parentbus virtio parentdev virtio1 
+    altname enp0s3
+    inet 192.168.180.35/24 brd 192.168.180.255 scope global ens3
+       valid_lft forever preferred_lft forever
+    inet6 fe80::f816:3eff:feee:239e/64 scope link 
+       valid_lft forever preferred_lft forever
+3: ens4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc fq_codel state UP group default qlen 1000
+    link/ether fa:16:3e:ce:3a:4d brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 1450 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 parentbus virtio parentdev virtio2 
+    altname enp0s4
+    inet 10.0.10.120/24 metric 100 brd 10.0.10.255 scope global dynamic ens4
+       valid_lft 85516sec preferred_lft 85516sec
+    inet6 fe80::f816:3eff:fece:3a4d/64 scope link 
+       valid_lft forever preferred_lft forever
+4: ovs-system: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether f6:40:fc:0c:bc:8f brd ff:ff:ff:ff:ff:ff promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    openvswitch numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 
+5: br1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether da:df:24:75:25:49 brd ff:ff:ff:ff:ff:ff promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    openvswitch numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 
+6: br-fb3adefb6a30: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
+    link/ether 42:98:55:67:aa:24 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
+    bridge forward_delay 1500 hello_time 200 max_age 2000 ageing_time 30000 stp_state 0 priority 32768 vlan_filtering 0 vlan_protocol 802.1Q bridge_id 8000.42:98:55:67:aa:24 designated_root 8000.42:98:55:67:aa:24 root_port 0 root_path_cost 0 topology_change 0 topology_change_detected 0 hello_timer    0.00 tcn_timer    0.00 topology_change_timer    0.00 gc_timer   16.24 vlan_default_pvid 1 vlan_stats_enabled 0 vlan_stats_per_port 0 group_fwd_mask 0 group_address 01:80:c2:00:00:00 mcast_snooping 1 no_linklocal_learn 0 mcast_vlan_snooping 0 mcast_router 1 mcast_query_use_ifaddr 0 mcast_querier 0 mcast_hash_elasticity 16 mcast_hash_max 4096 mcast_last_member_count 2 mcast_startup_query_count 2 mcast_last_member_interval 100 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query_response_interval 1000 mcast_startup_query_interval 3125 mcast_stats_enabled 0 mcast_igmp_version 2 mcast_mld_version 1 nf_call_iptables 0 nf_call_ip6tables 0 nf_call_arptables 0 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 
+    inet 172.20.0.1/16 brd 172.20.255.255 scope global br-fb3adefb6a30
+       valid_lft forever preferred_lft forever
+7: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
+    link/ether 3a:a6:0b:78:a8:b2 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
+    bridge forward_delay 1500 hello_time 200 max_age 2000 ageing_time 30000 stp_state 0 priority 32768 vlan_filtering 0 vlan_protocol 802.1Q bridge_id 8000.3a:a6:b:78:a8:b2 designated_root 8000.3a:a6:b:78:a8:b2 root_port 0 root_path_cost 0 topology_change 0 topology_change_detected 0 hello_timer    0.00 tcn_timer    0.00 topology_change_timer    0.00 gc_timer   16.24 vlan_default_pvid 1 vlan_stats_enabled 0 vlan_stats_per_port 0 group_fwd_mask 0 group_address 01:80:c2:00:00:00 mcast_snooping 1 no_linklocal_learn 0 mcast_vlan_snooping 0 mcast_router 1 mcast_query_use_ifaddr 0 mcast_querier 0 mcast_hash_elasticity 16 mcast_hash_max 4096 mcast_last_member_count 2 mcast_startup_query_count 2 mcast_last_member_interval 100 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query_response_interval 1000 mcast_startup_query_interval 3125 mcast_stats_enabled 0 mcast_igmp_version 2 mcast_mld_version 1 nf_call_iptables 0 nf_call_ip6tables 0 nf_call_arptables 0 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::38a6:bff:fe78:a8b2/64 scope link 
+       valid_lft forever preferred_lft forever
+8: flannel.1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
+    link/ether 96:6e:1b:8d:cf:50 brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
+    vxlan id 1 local 192.168.180.35 dev ens3 srcport 0 0 dstport 8472 nolearning ttl auto ageing 300 udpcsum noudp6zerocsumtx noudp6zerocsumrx numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 
+    inet 10.244.0.0/32 scope global flannel.1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::946e:1bff:fe8d:cf50/64 scope link 
+       valid_lft forever preferred_lft forever
+9: cni0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default qlen 1000
+    link/ether 02:30:b0:71:4c:1e brd ff:ff:ff:ff:ff:ff promiscuity 0  allmulti 0 minmtu 68 maxmtu 65535 
+    bridge forward_delay 1500 hello_time 200 max_age 2000 ageing_time 30000 stp_state 0 priority 32768 vlan_filtering 0 vlan_protocol 802.1Q bridge_id 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e root_port 0 root_path_cost 0 topology_change 0 topology_change_detected 0 hello_timer    0.00 tcn_timer    0.00 topology_change_timer    0.00 gc_timer   74.33 vlan_default_pvid 1 vlan_stats_enabled 0 vlan_stats_per_port 0 group_fwd_mask 0 group_address 01:80:c2:00:00:00 mcast_snooping 1 no_linklocal_learn 0 mcast_vlan_snooping 0 mcast_router 1 mcast_query_use_ifaddr 0 mcast_querier 0 mcast_hash_elasticity 16 mcast_hash_max 4096 mcast_last_member_count 2 mcast_startup_query_count 2 mcast_last_member_interval 100 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query_response_interval 1000 mcast_startup_query_interval 3125 mcast_stats_enabled 0 mcast_igmp_version 2 mcast_mld_version 1 nf_call_iptables 0 nf_call_ip6tables 0 nf_call_arptables 0 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet 10.244.0.1/24 brd 10.244.0.255 scope global cni0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::30:b0ff:fe71:4c1e/64 scope link 
+       valid_lft forever preferred_lft forever
+10: veth7a6ceb7b@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 12:bb:58:60:4b:2b brd ff:ff:ff:ff:ff:ff link-netnsid 0 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8001 port_no 0x1 designated_port 32769 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::10bb:58ff:fe60:4b2b/64 scope link 
+       valid_lft forever preferred_lft forever
+11: vethbeb46b92@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether d2:59:2b:fb:c9:25 brd ff:ff:ff:ff:ff:ff link-netnsid 1 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8002 port_no 0x2 designated_port 32770 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::d059:2bff:fefb:c925/64 scope link 
+       valid_lft forever preferred_lft forever
+12: vethdbbd3a89@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 52:36:ab:7d:8f:3a brd ff:ff:ff:ff:ff:ff link-netnsid 2 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8003 port_no 0x3 designated_port 32771 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::5036:abff:fe7d:8f3a/64 scope link 
+       valid_lft forever preferred_lft forever
+13: vethc838618c@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 7a:f2:7c:48:f9:ae brd ff:ff:ff:ff:ff:ff link-netnsid 3 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8004 port_no 0x4 designated_port 32772 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::78f2:7cff:fe48:f9ae/64 scope link 
+       valid_lft forever preferred_lft forever
+14: veth44d865a6@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether 0e:a0:01:73:fd:a0 brd ff:ff:ff:ff:ff:ff link-netnsid 3 promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::ca0:1ff:fe73:fda0/64 scope link 
+       valid_lft forever preferred_lft forever
+15: veth50edd7c3@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 1a:8f:4f:62:80:2e brd ff:ff:ff:ff:ff:ff link-netnsid 4 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8005 port_no 0x5 designated_port 32773 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::188f:4fff:fe62:802e/64 scope link 
+       valid_lft forever preferred_lft forever
+16: veth3a4ccf8d@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether c6:4d:92:a1:cb:7d brd ff:ff:ff:ff:ff:ff link-netnsid 5 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8006 port_no 0x6 designated_port 32774 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::c44d:92ff:fea1:cb7d/64 scope link 
+       valid_lft forever preferred_lft forever
+18: vethb22e0bd3@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether 86:db:92:84:77:3b brd ff:ff:ff:ff:ff:ff link-netnsid 5 promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::84db:92ff:fe84:773b/64 scope link 
+       valid_lft forever preferred_lft forever
+19: vethcfa51b24@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether c6:75:17:72:31:68 brd ff:ff:ff:ff:ff:ff link-netnsid 4 promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::c475:17ff:fe72:3168/64 scope link 
+       valid_lft forever preferred_lft forever
+21: veth721ea1e1@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 06:45:ce:f3:90:fa brd ff:ff:ff:ff:ff:ff link-netnsid 7 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8008 port_no 0x8 designated_port 32776 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::445:ceff:fef3:90fa/64 scope link 
+       valid_lft forever preferred_lft forever
+23: veth9c7c4645@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether a6:45:f4:cc:5c:76 brd ff:ff:ff:ff:ff:ff link-netnsid 9 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x800a port_no 0xa designated_port 32778 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::a445:f4ff:fecc:5c76/64 scope link 
+       valid_lft forever preferred_lft forever
+25: vethe251e867@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 7a:ea:90:de:3c:f2 brd ff:ff:ff:ff:ff:ff link-netnsid 11 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x800c port_no 0xc designated_port 32780 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::78ea:90ff:fede:3cf2/64 scope link 
+       valid_lft forever preferred_lft forever
+26: veth4c4e3e6f@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether fa:00:13:f0:03:bd brd ff:ff:ff:ff:ff:ff link-netnsid 11 promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::f800:13ff:fef0:3bd/64 scope link 
+       valid_lft forever preferred_lft forever
+32: vethb1c10ca0@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 22:85:6a:99:1f:8d brd ff:ff:ff:ff:ff:ff link-netnsid 15 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8010 port_no 0x10 designated_port 32784 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::2085:6aff:fe99:1f8d/64 scope link 
+       valid_lft forever preferred_lft forever
+33: vethd752ad3f@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether a6:5f:0a:c3:dd:a3 brd ff:ff:ff:ff:ff:ff link-netnsid 16 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8011 port_no 0x11 designated_port 32785 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::a45f:aff:fec3:dda3/64 scope link 
+       valid_lft forever preferred_lft forever
+42: veth2f7ec2c7@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 02:4e:39:c9:e0:0f brd ff:ff:ff:ff:ff:ff link-netnsid 21 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8016 port_no 0x16 designated_port 32790 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::4e:39ff:fec9:e00f/64 scope link 
+       valid_lft forever preferred_lft forever
+300: veth4990f39a@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 7a:a1:8a:c9:db:15 brd ff:ff:ff:ff:ff:ff link-netns cni-49c3987e-7afe-afdd-666c-96384e49e9a0 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8019 port_no 0x19 designated_port 32793 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::78a1:8aff:fec9:db15/64 scope link 
+       valid_lft forever preferred_lft forever
+301: veth74748c6d@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether f6:d6:84:67:c0:fe brd ff:ff:ff:ff:ff:ff link-netns cni-49c3987e-7afe-afdd-666c-96384e49e9a0 promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::9cff:19ff:fe77:d310/64 scope link 
+       valid_lft forever preferred_lft forever
+45: vethe7b3b0a8@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 6e:5b:55:58:16:7e brd ff:ff:ff:ff:ff:ff link-netnsid 23 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8018 port_no 0x18 designated_port 32792 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::6c5b:55ff:fe58:167e/64 scope link 
+       valid_lft forever preferred_lft forever
+302: veth9164dde8@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether f2:cc:68:8c:c7:99 brd ff:ff:ff:ff:ff:ff link-netns cni-978923ef-3722-be40-677c-5d3f36edf549 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x800b port_no 0xb designated_port 32779 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::f0cc:68ff:fe8c:c799/64 scope link 
+       valid_lft forever preferred_lft forever
+338: vethc5745f54@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 66:62:f2:bd:2f:4c brd ff:ff:ff:ff:ff:ff link-netns cni-e2363ba5-fd96-a292-f304-9fc903de67ac promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8007 port_no 0x7 designated_port 32775 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::6462:f2ff:febd:2f4c/64 scope link 
+       valid_lft forever preferred_lft forever
+339: vethae9be65d@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether 5e:14:ed:11:1b:af brd ff:ff:ff:ff:ff:ff link-netns cni-e2363ba5-fd96-a292-f304-9fc903de67ac promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::588b:39ff:fe52:2f39/64 scope link 
+       valid_lft forever preferred_lft forever
+340: veth990d23fb@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 0a:29:84:09:c1:c5 brd ff:ff:ff:ff:ff:ff link-netns cni-d6d51090-72d7-a891-f100-af503b0803c4 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8009 port_no 0x9 designated_port 32777 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::829:84ff:fe09:c1c5/64 scope link 
+       valid_lft forever preferred_lft forever
+341: veth661fe4f1@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether 9a:18:54:db:8a:f2 brd ff:ff:ff:ff:ff:ff link-netns cni-d6d51090-72d7-a891-f100-af503b0803c4 promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::54ae:55ff:fe84:e5dd/64 scope link 
+       valid_lft forever preferred_lft forever
+342: veth60c2dccd@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 96:8f:5d:5b:2b:fb brd ff:ff:ff:ff:ff:ff link-netns cni-ae8941b4-b2dc-db9c-a987-9a1cadb0598c promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x800e port_no 0xe designated_port 32782 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::948f:5dff:fe5b:2bfb/64 scope link 
+       valid_lft forever preferred_lft forever
+343: vetheef3ebe2@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether c2:ac:0b:dc:dc:e2 brd ff:ff:ff:ff:ff:ff link-netns cni-ae8941b4-b2dc-db9c-a987-9a1cadb0598c promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::4cc:c3ff:fea4:fd03/64 scope link 
+       valid_lft forever preferred_lft forever
+346: veth7176de4d@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 1a:58:66:71:30:ae brd ff:ff:ff:ff:ff:ff link-netns cni-ed0c2114-444d-f439-c1c7-625eee2c5d9e promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8013 port_no 0x13 designated_port 32787 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::1858:66ff:fe71:30ae/64 scope link 
+       valid_lft forever preferred_lft forever
+347: vethb7339276@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether 62:6b:a2:35:8c:90 brd ff:ff:ff:ff:ff:ff link-netns cni-ed0c2114-444d-f439-c1c7-625eee2c5d9e promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::50f3:e8ff:febd:7746/64 scope link 
+       valid_lft forever preferred_lft forever
+348: vethdd0770cb@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 46:fc:b3:05:44:31 brd ff:ff:ff:ff:ff:ff link-netns cni-ecfbd394-75dc-08ea-2b3d-f2395470deff promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8014 port_no 0x14 designated_port 32788 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::44fc:b3ff:fe05:4431/64 scope link 
+       valid_lft forever preferred_lft forever
+349: vethe611375a@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether 26:4e:06:ff:f1:2e brd ff:ff:ff:ff:ff:ff link-netns cni-ecfbd394-75dc-08ea-2b3d-f2395470deff promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::244e:6ff:feff:f12e/64 scope link 
+       valid_lft forever preferred_lft forever
+350: veth817eb36a@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether fa:f9:f6:7f:77:85 brd ff:ff:ff:ff:ff:ff link-netns cni-cbe3ed87-3a73-da0c-c0ba-25fd09dfe8a9 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8017 port_no 0x17 designated_port 32791 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::f8f9:f6ff:fe7f:7785/64 scope link 
+       valid_lft forever preferred_lft forever
+351: vethd0e5bedd@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether e2:98:73:93:41:99 brd ff:ff:ff:ff:ff:ff link-netns cni-cbe3ed87-3a73-da0c-c0ba-25fd09dfe8a9 promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::e098:73ff:fe93:4199/64 scope link 
+       valid_lft forever preferred_lft forever
+97: veth3a39bd5c@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether ce:05:f6:46:b4:55 brd ff:ff:ff:ff:ff:ff link-netns cni-aafb783c-d036-1872-231e-1b807f004400 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x800d port_no 0xd designated_port 32781 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::cc05:f6ff:fe46:b455/64 scope link 
+       valid_lft forever preferred_lft forever
+354: vethac59b052@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether a6:4d:c1:70:cb:80 brd ff:ff:ff:ff:ff:ff link-netns cni-c16ab835-75cd-16ea-050c-457375fb43b6 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x800f port_no 0xf designated_port 32783 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::a44d:c1ff:fe70:cb80/64 scope link 
+       valid_lft forever preferred_lft forever
+98: veth18750d74@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether 6a:42:2f:05:fb:fe brd ff:ff:ff:ff:ff:ff link-netns cni-aafb783c-d036-1872-231e-1b807f004400 promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::f0a2:78ff:fedc:84cb/64 scope link 
+       valid_lft forever preferred_lft forever
+355: veth6af3d9d3@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether 82:b1:ad:ae:01:64 brd ff:ff:ff:ff:ff:ff link-netns cni-c16ab835-75cd-16ea-050c-457375fb43b6 promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::80b1:adff:feae:164/64 scope link 
+       valid_lft forever preferred_lft forever
+356: veth3923d974@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 36:e2:c1:14:3b:55 brd ff:ff:ff:ff:ff:ff link-netns cni-f78a1cfc-d9c2-db53-a5d9-12bd0f79971c promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8012 port_no 0x12 designated_port 32786 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::34e2:c1ff:fe14:3b55/64 scope link 
+       valid_lft forever preferred_lft forever
+357: vethf53892de@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether b6:ef:de:a0:6b:9b brd ff:ff:ff:ff:ff:ff link-netns cni-f78a1cfc-d9c2-db53-a5d9-12bd0f79971c promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::b4ef:deff:fea0:6b9b/64 scope link 
+       valid_lft forever preferred_lft forever
+358: veth2bc96baf@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 5e:78:a9:63:c2:44 brd ff:ff:ff:ff:ff:ff link-netns cni-ca62ce7d-0dbf-3551-3149-ec3f227b4317 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x801c port_no 0x1c designated_port 32796 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::5c78:a9ff:fe63:c244/64 scope link 
+       valid_lft forever preferred_lft forever
+359: vethd9a53c57@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master ovs-system state UP group default 
+    link/ether 0a:1c:b8:31:2d:55 brd ff:ff:ff:ff:ff:ff link-netns cni-ca62ce7d-0dbf-3551-3149-ec3f227b4317 promiscuity 1  allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    openvswitch_slave numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::81c:b8ff:fe31:2d55/64 scope link 
+       valid_lft forever preferred_lft forever
+360: veth2ce73c19@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 96:8f:b7:3a:bd:ef brd ff:ff:ff:ff:ff:ff link-netns cni-2f8181a9-d12c-61bc-6e04-6e64252456bd promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x801d port_no 0x1d designated_port 32797 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::948f:b7ff:fe3a:bdef/64 scope link 
+       valid_lft forever preferred_lft forever
+361: veth2f966af2@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether ce:1e:f4:13:59:e8 brd ff:ff:ff:ff:ff:ff link-netns cni-b53365d7-7b19-7ac4-0e45-0bac7d559239 promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x801e port_no 0x1e designated_port 32798 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::cc1e:f4ff:fe13:59e8/64 scope link 
+       valid_lft forever preferred_lft forever
+184: veth4a08cc97@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP group default 
+    link/ether 92:95:2f:b4:c3:0b brd ff:ff:ff:ff:ff:ff link-netns cni-21d3a54a-380c-279e-8089-47fb78e62caf promiscuity 1  allmulti 1 minmtu 68 maxmtu 65535 
+    veth 
+    bridge_slave state forwarding priority 32 cost 2 hairpin on guard off root_block off fastleave off learning on flood on port_id 0x8015 port_no 0x15 designated_port 32789 designated_cost 0 designated_bridge 8000.2:30:b0:71:4c:1e designated_root 8000.2:30:b0:71:4c:1e hold_timer    0.00 message_age_timer    0.00 forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on bcast_flood on mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0 vlan_tunnel off isolated off locked off numtxqueues 6 numrxqueues 6 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 
+    inet6 fe80::9095:2fff:feb4:c30b/64 scope link 
+       valid_lft forever preferred_lft forever

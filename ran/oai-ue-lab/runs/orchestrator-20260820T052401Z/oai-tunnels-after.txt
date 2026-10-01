@@ -1,0 +1,1 @@
+oaitun_ue1       UNKNOWN        10.45.1.40/24 fe80::3ab7:ee0a:63d:fdeb/64 

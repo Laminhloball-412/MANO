@@ -206,6 +206,7 @@ public:
 
 class gw_dummy : public gw_interface_nas, public gw_interface_pdcp
 {
+  void add_bearer_mapping(uint32_t lcid, uint8_t pdu_session_id) override {}
   int setup_if_addr(uint32_t eps_bearer_id, uint8_t pdn_type, uint32_t ip_addr, uint8_t* ipv6_if_id, char* err_str)
   {
     return SRSRAN_SUCCESS;

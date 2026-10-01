@@ -32,13 +32,130 @@
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #include <netinet/in.h>
+#include <poll.h>
+#include <cstring>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <vector>
 
 namespace srsue {
 
 gw::gw(srslog::basic_logger& logger_) : thread("GW"), logger(logger_), tft_matcher(logger) {}
+
+void gw::run_session(std::shared_ptr<gw_session_t> session)
+{
+  while (session->run_enable) {
+    struct pollfd tun_poll = {};
+    tun_poll.fd            = session->tun_fd;
+    tun_poll.events        = POLLIN;
+
+    int poll_result = poll(&tun_poll, 1, 100);
+    if (poll_result < 0) {
+      if (errno == EINTR) {
+        continue;
+      }
+      logger.error("PDU session %u TUN poll failed: %s", session->session_id, strerror(errno));
+      break;
+    }
+    if (poll_result == 0) {
+      continue;
+    }
+    if ((tun_poll.revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+      if (session->run_enable) {
+        logger.warning("PDU session %u TUN stopped (revents=0x%x)", session->session_id, tun_poll.revents);
+      }
+      break;
+    }
+    if ((tun_poll.revents & POLLIN) == 0) {
+      continue;
+    }
+
+    srsran::unique_byte_buffer_t pdu = srsran::make_byte_buffer();
+    if (!pdu) {
+      logger.error("Could not allocate uplink PDU for session %u", session->session_id);
+      usleep(100000);
+      continue;
+    }
+
+    int n = read(session->tun_fd,
+                 pdu->msg,
+                 SRSRAN_MAX_BUFFER_SIZE_BYTES - SRSRAN_BUFFER_HEADER_OFFSET);
+    if (n < 0) {
+      if (errno == EINTR || errno == EAGAIN) {
+        continue;
+      }
+      logger.error("PDU session %u TUN read failed: %s", session->session_id, strerror(errno));
+      break;
+    }
+    if (n == 0) {
+      continue;
+    }
+
+    pdu->N_bytes        = static_cast<uint32_t>(n);
+    const uint8_t ipver = pdu->msg[0] >> 4U;
+    uint32_t      packet_length = 0;
+    if (ipver == 4 && pdu->N_bytes >= sizeof(struct iphdr)) {
+      packet_length = ntohs(reinterpret_cast<struct iphdr*>(pdu->msg)->tot_len);
+    } else if (ipver == 6 && pdu->N_bytes >= sizeof(struct ipv6hdr)) {
+      packet_length = ntohs(reinterpret_cast<struct ipv6hdr*>(pdu->msg)->payload_len) + sizeof(struct ipv6hdr);
+    } else {
+      logger.warning(pdu->msg,
+                     pdu->N_bytes,
+                     "Dropping invalid uplink IP packet from PDU session %u",
+                     session->session_id);
+      continue;
+    }
+    if (packet_length != pdu->N_bytes) {
+      logger.warning("Dropping incomplete uplink packet from PDU session %u (expected=%u, read=%u)",
+                     session->session_id,
+                     packet_length,
+                     pdu->N_bytes);
+      continue;
+    }
+
+    uint32_t lcid = 0;
+    {
+      std::lock_guard<std::mutex> lock(gw_mutex);
+      auto                        mapping = session_to_lcid.find(session->session_id);
+      if (mapping == session_to_lcid.end()) {
+        logger.warning("No LCID mapping for PDU session %u; dropping uplink packet", session->session_id);
+        continue;
+      }
+      lcid = mapping->second;
+      ul_tput_bytes += pdu->N_bytes;
+    }
+
+    pdu->set_timestamp();
+    logger.info(pdu->msg,
+                pdu->N_bytes,
+                "TX PDU. session=%u lcid=%u",
+                session->session_id,
+                lcid);
+    stack->write_sdu(lcid, std::move(pdu));
+  }
+
+  logger.info("PDU session %u uplink worker stopped", session->session_id);
+}
+
+void gw::add_bearer_mapping(uint32_t lcid,
+                              uint8_t  pdu_session_id)
+{
+  std::lock_guard<std::mutex> lock(gw_mutex);
+
+  lcid_to_session[lcid] = pdu_session_id;
+  session_to_lcid[pdu_session_id] = lcid;
+
+  auto it = sessions.find(pdu_session_id);
+  if (it != sessions.end()) {
+    lcid_to_tun_fd[lcid] = it->second->tun_fd;
+    logger.info("Bearer mapping: lcid=%d → session=%d tun_fd=%d",
+                lcid, pdu_session_id, it->second->tun_fd);
+  } else {
+    logger.warning("Session %d not found for lcid=%d",
+                   pdu_session_id, lcid);
+  }
+}
 
 int gw::init(const gw_args_t& args_, stack_interface_gw* stack_)
 {
@@ -73,35 +190,63 @@ int gw::init(const gw_args_t& args_, stack_interface_gw* stack_)
 
 gw::~gw()
 {
-  if (tun_fd > 0) {
-    close(tun_fd);
-  }
+  stop(); // Gọi stop() để dọn dẹp tập trung
 }
 
 void gw::stop()
 {
   if (run_enable) {
     run_enable = false;
-    if (if_up) {
-      if_up = false;
-      if (running) {
-        thread_cancel();
-      }
-
-      // Wait thread to exit gracefully otherwise might leave a mutex locked
-      int cnt = 0;
-      while (running && cnt < 100) {
-        usleep(10000);
-        cnt++;
-      }
-      wait_thread_finish();
-
-      current_ip_addr = 0;
+    
+    // Giữ nguyên logic gốc: Dừng thread một cách an toàn
+    if (running) {
+      thread_cancel();
     }
-    // TODO: tear down TUN device?
+
+    int cnt = 0;
+    while (running && cnt < 100) {
+      usleep(10000);
+      cnt++;
+    }
+    if (running) {
+      wait_thread_finish();
+    }
   }
-  if (mbsfn_sock_fd) {
+
+  // Giữ nguyên logic gốc: Đóng socket MCH (nếu có)
+  if (mbsfn_sock_fd > 0) {
     close(mbsfn_sock_fd);
+    mbsfn_sock_fd = 0;
+  }
+
+  std::vector<std::shared_ptr<gw_session_t>> sessions_to_stop;
+  {
+    std::lock_guard<std::mutex> lock(gw_mutex);
+    for (auto& item : sessions) {
+      if (item.second) {
+        item.second->run_enable = false;
+        sessions_to_stop.push_back(item.second);
+      }
+    }
+    sessions.clear();
+    lcid_to_tun_fd.clear();
+    lcid_to_session.clear();
+    session_to_lcid.clear();
+  }
+
+  for (auto& session : sessions_to_stop) {
+    if (session->worker.joinable()) {
+      session->worker.join();
+    }
+    if (session->tun_fd >= 0) {
+      close(session->tun_fd);
+      session->tun_fd = -1;
+    }
+    if (session->sock >= 0) {
+      close(session->sock);
+      session->sock = -1;
+    }
+    session->if_up = false;
   }
 }
 
@@ -135,112 +280,146 @@ void gw::get_metrics(gw_metrics_t& m, const uint32_t nof_tti)
 *******************************************************************************/
 void gw::write_pdu(uint32_t lcid, srsran::unique_byte_buffer_t pdu)
 {
-  logger.info(pdu->msg, pdu->N_bytes, "RX PDU. Stack latency: %ld us", pdu->get_latency_us().count());
-  {
-    std::unique_lock<std::mutex> lock(gw_mutex);
-    dl_tput_bytes += pdu->N_bytes;
+  if (!pdu || pdu->N_bytes == 0) {
+    logger.warning("Empty downlink PDU for lcid=%u", lcid);
+    return;
   }
-  if (!if_up) {
-    if (run_enable) {
-      logger.warning("TUN/TAP not up - dropping gw RX message");
-    }
-  } else if (pdu->N_bytes < 20) {
-    // Packet not large enough to hold IPv4 Header
-    logger.warning("Packet to small to hold IPv4 header. Dropping packet with %d B", pdu->N_bytes);
+
+  // Giữ lại log latency và thống kê throughput như bản gốc
+  logger.info(pdu->msg, pdu->N_bytes, "RX PDU. Stack latency: %ld us", pdu->get_latency_us().count());
+  const uint8_t ipver = pdu->msg[0] >> 4U;
+  if ((ipver == 4 && pdu->N_bytes < sizeof(struct iphdr)) ||
+      (ipver == 6 && pdu->N_bytes < sizeof(struct ipv6hdr)) || (ipver != 4 && ipver != 6)) {
+    logger.warning("Invalid downlink IP packet for lcid=%u; dropping", lcid);
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(gw_mutex);
+  auto                        mapping = lcid_to_session.find(lcid);
+  if (mapping == lcid_to_session.end()) {
+    logger.error("No PDU session mapping for lcid=%u; dropping downlink packet", lcid);
+    return;
+  }
+  auto session = sessions.find(mapping->second);
+  if (session == sessions.end() || !session->second || session->second->tun_fd < 0) {
+    logger.error("PDU session %u for lcid=%u has no valid TUN; dropping downlink packet", mapping->second, lcid);
+    return;
+  }
+
+  int n = write(session->second->tun_fd, pdu->msg, pdu->N_bytes);
+  if (n < 0) {
+    logger.error("Failed downlink write to session=%u lcid=%u: %s", mapping->second, lcid, strerror(errno));
+  } else if (static_cast<uint32_t>(n) != pdu->N_bytes) {
+    logger.warning("Partial downlink write to session=%u lcid=%u (expected=%u, wrote=%d)",
+                   mapping->second,
+                   lcid,
+                   pdu->N_bytes,
+                   n);
   } else {
-    // Only handle IPv4 and IPv6 packets
-    struct iphdr* ip_pkt = (struct iphdr*)pdu->msg;
-    if (ip_pkt->version == 4 || ip_pkt->version == 6) {
-      int n = write(tun_fd, pdu->msg, pdu->N_bytes);
-      if (n > 0 && (pdu->N_bytes != (uint32_t)n)) {
-        logger.warning("DL TUN/TAP write failure. Wanted to write %d B but only wrote %d B.", pdu->N_bytes, n);
-      }
-    } else {
-      logger.error("Unsupported IP version. Dropping packet with %d B", pdu->N_bytes);
-    }
+    dl_tput_bytes += pdu->N_bytes;
   }
 }
 
 void gw::write_pdu_mch(uint32_t lcid, srsran::unique_byte_buffer_t pdu)
 {
-  if (pdu->N_bytes > 2) {
-    logger.info(pdu->msg,
-                pdu->N_bytes,
-                "RX MCH PDU (%d B). Stack latency: %ld us",
-                pdu->N_bytes,
-                pdu->get_latency_us().count());
-    {
-      std::unique_lock<std::mutex> lock(gw_mutex);
-      dl_tput_bytes += pdu->N_bytes;
-    }
 
-    // Hack to drop initial 2 bytes
-    pdu->msg += 2;
-    pdu->N_bytes -= 2;
-    struct in_addr dst_addr;
-    memcpy(&dst_addr.s_addr, &pdu->msg[16], 4);
-
-    if (!if_up) {
-      if (run_enable) {
-        logger.warning("TUN/TAP not up - dropping gw RX message");
-      }
-    } else {
-      int n = write(tun_fd, pdu->msg, pdu->N_bytes);
-      if (n > 0 && (pdu->N_bytes != (uint32_t)n)) {
-        logger.warning("DL TUN/TAP write failure");
-      }
-    }
-  }
 }
 
 /*******************************************************************************
   NAS interface
 *******************************************************************************/
-int gw::setup_if_addr(uint32_t eps_bearer_id, uint8_t pdn_type, uint32_t ip_addr, uint8_t* ipv6_if_addr, char* err_str)
+int gw::setup_if_addr(uint32_t eps_bearer_id,
+                       uint8_t  pdn_type,
+                       uint32_t ip_addr,
+                       uint8_t* ipv6_if_addr,
+                       char*    err_str)
 {
-  int err;
+  uint8_t session_id = static_cast<uint8_t>(eps_bearer_id);
 
-  // Make sure the worker thread is terminated before spawning a new one.
-  if (running) {
-    run_enable = false;
-    thread_cancel();
-    wait_thread_finish();
+  // Multi-session IPv6 needs a session-aware IPv6 configuration path. Reject it
+  // explicitly instead of reporting success without configuring an address.
+  if (pdn_type != LIBLTE_MME_PDN_TYPE_IPV4) {
+    logger.error("PDU session %u requested unsupported IPv6/IPv4v6 data plane", session_id);
+    return SRSRAN_ERROR_CANT_START;
   }
-  if (pdn_type == LIBLTE_MME_PDN_TYPE_IPV4 || pdn_type == LIBLTE_MME_PDN_TYPE_IPV4V6) {
-    err = setup_if_addr4(ip_addr, err_str);
+
+  stop_session(session_id);
+
+  // Tạo session mới
+  auto new_session       = std::make_shared<gw_session_t>();
+  new_session->session_id = session_id;
+
+  {
+    std::lock_guard<std::mutex> lock(gw_mutex);
+    sessions[session_id] = new_session;
+  }
+
+  // Setup IP (ngoài lock)
+  if (pdn_type == LIBLTE_MME_PDN_TYPE_IPV4 ||
+      pdn_type == LIBLTE_MME_PDN_TYPE_IPV4V6) {
+    int err = setup_if_addr4(new_session, ip_addr, err_str);
     if (err != SRSRAN_SUCCESS) {
+      stop_session(session_id);
       return err;
     }
   }
-  if (pdn_type == LIBLTE_MME_PDN_TYPE_IPV6 || pdn_type == LIBLTE_MME_PDN_TYPE_IPV4V6) {
-    err = setup_if_addr6(ipv6_if_addr, err_str);
-    if (err != SRSRAN_SUCCESS) {
-      return err;
+
+  // Spawn thread riêng cho session này
+  new_session->run_enable = true;
+  new_session->worker = std::thread(
+    [this, session = new_session]() {
+      run_session(session);
     }
-  }
-
-  default_eps_bearer_id = static_cast<int>(eps_bearer_id);
-
-  // Setup a thread to receive packets from the TUN device
-  run_enable = true;
-  start(GW_THREAD_PRIO);
+  );
 
   return SRSRAN_SUCCESS;
 }
 
 int gw::deactivate_eps_bearer(const uint32_t eps_bearer_id)
 {
-  std::lock_guard<std::mutex> lock(gw_mutex);
+  logger.info("Deactivating EPS bearer / PDU session %d", eps_bearer_id);
+  tft_matcher.delete_tft_for_eps_bearer(eps_bearer_id);
+  stop_session(static_cast<uint8_t>(eps_bearer_id));
+  return SRSRAN_SUCCESS;
+}
 
-  // only deactivation of default bearer
-  if (eps_bearer_id == static_cast<uint32_t>(default_eps_bearer_id)) {
-    logger.debug("Deactivating EPS bearer %d", eps_bearer_id);
-    default_eps_bearer_id = NOT_ASSIGNED;
-    return SRSRAN_SUCCESS;
-  } else {
-    // delete TFT template (if any) for this bearer
-    tft_matcher.delete_tft_for_eps_bearer(eps_bearer_id);
-    return SRSRAN_SUCCESS;
+void gw::stop_session(uint8_t session_id)
+{
+  std::shared_ptr<gw_session_t> session;
+  {
+    std::lock_guard<std::mutex> lock(gw_mutex);
+    auto                        item = sessions.find(session_id);
+    if (item == sessions.end()) {
+      return;
+    }
+    session             = item->second;
+    session->run_enable = false;
+    sessions.erase(item);
+
+    for (auto map_it = lcid_to_session.begin(); map_it != lcid_to_session.end();) {
+      if (map_it->second != session_id) {
+        ++map_it;
+        continue;
+      }
+      lcid_to_tun_fd.erase(map_it->first);
+      map_it = lcid_to_session.erase(map_it);
+    }
+    session_to_lcid.erase(session_id);
+  }
+
+  if (session && session->worker.joinable()) {
+    session->worker.join();
+  }
+  if (session && session->tun_fd >= 0) {
+    close(session->tun_fd);
+    session->tun_fd = -1;
+  }
+  if (session && session->sock >= 0) {
+    close(session->sock);
+    session->sock = -1;
+  }
+  if (session) {
+    session->if_up = false;
   }
 }
 
@@ -274,299 +453,150 @@ void gw::add_mch_port(uint32_t lcid, uint32_t port)
 /********************/
 void gw::run_thread()
 {
-  uint32 idx     = 0;
-  int32  N_bytes = 0;
-
-  srsran::unique_byte_buffer_t pdu = srsran::make_byte_buffer();
-  if (!pdu) {
-    logger.error("Couldn't allocate PDU in %s().", __FUNCTION__);
-    return;
-  }
-
-  const static uint32_t REGISTER_WAIT_TOUT = 40, SERVICE_WAIT_TOUT = 40; // 4 sec
-  uint32_t              register_wait = 0, service_wait = 0;
-
-  logger.info("GW IP packet receiver thread run_enable");
-
-  running = true;
+  // TODO: Sẽ implement logic Uplink đa kênh (polling) ở phần tiếp theo
   while (run_enable) {
-    // Read packet from TUN
-    if (SRSRAN_MAX_BUFFER_SIZE_BYTES - SRSRAN_BUFFER_HEADER_OFFSET > idx) {
-      N_bytes = read(tun_fd, &pdu->msg[idx], SRSRAN_MAX_BUFFER_SIZE_BYTES - SRSRAN_BUFFER_HEADER_OFFSET - idx);
-    } else {
-      logger.error("GW pdu buffer full - gw receive thread exiting.");
-      srsran::console("GW pdu buffer full - gw receive thread exiting.\n");
-      break;
-    }
-    logger.debug("Read %d bytes from TUN fd=%d, idx=%d", N_bytes, tun_fd, idx);
-
-    if (N_bytes <= 0) {
-      logger.error("Failed to read from TUN interface - gw receive thread exiting.");
-      srsran::console("Failed to read from TUN interface - gw receive thread exiting.\n");
-      break;
-    }
-
-    {
-      std::unique_lock<std::mutex> lock(gw_mutex);
-      // Check if IP version makes sense and get packtet length
-      struct iphdr*   ip_pkt  = (struct iphdr*)pdu->msg;
-      struct ipv6hdr* ip6_pkt = (struct ipv6hdr*)pdu->msg;
-      uint16_t        pkt_len = 0;
-      pdu->N_bytes            = idx + N_bytes;
-      if (ip_pkt->version == 4) {
-        pkt_len = ntohs(ip_pkt->tot_len);
-      } else if (ip_pkt->version == 6) {
-        pkt_len = ntohs(ip6_pkt->payload_len) + 40;
-      } else {
-        logger.error(pdu->msg, pdu->N_bytes, "Unsupported IP version. Dropping packet.");
-        continue;
-      }
-      logger.debug("IPv%d packet total length: %d Bytes", int(ip_pkt->version), pkt_len);
-
-      // Check if entire packet was received
-      if (pkt_len == pdu->N_bytes) {
-        logger.info(pdu->msg, pdu->N_bytes, "TX PDU");
-
-        // Make sure UE is attached and has default EPS bearer activated
-        while (run_enable && default_eps_bearer_id == NOT_ASSIGNED && register_wait < REGISTER_WAIT_TOUT) {
-          if (!register_wait) {
-            logger.info("UE is not attached, waiting for NAS attach (%d/%d)", register_wait, REGISTER_WAIT_TOUT);
-          }
-          lock.unlock();
-          std::this_thread::sleep_for(std::chrono::microseconds(100));
-          lock.lock();
-          register_wait++;
-        }
-        register_wait = 0;
-
-        // If we are still not attached by this stage, drop packet
-        if (run_enable && default_eps_bearer_id == NOT_ASSIGNED) {
-          continue;
-        }
-
-        if (!run_enable) {
-          break;
-        }
-
-        // Beyond this point we should have a activated default EPS bearer
-        srsran_assert(default_eps_bearer_id != NOT_ASSIGNED, "Default EPS bearer not activated");
-
-        uint8_t eps_bearer_id = default_eps_bearer_id;
-        tft_matcher.check_tft_filter_match(pdu, eps_bearer_id);
-
-        // Wait for service request if necessary
-        while (run_enable && !stack->has_active_radio_bearer(eps_bearer_id) && service_wait < SERVICE_WAIT_TOUT) {
-          if (!service_wait) {
-            logger.info(
-                "UE does not have service, waiting for NAS service request (%d/%d)", service_wait, SERVICE_WAIT_TOUT);
-            stack->start_service_request();
-          }
-          usleep(100000);
-          service_wait++;
-        }
-        service_wait = 0;
-
-        // Quit before writing packet if necessary
-        if (!run_enable) {
-          break;
-        }
-
-        // Send PDU directly to PDCP
-        pdu->set_timestamp();
-        ul_tput_bytes += pdu->N_bytes;
-        stack->write_sdu(eps_bearer_id, std::move(pdu));
-        do {
-          pdu = srsran::make_byte_buffer();
-          if (!pdu) {
-            logger.error("Fatal Error: Couldn't allocate PDU in run_thread().");
-            usleep(100000);
-          }
-        } while (!pdu);
-        idx = 0;
-      } else {
-        idx += N_bytes;
-        logger.debug("Entire packet not read from socket. Total Length %d, N_Bytes %d.", ip_pkt->tot_len, pdu->N_bytes);
-      }
-    } // end of holdering gw_mutex
+    usleep(10000); 
   }
-  running = false;
-  logger.info("GW IP receiver thread exiting.");
 }
-
 /**************************/
 /* TUN Interface Helpers  */
 /**************************/
-int gw::init_if(char* err_str)
+int gw::init_if(std::shared_ptr<gw_session_t> s, char* err_str)
 {
-  if (if_up) {
+  if (s->if_up) {
     return SRSRAN_ERROR_ALREADY_STARTED;
   }
 
-  // change into netns
+  // Tên TUN động theo session_id
+  s->tun_name = args.tun_dev_name + std::to_string(s->session_id);
+
+  // Vào netns (giữ nguyên logic cũ)
   if (!args.netns.empty()) {
     std::string netns("/run/netns/");
     netns += args.netns;
-    netns_fd = open(netns.c_str(), O_RDONLY);
+    int netns_fd = open(netns.c_str(), O_RDONLY);
     if (netns_fd == -1) {
       err_str = strerror(errno);
-      logger.error("Failed to find netns %s (%s): %s", args.netns.c_str(), netns.c_str(), err_str);
       return SRSRAN_ERROR_CANT_START;
     }
     if (setns(netns_fd, CLONE_NEWNET) == -1) {
       err_str = strerror(errno);
-      logger.error("Failed to change netns: %s", err_str);
+      close(netns_fd);
       return SRSRAN_ERROR_CANT_START;
     }
+    close(netns_fd);
   }
 
-  // Construct the TUN device
-  tun_fd = open("/dev/net/tun", O_RDWR);
-  logger.info("TUN file descriptor = %d", tun_fd);
-  if (0 > tun_fd) {
+  // Tạo TUN device
+  s->tun_fd = open("/dev/net/tun", O_RDWR);
+  if (s->tun_fd < 0) {
     err_str = strerror(errno);
-    logger.error("Failed to open TUN device: %s", err_str);
     return SRSRAN_ERROR_CANT_START;
   }
 
-  memset(&ifr, 0, sizeof(ifr));
-  ifr.ifr_flags = IFF_TUN | IFF_NO_PI;
-  strncpy(
-      ifr.ifr_ifrn.ifrn_name, args.tun_dev_name.c_str(), std::min(args.tun_dev_name.length(), (size_t)(IFNAMSIZ - 1)));
-  ifr.ifr_ifrn.ifrn_name[IFNAMSIZ - 1] = 0;
-  if (0 > ioctl(tun_fd, TUNSETIFF, &ifr)) {
+  memset(&s->ifr, 0, sizeof(s->ifr));
+  s->ifr.ifr_flags = IFF_TUN | IFF_NO_PI;
+  strncpy(s->ifr.ifr_ifrn.ifrn_name,
+          s->tun_name.c_str(),
+          IFNAMSIZ - 1);
+
+  if (ioctl(s->tun_fd, TUNSETIFF, &s->ifr) < 0) {
     err_str = strerror(errno);
-    logger.error("Failed to set TUN device name: %s", err_str);
-    close(tun_fd);
+    close(s->tun_fd);
+    s->tun_fd = -1;
     return SRSRAN_ERROR_CANT_START;
   }
 
-  // Bring up the interface
-  sock = socket(AF_INET, SOCK_DGRAM, 0);
-  if (0 > ioctl(sock, SIOCGIFFLAGS, &ifr)) {
-    err_str = strerror(errno);
-    logger.error("Failed to bring up socket: %s", err_str);
-    close(tun_fd);
-    return SRSRAN_ERROR_CANT_START;
-  }
-  ifr.ifr_flags |= IFF_UP | IFF_RUNNING;
-  if (0 > ioctl(sock, SIOCSIFFLAGS, &ifr)) {
-    err_str = strerror(errno);
-    logger.error("Failed to set socket flags: %s", err_str);
-    close(tun_fd);
+  if (fcntl(s->tun_fd, F_SETFL, O_NONBLOCK) < 0) {
+    logger.error("Failed to set PDU session %u TUN non-blocking: %s", s->session_id, strerror(errno));
+    close(s->tun_fd);
+    s->tun_fd = -1;
     return SRSRAN_ERROR_CANT_START;
   }
 
-  // Delete link-local IPv6 address.
-  struct in6_addr in6p;
-  char            addr_str[INET6_ADDRSTRLEN];
-  if (find_ipv6_addr(&in6p)) {
-    logger.debug("Found link-local IPv6 address: %s", inet_ntop(AF_INET6, &in6p, addr_str, INET6_ADDRSTRLEN));
-    del_ipv6_addr(&in6p);
-  } else {
-    logger.warning("Could not find link-local IPv6 address.");
+  // Bring up interface
+  s->sock = socket(AF_INET, SOCK_DGRAM, 0);
+  if (s->sock < 0) {
+    logger.error("Failed to create control socket for PDU session %u: %s", s->session_id, strerror(errno));
+    return SRSRAN_ERROR_CANT_START;
   }
-  if_up = true;
+  if (ioctl(s->sock, SIOCGIFFLAGS, &s->ifr) < 0) {
+    logger.error("Failed to read TUN flags for PDU session %u: %s", s->session_id, strerror(errno));
+    return SRSRAN_ERROR_CANT_START;
+  }
+  s->ifr.ifr_flags |= IFF_UP | IFF_RUNNING;
+  if (ioctl(s->sock, SIOCSIFFLAGS, &s->ifr) < 0) {
+    logger.error("Failed to bring up TUN for PDU session %u: %s", s->session_id, strerror(errno));
+    return SRSRAN_ERROR_CANT_START;
+  }
 
+  s->if_up = true;
   return SRSRAN_SUCCESS;
 }
 
-int gw::setup_if_addr4(uint32_t ip_addr, char* err_str)
+int gw::setup_if_addr4(std::shared_ptr<gw_session_t> session, uint32_t ip_addr, char* err_str)
 {
-  if (ip_addr != current_ip_addr) {
-    if (!if_up) {
-      if (init_if(err_str)) {
-        logger.error("init_if failed");
+  if (ip_addr == 0) {
+    logger.error("Network assigned an invalid IPv4 address to PDU session %u", session->session_id);
+    return SRSRAN_ERROR_CANT_START;
+  }
+
+  if (ip_addr != session->ip_addr) {
+    if (!session->if_up) {
+      // Gọi init_if mới có truyền session_id
+      if (init_if(session, err_str)) {
+        logger.error("init_if failed for session %u", session->session_id);
         return SRSRAN_ERROR_CANT_START;
       }
     }
 
-    if (sock > 0) {
-      close(sock);
+    if (session->sock >= 0) {
+      close(session->sock);
+      session->sock = -1;
     }
-    // Setup the IP address
-    sock                                                  = socket(AF_INET, SOCK_DGRAM, 0);
-    ifr.ifr_addr.sa_family                                = AF_INET;
-    ((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr.s_addr = htonl(ip_addr);
-    if (0 > ioctl(sock, SIOCSIFADDR, &ifr)) {
-      err_str = strerror(errno);
-      logger.debug("Failed to set socket address: %s", err_str);
-      close(tun_fd);
+
+    // Setup the IP address sử dụng socket và ifr riêng của session
+    session->sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (session->sock < 0) {
+      logger.error("Failed to create IPv4 control socket for PDU session %u: %s",
+                   session->session_id,
+                   strerror(errno));
       return SRSRAN_ERROR_CANT_START;
     }
-    ifr.ifr_netmask.sa_family = AF_INET;
-    if (inet_pton(ifr.ifr_netmask.sa_family,
+    session->ifr.ifr_addr.sa_family = AF_INET;
+    ((struct sockaddr_in*)&session->ifr.ifr_addr)->sin_addr.s_addr = htonl(ip_addr);
+    
+    if (0 > ioctl(session->sock, SIOCSIFADDR, &session->ifr)) {
+      err_str = strerror(errno);
+      logger.debug("Failed to set socket address: %s", err_str);
+      return SRSRAN_ERROR_CANT_START;
+    }
+
+    session->ifr.ifr_netmask.sa_family = AF_INET;
+    if (inet_pton(session->ifr.ifr_netmask.sa_family,
                   args.tun_dev_netmask.c_str(),
-                  &((struct sockaddr_in*)&ifr.ifr_netmask)->sin_addr.s_addr) != 1) {
+                  &((struct sockaddr_in*)&session->ifr.ifr_netmask)->sin_addr.s_addr) != 1) {
       logger.error("Invalid tun_dev_netmask: %s", args.tun_dev_netmask.c_str());
       srsran::console("Invalid tun_dev_netmask: %s\n", args.tun_dev_netmask.c_str());
       perror("inet_pton");
       return SRSRAN_ERROR_CANT_START;
     }
-    if (0 > ioctl(sock, SIOCSIFNETMASK, &ifr)) {
+
+    if (0 > ioctl(session->sock, SIOCSIFNETMASK, &session->ifr)) {
       err_str = strerror(errno);
       logger.debug("Failed to set socket netmask: %s", err_str);
-      close(tun_fd);
       return SRSRAN_ERROR_CANT_START;
     }
-    current_ip_addr = ip_addr;
+
+    session->ip_addr = ip_addr;
   }
   return SRSRAN_SUCCESS;
 }
 
 int gw::setup_if_addr6(uint8_t* ipv6_if_id, char* err_str)
 {
-  struct sockaddr_in6 sai;
-  struct in6_ifreq    ifr6;
-  bool                match = true;
-
-  for (int i = 0; i < 8; i++) {
-    if (ipv6_if_id[i] != current_if_id[i]) {
-      match = false;
-      break;
-    }
-  }
-
-  if (!match) {
-    if (!if_up) {
-      if (init_if(err_str)) {
-        logger.error("init_if failed");
-        return SRSRAN_ERROR_CANT_START;
-      }
-    }
-
-    if (sock > 0) {
-      close(sock);
-    }
-    // Setup the IP address
-    sock                   = socket(AF_INET6, SOCK_DGRAM, 0);
-    ifr.ifr_addr.sa_family = AF_INET6;
-
-    if (inet_pton(AF_INET6, "fe80::", (void*)&sai.sin6_addr) <= 0) {
-      logger.error("Bad address");
-      return SRSRAN_ERROR_CANT_START;
-    }
-
-    memcpy(&sai.sin6_addr.s6_addr[8], ipv6_if_id, 8);
-    if (ioctl(sock, SIOGIFINDEX, &ifr) < 0) {
-      perror("SIOGIFINDEX");
-      return SRSRAN_ERROR_CANT_START;
-    }
-    ifr6.ifr6_ifindex   = ifr.ifr_ifindex;
-    ifr6.ifr6_prefixlen = 64;
-    memcpy((char*)&ifr6.ifr6_addr, (char*)&sai.sin6_addr, sizeof(struct in6_addr));
-
-    if (ioctl(sock, SIOCSIFADDR, &ifr6) < 0) {
-      err_str = strerror(errno);
-      logger.error("Could not set IPv6 Link local address. Error %s", err_str);
-      return SRSRAN_ERROR_CANT_START;
-    }
-
-    for (int i = 0; i < 8; i++) {
-      current_if_id[i] = ipv6_if_id[i];
-    }
-  }
-
-  return SRSRAN_SUCCESS;
+  logger.error("IPv6 setup is not implemented for multi-PDU TUN sessions");
+  return SRSRAN_ERROR_CANT_START;
 }
 
 bool gw::find_ipv6_addr(struct in6_addr* in6_out)

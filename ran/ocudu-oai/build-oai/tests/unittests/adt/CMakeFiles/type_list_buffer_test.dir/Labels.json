@@ -1,0 +1,19 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/adt/type_list_buffer_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/adt/segment_list_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"adt"
+		],
+		"name" : "type_list_buffer_test"
+	}
+}

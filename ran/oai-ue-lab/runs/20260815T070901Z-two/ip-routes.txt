@@ -1,0 +1,160 @@
+default via 192.168.180.1 dev ens3 proto static metric 50 
+default via 10.0.10.1 dev ens4 proto dhcp src 10.0.10.120 metric 100 
+8.8.8.8 via 10.0.10.1 dev ens4 proto dhcp src 10.0.10.120 metric 100 
+10.0.10.0/24 dev ens4 proto kernel scope link src 10.0.10.120 metric 100 
+10.0.10.1 dev ens4 proto dhcp scope link src 10.0.10.120 metric 100 
+10.45.1.0/24 dev oaitun_ue1 proto kernel scope link src 10.45.1.7 
+10.45.2.0/24 dev oaitun_ue1p2 proto kernel scope link src 10.45.2.4 
+10.244.0.0/24 dev cni0 proto kernel scope link src 10.244.0.1 
+169.254.169.254 via 10.0.10.1 dev ens4 proto dhcp src 10.0.10.120 metric 100 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+172.20.0.0/16 dev br-fb3adefb6a30 proto kernel scope link src 172.20.0.1 linkdown 
+192.168.180.0/24 dev ens3 proto kernel scope link src 192.168.180.35 
+local 10.0.10.120 dev ens4 table local proto kernel scope host src 10.0.10.120 
+broadcast 10.0.10.255 dev ens4 table local proto kernel scope link src 10.0.10.120 
+local 10.45.1.7 dev oaitun_ue1 table local proto kernel scope host src 10.45.1.7 
+broadcast 10.45.1.255 dev oaitun_ue1 table local proto kernel scope link src 10.45.1.7 
+local 10.45.2.4 dev oaitun_ue1p2 table local proto kernel scope host src 10.45.2.4 
+broadcast 10.45.2.255 dev oaitun_ue1p2 table local proto kernel scope link src 10.45.2.4 
+local 10.244.0.0 dev flannel.1 table local proto kernel scope host src 10.244.0.0 
+local 10.244.0.1 dev cni0 table local proto kernel scope host src 10.244.0.1 
+broadcast 10.244.0.255 dev cni0 table local proto kernel scope link src 10.244.0.1 
+local 127.0.0.0/8 dev lo table local proto kernel scope host src 127.0.0.1 
+local 127.0.0.1 dev lo table local proto kernel scope host src 127.0.0.1 
+broadcast 127.255.255.255 dev lo table local proto kernel scope link src 127.0.0.1 
+local 172.17.0.1 dev docker0 table local proto kernel scope host src 172.17.0.1 
+broadcast 172.17.255.255 dev docker0 table local proto kernel scope link src 172.17.0.1 linkdown 
+local 172.20.0.1 dev br-fb3adefb6a30 table local proto kernel scope host src 172.20.0.1 
+broadcast 172.20.255.255 dev br-fb3adefb6a30 table local proto kernel scope link src 172.20.0.1 linkdown 
+local 192.168.180.35 dev ens3 table local proto kernel scope host src 192.168.180.35 
+broadcast 192.168.180.255 dev ens3 table local proto kernel scope link src 192.168.180.35 
+fe80::/64 dev ens3 proto kernel metric 256 pref medium
+fe80::/64 dev ens4 proto kernel metric 256 pref medium
+fe80::/64 dev flannel.1 proto kernel metric 256 pref medium
+fe80::/64 dev cni0 proto kernel metric 256 pref medium
+fe80::/64 dev veth7a6ceb7b proto kernel metric 256 pref medium
+fe80::/64 dev vethbeb46b92 proto kernel metric 256 pref medium
+fe80::/64 dev vethdbbd3a89 proto kernel metric 256 pref medium
+fe80::/64 dev vethc838618c proto kernel metric 256 pref medium
+fe80::/64 dev veth44d865a6 proto kernel metric 256 pref medium
+fe80::/64 dev veth50edd7c3 proto kernel metric 256 pref medium
+fe80::/64 dev veth3a4ccf8d proto kernel metric 256 pref medium
+fe80::/64 dev vethdd7393d2 proto kernel metric 256 pref medium
+fe80::/64 dev vethb22e0bd3 proto kernel metric 256 pref medium
+fe80::/64 dev vethcfa51b24 proto kernel metric 256 pref medium
+fe80::/64 dev veth900cd5b7 proto kernel metric 256 pref medium
+fe80::/64 dev veth721ea1e1 proto kernel metric 256 pref medium
+fe80::/64 dev vethfc75586b proto kernel metric 256 pref medium
+fe80::/64 dev veth9c7c4645 proto kernel metric 256 pref medium
+fe80::/64 dev veth2be7c76d proto kernel metric 256 pref medium
+fe80::/64 dev vethe251e867 proto kernel metric 256 pref medium
+fe80::/64 dev veth4c4e3e6f proto kernel metric 256 pref medium
+fe80::/64 dev vethab6c33b9 proto kernel metric 256 pref medium
+fe80::/64 dev veth8ec87901 proto kernel metric 256 pref medium
+fe80::/64 dev vethf879919e proto kernel metric 256 pref medium
+fe80::/64 dev veth33e0cca6 proto kernel metric 256 pref medium
+fe80::/64 dev veth3e28cb25 proto kernel metric 256 pref medium
+fe80::/64 dev vethb1c10ca0 proto kernel metric 256 pref medium
+fe80::/64 dev vethd752ad3f proto kernel metric 256 pref medium
+fe80::/64 dev vethb67cab2b proto kernel metric 256 pref medium
+fe80::/64 dev vethd2fc0f17 proto kernel metric 256 pref medium
+fe80::/64 dev vethf9a2f29c proto kernel metric 256 pref medium
+fe80::/64 dev veth36a22923 proto kernel metric 256 pref medium
+fe80::/64 dev veth344c60d5 proto kernel metric 256 pref medium
+fe80::/64 dev veth4481a6e1 proto kernel metric 256 pref medium
+fe80::/64 dev veth77a9cdda proto kernel metric 256 pref medium
+fe80::/64 dev vethe18bf219 proto kernel metric 256 pref medium
+fe80::/64 dev veth2f7ec2c7 proto kernel metric 256 pref medium
+fe80::/64 dev veth5966c76b proto kernel metric 256 pref medium
+fe80::/64 dev vethccc7f1e2 proto kernel metric 256 pref medium
+fe80::/64 dev vethe7b3b0a8 proto kernel metric 256 pref medium
+fe80::/64 dev docker0 proto kernel metric 256 linkdown pref medium
+fe80::/64 dev oaitun_ue1 proto kernel metric 256 pref medium
+fe80::/64 dev oaitun_ue1p2 proto kernel metric 256 pref medium
+local ::1 dev lo table local proto kernel metric 0 pref medium
+local fe80::30:b0ff:fe71:4c1e dev cni0 table local proto kernel metric 0 pref medium
+local fe80::4e:39ff:fec9:e00f dev veth2f7ec2c7 table local proto kernel metric 0 pref medium
+local fe80::445:ceff:fef3:90fa dev veth721ea1e1 table local proto kernel metric 0 pref medium
+local fe80::ca0:1ff:fe73:fda0 dev veth44d865a6 table local proto kernel metric 0 pref medium
+local fe80::10bb:58ff:fe60:4b2b dev veth7a6ceb7b table local proto kernel metric 0 pref medium
+local fe80::1870:1aff:fee9:964b dev vethfc75586b table local proto kernel metric 0 pref medium
+local fe80::188f:4fff:fe62:802e dev veth50edd7c3 table local proto kernel metric 0 pref medium
+local fe80::18d8:c4ff:fe50:8368 dev veth33e0cca6 table local proto kernel metric 0 pref medium
+local fe80::2085:6aff:fe99:1f8d dev vethb1c10ca0 table local proto kernel metric 0 pref medium
+local fe80::2cf2:b4ff:feae:1c37 dev veth3e28cb25 table local proto kernel metric 0 pref medium
+local fe80::3478:68ff:fed2:c948 dev vethb67cab2b table local proto kernel metric 0 pref medium
+local fe80::38a6:bff:fe78:a8b2 dev docker0 table local proto kernel metric 0 pref medium
+local fe80::3bbf:874d:1e8d:4540 dev oaitun_ue1 table local proto kernel metric 0 pref medium
+local fe80::40bf:f3ff:fed7:81d6 dev veth344c60d5 table local proto kernel metric 0 pref medium
+local fe80::40de:7fff:fe58:c375 dev vethf9a2f29c table local proto kernel metric 0 pref medium
+local fe80::440a:b7ff:fecd:f6fb dev veth8ec87901 table local proto kernel metric 0 pref medium
+local fe80::481c:a8ff:fec6:c6a dev veth4481a6e1 table local proto kernel metric 0 pref medium
+local fe80::4838:daff:fe8a:6fac dev vethdd7393d2 table local proto kernel metric 0 pref medium
+local fe80::5036:abff:fe7d:8f3a dev vethdbbd3a89 table local proto kernel metric 0 pref medium
+local fe80::68a5:fdff:fee2:a9b1 dev veth900cd5b7 table local proto kernel metric 0 pref medium
+local fe80::6c5b:55ff:fe58:167e dev vethe7b3b0a8 table local proto kernel metric 0 pref medium
+local fe80::6cc1:5aff:fea9:79df dev vethf879919e table local proto kernel metric 0 pref medium
+local fe80::7490:5dff:fe1b:df40 dev vethccc7f1e2 table local proto kernel metric 0 pref medium
+local fe80::78ea:90ff:fede:3cf2 dev vethe251e867 table local proto kernel metric 0 pref medium
+local fe80::78f2:7cff:fe48:f9ae dev vethc838618c table local proto kernel metric 0 pref medium
+local fe80::84db:92ff:fe84:773b dev vethb22e0bd3 table local proto kernel metric 0 pref medium
+local fe80::946e:1bff:fe8d:cf50 dev flannel.1 table local proto kernel metric 0 pref medium
+local fe80::98fb:c0ff:fe89:a45d dev vethab6c33b9 table local proto kernel metric 0 pref medium
+local fe80::a445:f4ff:fecc:5c76 dev veth9c7c4645 table local proto kernel metric 0 pref medium
+local fe80::a45f:aff:fec3:dda3 dev vethd752ad3f table local proto kernel metric 0 pref medium
+local fe80::ac3e:9fff:fe23:e750 dev veth2be7c76d table local proto kernel metric 0 pref medium
+local fe80::b05c:14ff:fe73:c17d dev veth5966c76b table local proto kernel metric 0 pref medium
+local fe80::c44d:92ff:fea1:cb7d dev veth3a4ccf8d table local proto kernel metric 0 pref medium
+local fe80::c475:17ff:fe72:3168 dev vethcfa51b24 table local proto kernel metric 0 pref medium
+local fe80::c84e:c4ff:fe0b:41f9 dev veth36a22923 table local proto kernel metric 0 pref medium
+local fe80::d059:2bff:fefb:c925 dev vethbeb46b92 table local proto kernel metric 0 pref medium
+local fe80::e07a:77ff:fe7d:f3fb dev vethd2fc0f17 table local proto kernel metric 0 pref medium
+local fe80::f4da:3eff:fe04:47ff dev veth77a9cdda table local proto kernel metric 0 pref medium
+local fe80::f800:13ff:fef0:3bd dev veth4c4e3e6f table local proto kernel metric 0 pref medium
+local fe80::f816:3eff:fece:3a4d dev ens4 table local proto kernel metric 0 pref medium
+local fe80::f816:3eff:feee:239e dev ens3 table local proto kernel metric 0 pref medium
+local fe80::fce8:c7ff:fe32:d1af dev vethe18bf219 table local proto kernel metric 0 pref medium
+local fe80::fcf3:f25c:2824:d591 dev oaitun_ue1p2 table local proto kernel metric 0 pref medium
+multicast ff00::/8 dev ens3 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev ens4 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev flannel.1 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev cni0 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth7a6ceb7b table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethbeb46b92 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethdbbd3a89 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethc838618c table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth44d865a6 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth50edd7c3 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth3a4ccf8d table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethdd7393d2 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethb22e0bd3 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethcfa51b24 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth900cd5b7 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth721ea1e1 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethfc75586b table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth9c7c4645 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth2be7c76d table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethe251e867 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth4c4e3e6f table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethab6c33b9 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth8ec87901 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethf879919e table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth33e0cca6 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth3e28cb25 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethb1c10ca0 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethd752ad3f table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethb67cab2b table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethd2fc0f17 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethf9a2f29c table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth36a22923 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth344c60d5 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth4481a6e1 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth77a9cdda table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethe18bf219 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth2f7ec2c7 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev veth5966c76b table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethccc7f1e2 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev vethe7b3b0a8 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev docker0 table local proto kernel metric 256 linkdown pref medium
+multicast ff00::/8 dev oaitun_ue1 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev oaitun_ue1p2 table local proto kernel metric 256 pref medium

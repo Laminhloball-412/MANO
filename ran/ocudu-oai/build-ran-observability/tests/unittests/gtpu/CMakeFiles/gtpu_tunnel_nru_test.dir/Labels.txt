@@ -1,0 +1,4 @@
+# Directory labels
+ gtpu
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/gtpu/gtpu_tunnel_nru_test.cpp

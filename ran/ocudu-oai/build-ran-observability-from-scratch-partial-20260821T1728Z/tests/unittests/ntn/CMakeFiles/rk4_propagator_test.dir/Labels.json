@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/ntn/rk4_propagator_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"ntn"
+		],
+		"name" : "rk4_propagator_test"
+	}
+}

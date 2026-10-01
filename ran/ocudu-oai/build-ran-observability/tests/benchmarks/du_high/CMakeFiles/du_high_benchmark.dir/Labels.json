@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/benchmarks/du_high/du_high_benchmark.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"du_high|tsan|rtsan"
+		],
+		"name" : "du_high_benchmark"
+	}
+}

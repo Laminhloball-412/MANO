@@ -1,0 +1,112 @@
+{
+  "flow_id": "flow-5256bc74d6da",
+  "state": "COMPLETED",
+  "intent": {
+    "service": "control",
+    "ue_id": 1,
+    "duration_seconds": 3,
+    "packet_size_bytes": 120,
+    "message_rate_per_second": 10.0
+  },
+  "events": [
+    {
+      "at": "2026-08-20T04:00:48.361494+00:00",
+      "state": "DEFAULT_ACTIVE",
+      "detail": "default PDU remains active"
+    },
+    {
+      "at": "2026-08-20T04:00:48.361820+00:00",
+      "state": "OBSERVING",
+      "detail": "measuring real traffic on default PDU"
+    },
+    {
+      "at": "2026-08-20T04:00:52.378446+00:00",
+      "state": "DECIDING",
+      "detail": "selecting S-NSSAI/DNN from intent and observed metrics"
+    },
+    {
+      "at": "2026-08-20T04:00:52.379129+00:00",
+      "state": "ENSURING_SLICE",
+      "detail": "checking slice-2"
+    },
+    {
+      "at": "2026-08-20T04:00:52.486340+00:00",
+      "state": "ESTABLISHING",
+      "detail": "establishing PDU session 2; old PDU is retained"
+    },
+    {
+      "at": "2026-08-20T04:01:02.795108+00:00",
+      "state": "VALIDATING",
+      "detail": "validating TUN, gateway and SLA stability"
+    },
+    {
+      "at": "2026-08-20T04:01:07.898766+00:00",
+      "state": "STEERING",
+      "detail": "new service flows bind to oaitun_ue1p2"
+    },
+    {
+      "at": "2026-08-20T04:01:07.900496+00:00",
+      "state": "DRAINING",
+      "detail": "allowing old-interface flows to drain"
+    },
+    {
+      "at": "2026-08-20T04:01:09.901831+00:00",
+      "state": "RELEASING",
+      "detail": "releasing old PDU session 1"
+    },
+    {
+      "at": "2026-08-20T04:01:23.230677+00:00",
+      "state": "RELEASING",
+      "detail": "source slice lifecycle: protected"
+    },
+    {
+      "at": "2026-08-20T04:01:23.230691+00:00",
+      "state": "COMPLETED",
+      "detail": "make-before-break transition completed"
+    }
+  ],
+  "source": {
+    "name": "default",
+    "namespace": "slice-1",
+    "sst": 1,
+    "sd": "000001",
+    "dnn": "srsapn",
+    "gateway": "10.45.1.1",
+    "pdu_session_id": 1,
+    "tun_pattern": "oaitun_ue1",
+    "protected": true,
+    "max_rtt_ms": 200.0,
+    "max_jitter_ms": 100.0,
+    "max_loss_percent": 5.0,
+    "min_throughput_mbps": 0.0
+  },
+  "target": {
+    "name": "urllc",
+    "namespace": "slice-2",
+    "sst": 2,
+    "sd": "000001",
+    "dnn": "srsapn",
+    "gateway": "10.45.2.1",
+    "pdu_session_id": 2,
+    "tun_pattern": "oaitun_ue1p2",
+    "protected": true,
+    "max_rtt_ms": 250,
+    "max_jitter_ms": 100,
+    "max_loss_percent": 5,
+    "min_throughput_mbps": 0.0
+  },
+  "metrics": {
+    "throughput_mbps": 0.023575024783612022,
+    "rtt_ms": 59.591,
+    "jitter_ms": 24.358,
+    "loss_percent": 0.0,
+    "packet_size_bytes": 120,
+    "message_rate_per_second": 9.955669249836157,
+    "samples": 30,
+    "interface": "oaitun_ue1p2",
+    "gateway": "10.45.2.1"
+  },
+  "slice_action": "reused",
+  "old_session_released": true,
+  "error": null
+}

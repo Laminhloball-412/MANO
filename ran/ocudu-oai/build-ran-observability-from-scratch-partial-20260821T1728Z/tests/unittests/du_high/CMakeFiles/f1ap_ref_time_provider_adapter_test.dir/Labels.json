@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/du_high/f1ap_ref_time_provider_adapter_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"du_high"
+		],
+		"name" : "f1ap_ref_time_provider_adapter_test"
+	}
+}

@@ -1,0 +1,69 @@
+cu_cp:
+  amf:
+    addr: 10.108.45.101
+    port: 38412
+    bind_addr: 10.244.0.1   # ← thay bằng kết quả lệnh bên trên
+    supported_tracking_areas:
+      - tac: 1                          # ← verify với AMF
+        plmn_list:
+          - plmn: "46099"               # ← verify với AMF
+            tai_slice_support_list:
+              - sst: 1
+                sd: 1
+              - sst: 2
+                sd: 1
+              - sst: 3
+                sd: 1
+                
+  inactivity_timer: 7200
+
+ru_sdr:
+  device_driver: zmq
+  device_args: tx_port=tcp://127.0.0.1:2000,rx_port=tcp://127.0.0.1:2001,base_srate=15.36e6
+  srate: 15.36
+  # OCUDU 26.04 validates ZMQ channel gain as attenuation (must be <= 0 dB).
+  tx_gain: 0
+  rx_gain: 0
+
+cell_cfg:
+  dl_arfcn: 368500
+  band: 3
+  channel_bandwidth_MHz: 10
+  common_scs: 15
+  plmn: "46099"                         # ← verify với AMF
+  tac: 1                                # ← verify với AMF
+  pdcch:
+    common:
+      ss0_index: 0
+      coreset0_index: 6
+    dedicated:
+      ss2_type: common
+      dci_format_0_1_and_1_1: false
+  prach:
+    prach_config_index: 1    
+  pdsch:
+    mcs_table: qam64
+  pusch:
+    mcs_table: qam64
+    # Keep OAI's initial SRB1 uplink on QPSK. With the default max MCS the gNB
+    # selected 64-QAM before receiving valid link-adaptation feedback, causing
+    # repeated CRC failures for RRCSetupComplete over the ZMQ test link.
+    max_ue_mcs: 10
+
+log:
+  filename: /tmp/gnb.log
+  all_level: info
+  hex_max_size: 0
+
+pcap:
+  mac_enable: false
+  mac_filename: /tmp/gnb_mac.pcap
+  ngap_enable: true                     # ← bật lên để debug ban đầu
+  ngap_filename: /tmp/gnb_ngap.pcap
+
+metrics:
+  layers:
+    enable_rlc: true
+    enable_sched: true
+  periodicity:
+    du_report_period: 1000

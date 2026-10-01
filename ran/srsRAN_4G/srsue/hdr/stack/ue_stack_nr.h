@@ -48,7 +48,6 @@
 namespace srsue {
 
 class rrc_nr;
-
 /** \brief L2/L3 stack class for 5G/NR UEs.
  *
  *  This class wraps all L2/L3 blocks and provides a single interface towards the PHY.
@@ -118,7 +117,16 @@ public:
 
   // Interface for RRC
   srsran::tti_point get_current_tti() final { return srsran::tti_point{0}; }
-  void              add_eps_bearer(uint8_t eps_bearer_id, srsran::srsran_rat_t rat, uint32_t lcid) final {}
+
+  void add_eps_bearer(uint8_t          eps_bearer_id,
+                    srsran::srsran_rat_t rat,
+                    uint32_t         lcid) final
+{
+    if (gw != nullptr) {
+      gw->add_bearer_mapping(lcid, static_cast<uint8_t>(eps_bearer_id));
+    }
+}
+
   void              remove_eps_bearer(uint8_t eps_bearer_id) final {}
   void              reset_eps_bearers() final {}
   void              cell_select_completed(const cell_select_result_t& result) override;

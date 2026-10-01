@@ -1,0 +1,57 @@
+# Isolated OAI/OCUDU interoperability profile based on OAI's official
+# 5g_zmq_radio_1x1_ocudu CI topology. It is not the lab's production gNB file.
+cu_cp:
+  amf:
+    addrs: 10.108.45.101
+    port: 38412
+    bind_addrs: 10.244.0.1
+    supported_tracking_areas:
+      - tac: 1
+        plmn_list:
+          - plmn: "46099"
+            tai_slice_support_list:
+              - sst: 1
+                sd: 1
+              - sst: 2
+                sd: 1
+              - sst: 3
+                sd: 1
+
+ru_sdr:
+  device_driver: zmq
+  device_args: tx_port=tcp://127.0.0.1:2000,rx_port=tcp://127.0.0.1:2001
+  srate: 23.04
+  # Required by the OCUDU OAI-UE tutorial to avoid saturation in OAI's
+  # fixed-point FFT when the samples are carried directly over ZMQ.
+  tx_gain: -12
+  rx_gain: 0
+
+cell_cfg:
+  dl_arfcn: 632628
+  band: 78
+  channel_bandwidth_MHz: 20
+  common_scs: 30
+  plmn: "46099"
+  tac: 1
+  pci: 1
+  tdd_ul_dl_cfg:
+    dl_ul_tx_period: 5
+    nof_dl_slots: 3
+    nof_dl_symbols: 10
+    nof_ul_slots: 1
+    nof_ul_symbols: 2
+  csi:
+    csi_rs_enabled: true
+  pucch:
+    nof_cell_csi_res: 1
+
+log:
+  filename: /tmp/gnb.log
+  all_level: info
+  hex_max_size: 0
+
+pcap:
+  mac_enable: false
+  mac_filename: /tmp/gnb_mac.pcap
+  ngap_enable: true
+  ngap_filename: /tmp/gnb_ngap.pcap

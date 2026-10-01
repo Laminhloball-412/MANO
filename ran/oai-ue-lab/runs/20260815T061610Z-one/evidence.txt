@@ -1,0 +1,19 @@
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3747.024657 [NR_RRC] I create TASK_RRC_NRUE 
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3747.024707 [UTIL]   I threadCreate() for TASK_RRC_NRUE: creating thread (no affinity, default priority)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3747.025522 [SIM]    I will request PDU session ID 1, type 1, DNN srsapn, NSSAI 1.     1
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3747.029627 [UTIL]   I threadCreate() for SYNC__actor: creating thread (no affinity, default priority)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.452556 [NR_PHY] W Starting sync detection
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.452567 [PHY]    I [UE thread Synch] Running Initial Synch 
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.506671 [PHY]    A Initial sync: pbch decoded sucessfully, ssb index 0
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.507084 [PHY]    I [UE0] In synch, rx_offset 200 samples
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.507090 [PHY]    A Initial sync successful, PCI: 1
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.507151 [PHY]    I Got synch: hw_slot_offset 0, carrier off 0 Hz
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.507168 [NR_RRC] I [UE 0] BCCH update: phyCellID 0->1, arfcn_ssb 0->368410
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.520514 [PHY]    A UE synchronized! decoded_frame_rx=110 UE->init_sync_frame=1 trashed_frames=10
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.520530 [PHY]    I Resynchronizing RX by 200 samples
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.689343 [NR_RRC] A SIB1 decoded
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.794293 [NR_RRC] I [UE0][RAPROC] Logical Channel DL-CCCH (SRB0), Received NR_RRCSetup
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.794416 [NR_RRC] I State = NR_RRC_CONNECTED
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.794432 [NAS]    I Generate Initial NAS Message: Registration Request
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3748.794442 [NR_RRC] I [UE 0][RAPROC] Logical Channel UL-DCCH (SRB1), Generating RRCSetupComplete (bytes33)
+/home/ubuntu/ran/oai-ue-lab/runs/20260815T061610Z-one/oai-ue.log:3756.351605 [MAC]    W [UE 0] RAR reception failed

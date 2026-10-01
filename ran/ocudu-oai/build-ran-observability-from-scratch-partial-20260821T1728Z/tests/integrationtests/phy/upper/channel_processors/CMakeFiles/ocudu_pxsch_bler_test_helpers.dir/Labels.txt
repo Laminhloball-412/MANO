@@ -1,0 +1,7 @@
+# Directory labels
+ phy
+ tsan
+ NO_MEMCHECK
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/integrationtests/phy/upper/channel_processors/pxsch_bler_test_channel_emulator.cpp
+/home/ubuntu/ran/ocudu-oai/tests/integrationtests/phy/upper/channel_processors/pxsch_bler_test_factories.cpp

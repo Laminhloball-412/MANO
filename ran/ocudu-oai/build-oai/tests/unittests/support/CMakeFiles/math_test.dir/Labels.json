@@ -1,0 +1,19 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/support/math/mod_math_utils_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/support/math/curve_fitting_find_max_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"support"
+		],
+		"name" : "math_test"
+	}
+}

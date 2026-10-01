@@ -1,0 +1,26 @@
+# TYPE ansa_ue_throughput_mbps gauge
+ansa_ue_throughput_mbps{ue_id="1",service="control",flow_id="flow-3fd87043554c"} 0.023612455155180026
+# TYPE ansa_ue_rtt_ms gauge
+ansa_ue_rtt_ms{ue_id="1",service="control",flow_id="flow-3fd87043554c"} 56.153
+# TYPE ansa_ue_jitter_ms gauge
+ansa_ue_jitter_ms{ue_id="1",service="control",flow_id="flow-3fd87043554c"} 25.538
+# TYPE ansa_ue_packet_loss_percent gauge
+ansa_ue_packet_loss_percent{ue_id="1",service="control",flow_id="flow-3fd87043554c"} 0.0
+# TYPE ansa_ue_packet_size_bytes gauge
+ansa_ue_packet_size_bytes{ue_id="1",service="control",flow_id="flow-3fd87043554c"} 120
+# TYPE ansa_ue_message_rate_per_second gauge
+ansa_ue_message_rate_per_second{ue_id="1",service="control",flow_id="flow-3fd87043554c"} 9.971475994586159
+# TYPE ansa_intent_flow_info gauge
+ansa_intent_flow_info{ue_id="1",service="control",flow_id="flow-3fd87043554c",state="COMPLETED"} 1
+# TYPE ansa_pdu_session_info gauge
+ansa_pdu_session_info{ue_id="1",service="control",flow_id="flow-3fd87043554c",pdu_session_id="1",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",interface="oaitun_ue1",role="source",state="inactive"} 1
+# TYPE ansa_pdu_session_info gauge
+ansa_pdu_session_info{ue_id="1",service="control",flow_id="flow-3fd87043554c",pdu_session_id="2",slice_id="slice-2",sst="2",sd="000001",dnn="srsapn",interface="oaitun_ue1p2",role="target",state="active"} 1
+# TYPE ansa_intent_slice_selected_info gauge
+ansa_intent_slice_selected_info{ue_id="1",service="control",flow_id="flow-3fd87043554c",profile="urllc",slice_id="slice-2",sst="2",sd="000001",dnn="srsapn",reason="explicit service intent selected urllc"} 1
+# TYPE ansa_intent_slice_score gauge
+ansa_intent_slice_score{ue_id="1",service="control",flow_id="flow-3fd87043554c",profile="urllc",slice_id="slice-2",sst="2",sd="000001",dnn="srsapn",reason="service intent matches urllc"} 96.83
+# TYPE ansa_intent_slice_score gauge
+ansa_intent_slice_score{ue_id="1",service="control",flow_id="flow-3fd87043554c",profile="mmtc",slice_id="slice-3",sst="3",sd="000001",dnn="srsapn",reason="service intent targets urllc"} 23.59
+# TYPE ansa_intent_slice_score gauge
+ansa_intent_slice_score{ue_id="1",service="control",flow_id="flow-3fd87043554c",profile="embb",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",reason="service intent targets urllc"} 20.02

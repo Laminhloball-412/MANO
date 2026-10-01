@@ -1,41 +1,73 @@
 {% extends 'bar.html' %}
 {% load static %}
-{% block title %}Intent UE Attach{% endblock %}
+{% block title %}Intent-Based Slice Provisioning{% endblock %}
 {% block js %}<link href="{% static 'intent_based_mvp/intent_attach.css' %}" rel="stylesheet">{% endblock %}
 {% block content %}
-<div class="container-fluid intent-mvp">
-  <div class="d-sm-flex align-items-start justify-content-between mb-4">
-    <div><h1 class="h3 mb-1 text-gray-800">Intent-based UE Attach</h1><p class="text-muted mb-0">MVP: simulated Prometheus observation → Intent similarity policy → UE attach → PDU/IP verification.</p></div>
-    <span class="badge badge-primary p-2">INPUT: PROMETHEUS SIMULATION</span>
-  </div>
+<main class="container-fluid intent-console" id="main-content">
+  <header class="intent-hero">
+    <div>
+      <p class="intent-kicker">MANO / Core orchestration</p>
+      <h1>Intent-Based Slice Provisioning</h1>
+      <p class="intent-lead">Translate a business request into an auditable technical SLA, then reuse a healthy slice or allocate one from a governed template.</p>
+    </div>
+    <div class="intent-mode"><span class="intent-mode-dot"></span>Business intent input</div>
+  </header>
 
-  <div class="alert alert-info"><strong>Simulation mode:</strong> Enter aggregated KPI values as if they came from a 30-second Prometheus query. Values may be arbitrary for testing; latency and jitter use p95, while throughput, packet loss and message rate use averages.</div>
-  <div class="row">
-    <div class="col-xl-6 mb-4"><div class="card shadow h-100"><div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">1. Simulated Prometheus output (30-second window)</h6></div><div class="card-body">
-      <form id="intent-mvp-form">
-        <div class="form-group"><label>Registered UE</label><select class="form-control" id="mvp-ue" required><option value="">Loading…</option></select><small id="mvp-ue-help" class="form-text text-muted"></small></div>
-        <div class="form-group"><label>Service name</label><input class="form-control" id="mvp-service" value="video_streaming" required></div>
-        <div class="btn-group mb-3" role="group"><button type="button" class="btn btn-outline-primary preset" data-preset="video">Video</button><button type="button" class="btn btn-outline-danger preset" data-preset="control">Robot control</button><button type="button" class="btn btn-outline-success preset" data-preset="sensor">IoT sensor</button></div>
-        <div class="form-row">
-          <div class="form-group col-md-6"><label>Observed throughput average (Mbps)</label><input class="form-control qos" id="mvp-throughput" type="number" step="0.01" min="0" required></div>
-          <div class="form-group col-md-6"><label>Observed latency p95 (ms)</label><input class="form-control qos" id="mvp-latency" type="number" step="0.01" min="0" required></div>
-          <div class="form-group col-md-6"><label>Observed jitter p95 (ms)</label><input class="form-control qos" id="mvp-jitter" type="number" step="0.01" min="0" required></div>
-          <div class="form-group col-md-6"><label>Observed packet loss average (%)</label><input class="form-control qos" id="mvp-loss" type="number" step="0.001" min="0" max="100" required></div>
-          <div class="form-group col-md-6"><label>Observed reliability in window (%)</label><input class="form-control qos" id="mvp-reliability" type="number" step="0.001" min="0" max="100" required></div>
-          <div class="form-group col-md-6"><label>Observed message rate average (/second)</label><input class="form-control qos" id="mvp-rate" type="number" step="1" min="0" required></div>
+  <div id="intent-error" class="intent-alert intent-alert-error" role="alert" hidden></div>
+
+  <div class="intent-layout">
+    <section class="intent-panel intent-form-panel" aria-labelledby="service-intent-heading">
+      <div class="intent-panel-heading">
+        <span class="intent-step">01</span>
+        <div><h2 id="service-intent-heading">Service Intent</h2><p>Describe the outcome. The policy catalog supplies the network details.</p></div>
+      </div>
+      <form id="service-intent-form">
+        <div class="form-group">
+          <label for="intent-service">Service type</label>
+          <select class="form-control" id="intent-service" required><option value="">Loading catalog…</option></select>
         </div>
-        <button class="btn btn-primary btn-block" type="submit" id="mvp-submit"><i class="fas fa-play mr-2"></i>Decide and attach UE</button><div id="mvp-error" class="text-danger mt-3"></div>
+        <div class="intent-form-grid">
+          <div class="form-group"><label for="intent-quality">Quality</label><select class="form-control" id="intent-quality" required></select></div>
+          <div class="form-group"><label for="intent-priority">Priority</label><select class="form-control" id="intent-priority" required></select></div>
+          <div class="form-group"><label for="intent-scale" id="intent-scale-label">Scale</label><input class="form-control" id="intent-scale" type="number" min="1" step="1" value="20" required></div>
+          <div class="form-group"><label for="intent-duration">Duration (minutes)</label><input class="form-control" id="intent-duration" type="number" min="1" step="1" value="120" required></div>
+        </div>
+        <div class="form-group intent-execution">
+          <label for="intent-execution">Execution</label>
+          <select class="form-control" id="intent-execution"><option value="dry_run">Dry-run · inspect only</option><option value="execute">Execute · reuse or allocate</option></select>
+          <small>Dry-run is the default and does not change BK-MANO or Kubernetes.</small>
+        </div>
+        <button class="intent-submit" id="intent-submit" type="submit"><span>Evaluate intent</span><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
       </form>
-    </div></div></div>
+    </section>
 
-    <div class="col-xl-6 mb-4"><div class="card shadow h-100"><div class="card-header py-3 d-flex justify-content-between align-items-center"><h6 class="m-0 font-weight-bold text-primary">2. Execution</h6><div class="d-flex align-items-center"><span id="mvp-radio-status" class="badge badge-light mr-2 p-2">RADIO: CHECKING</span><span id="mvp-status" class="badge badge-secondary mr-2 p-2">IDLE</span><button id="mvp-disconnect" type="button" class="btn btn-sm btn-outline-danger" disabled><i class="fas fa-unlink mr-1"></i>Disconnect UE</button></div></div><div class="card-body">
-      <h5 id="mvp-stage">Waiting for input</h5><div class="progress mb-3"><div id="mvp-progress" class="progress-bar" style="width:0%"></div></div>
-      <ul id="mvp-events" class="list-group list-group-flush"><li class="list-group-item text-muted">Submit an intent to start.</li></ul>
-      <div id="mvp-result" class="mt-3"></div>
-    </div></div></div>
+    <section class="intent-panel intent-sla-panel" aria-labelledby="technical-sla-heading">
+      <div class="intent-panel-heading"><span class="intent-step">02</span><div><h2 id="technical-sla-heading">Translated Technical SLA</h2><p>Calculated from catalog version, quality and requested scale.</p></div></div>
+      <div id="sla-empty" class="intent-empty">Submit an intent to view the translated SLA and formula trace.</div>
+      <div id="sla-content" hidden><div id="sla-grid" class="metric-grid"></div><div id="translation-trace" class="intent-note"></div></div>
+    </section>
+
+    <section class="intent-panel intent-candidates" aria-labelledby="candidate-heading">
+      <div class="intent-panel-heading"><span class="intent-step">03</span><div><h2 id="candidate-heading">Candidate Comparison</h2><p>Hard constraints decide eligibility. Suitability only explains headroom.</p></div></div>
+      <div class="table-responsive"><table class="table intent-table"><thead><tr><th>Candidate</th><th>Action</th><th>Eligibility</th><th>Suitability</th><th>Evidence</th><th>Reason</th></tr></thead><tbody id="candidate-body"><tr><td colspan="6" class="intent-empty-cell">No decision yet.</td></tr></tbody></table></div>
+    </section>
+
+    <section class="intent-panel intent-lifecycle" aria-labelledby="lifecycle-heading">
+      <div class="intent-panel-heading"><span class="intent-step">04</span><div><h2 id="lifecycle-heading">Allocation Lifecycle</h2><p>Every transition is recorded for audit and failure diagnosis.</p></div><span id="intent-stage" class="stage-badge">Idle</span></div>
+      <ol id="lifecycle-list" class="lifecycle-list"><li class="intent-empty">No lifecycle events.</li></ol>
+    </section>
+
+    <section class="intent-panel intent-configuration" aria-labelledby="configuration-heading">
+      <div class="intent-panel-heading"><span class="intent-step">05</span><div><h2 id="configuration-heading">Deployed Slice Configuration</h2><p>Planned and effective values retain their evidence source.</p></div></div>
+      <div id="configuration-empty" class="intent-empty">Configuration appears after planning.</div>
+      <div id="configuration-content" class="configuration-grid" hidden></div>
+    </section>
+
+    <section class="intent-panel intent-inventory" aria-labelledby="inventory-heading">
+      <div class="intent-panel-heading"><span class="intent-step">06</span><div><h2 id="inventory-heading">Active Slice Inventory</h2><p>Current instance identity, template family and operational health.</p></div><button id="inventory-refresh" class="intent-text-button" type="button">Refresh</button></div>
+      <div class="table-responsive"><table class="table intent-table"><thead><tr><th>Instance</th><th>Template</th><th>S-NSSAI</th><th>Capacity left</th><th>Evidence</th><th>Health</th></tr></thead><tbody id="inventory-body"><tr><td colspan="6" class="intent-empty-cell">Loading inventory…</td></tr></tbody></table></div>
+    </section>
   </div>
-
-  <div class="card shadow mb-4"><div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Normalized JSON sent to Intent Engine</h6></div><div class="card-body"><pre id="mvp-json-preview"></pre></div></div>
-</div>
+</main>
 {% endblock %}
 {% block foot_js %}<script src="{% static 'intent_based_mvp/intent_attach.js' %}"></script>{% endblock %}

@@ -1,0 +1,18 @@
+interface=oaitun_ue1 ue_ip=10.45.1.7 gateway=10.45.1.1
+PING 10.45.1.1 (10.45.1.1) from 10.45.1.7 oaitun_ue1: 56(84) bytes of data.
+64 bytes from 10.45.1.1: icmp_seq=1 ttl=64 time=60.6 ms
+64 bytes from 10.45.1.1: icmp_seq=2 ttl=64 time=71.2 ms
+64 bytes from 10.45.1.1: icmp_seq=3 ttl=64 time=54.0 ms
+
+--- 10.45.1.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 54.044/61.934/71.205/7.073 ms
+interface=oaitun_ue1p2 ue_ip=10.45.2.4 gateway=10.45.2.1
+PING 10.45.2.1 (10.45.2.1) from 10.45.2.4 oaitun_ue1p2: 56(84) bytes of data.
+64 bytes from 10.45.2.1: icmp_seq=1 ttl=64 time=128 ms
+64 bytes from 10.45.2.1: icmp_seq=2 ttl=64 time=143 ms
+64 bytes from 10.45.2.1: icmp_seq=3 ttl=64 time=72.1 ms
+
+--- 10.45.2.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 72.130/114.364/143.237/30.528 ms

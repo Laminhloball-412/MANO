@@ -1,0 +1,4 @@
+# Directory labels
+ ntn
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/ntn/coordinate_converter_test.cpp

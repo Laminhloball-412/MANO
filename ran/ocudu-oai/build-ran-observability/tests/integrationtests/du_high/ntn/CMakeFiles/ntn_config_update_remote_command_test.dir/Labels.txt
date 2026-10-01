@@ -1,0 +1,4 @@
+# Directory labels
+ ntn
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/integrationtests/du_high/ntn/ntn_config_update_remote_command_test.cpp

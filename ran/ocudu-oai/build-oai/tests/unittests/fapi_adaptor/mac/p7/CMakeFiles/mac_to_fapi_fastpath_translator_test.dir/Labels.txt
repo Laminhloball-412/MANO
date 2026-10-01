@@ -1,0 +1,4 @@
+# Directory labels
+ fapi_adaptor
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/fapi_adaptor/mac/p7/mac_to_fapi_fastpath_translator_test.cpp

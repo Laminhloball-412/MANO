@@ -1,6 +1,6 @@
 """
-slice_exporter.py v4 - AMF chung, filter cm_state=connected + pdu_state=active
-Build: docker build -f Dockerfile.exporter -t nguyen0105/open5gs-slice-exporter:v4 .
+slice_exporter.py v5 - AMF chung, filter cm_state=connected + pdu_state=active
+Build: docker build -f Dockerfile.exporter -t nguyen0105/open5gs-slice-exporter:v5 .
 """
 import os, json, time, threading, logging
 from flask import Flask, jsonify
@@ -87,6 +87,10 @@ def get_gnb_id(ue: dict) -> str:
 
 
 def collect_all(slices: list):
+    if not slices:
+        log.info("No slices configured; exporter remains ready with empty results")
+        return
+
     amf_addr  = slices[0]["amf"]
     slice_map = build_slice_map(slices)
 

@@ -1,0 +1,174 @@
+{
+  "flow_id": "flow-abbd7b88bebe",
+  "state": "COMPLETED",
+  "intent": {
+    "service": "sensor",
+    "ue_id": 1,
+    "duration_seconds": 3,
+    "packet_size_bytes": 64,
+    "message_rate_per_second": 200.0
+  },
+  "events": [
+    {
+      "at": "2026-08-20T05:22:50.917623+00:00",
+      "state": "DEFAULT_ACTIVE",
+      "detail": "default PDU remains active"
+    },
+    {
+      "at": "2026-08-20T05:22:50.917946+00:00",
+      "state": "OBSERVING",
+      "detail": "measuring real traffic on default PDU"
+    },
+    {
+      "at": "2026-08-20T05:23:02.357882+00:00",
+      "state": "DECIDING",
+      "detail": "selecting S-NSSAI/DNN from intent and observed metrics"
+    },
+    {
+      "at": "2026-08-20T05:23:02.379399+00:00",
+      "state": "ENSURING_SLICE",
+      "detail": "checking slice-3"
+    },
+    {
+      "at": "2026-08-20T05:23:02.518529+00:00",
+      "state": "ESTABLISHING",
+      "detail": "establishing PDU session 3; old PDU is retained"
+    },
+    {
+      "at": "2026-08-20T05:23:12.828466+00:00",
+      "state": "VALIDATING",
+      "detail": "validating TUN, gateway and SLA stability"
+    },
+    {
+      "at": "2026-08-20T05:23:24.962663+00:00",
+      "state": "STEERING",
+      "detail": "new service flows bind to oaitun_ue1p3"
+    },
+    {
+      "at": "2026-08-20T05:23:24.969370+00:00",
+      "state": "DRAINING",
+      "detail": "allowing old-interface flows to drain"
+    },
+    {
+      "at": "2026-08-20T05:23:26.969684+00:00",
+      "state": "RELEASING",
+      "detail": "releasing old PDU session 1"
+    },
+    {
+      "at": "2026-08-20T05:23:44.634628+00:00",
+      "state": "RELEASING",
+      "detail": "source slice lifecycle: protected"
+    },
+    {
+      "at": "2026-08-20T05:23:44.634646+00:00",
+      "state": "COMPLETED",
+      "detail": "make-before-break transition completed"
+    }
+  ],
+  "source": {
+    "name": "default",
+    "namespace": "slice-1",
+    "sst": 1,
+    "sd": "000001",
+    "dnn": "srsapn",
+    "gateway": "10.45.1.1",
+    "pdu_session_id": 1,
+    "tun_pattern": "oaitun_ue1",
+    "service_class": "embb",
+    "protected": true,
+    "max_rtt_ms": 200.0,
+    "max_jitter_ms": 100.0,
+    "max_loss_percent": 5.0,
+    "min_throughput_mbps": 0.0,
+    "capacity_mbps": 10.0,
+    "max_pdu_sessions": 32,
+    "max_message_rate_per_second": 1000.0,
+    "baseline_rtt_ms": 150.0,
+    "baseline_jitter_ms": 75.0,
+    "baseline_loss_percent": 2.0
+  },
+  "target": {
+    "name": "mmtc",
+    "namespace": "slice-3",
+    "sst": 3,
+    "sd": "000001",
+    "dnn": "srsapn",
+    "gateway": "10.45.3.1",
+    "pdu_session_id": 3,
+    "tun_pattern": "oaitun_ue1p3",
+    "service_class": "mmtc",
+    "protected": true,
+    "max_rtt_ms": 200.0,
+    "max_jitter_ms": 100.0,
+    "max_loss_percent": 5.0,
+    "min_throughput_mbps": 0.0,
+    "capacity_mbps": 10,
+    "max_pdu_sessions": 1000,
+    "max_message_rate_per_second": 10000,
+    "baseline_rtt_ms": 200,
+    "baseline_jitter_ms": 100,
+    "baseline_loss_percent": 2
+  },
+  "metrics": {
+    "throughput_mbps": 0.12022953125801626,
+    "rtt_ms": 62.339,
+    "jitter_ms": 27.689,
+    "loss_percent": 0.0,
+    "packet_size_bytes": 64,
+    "message_rate_per_second": 81.64217409415488,
+    "samples": 600,
+    "interface": "oaitun_ue1p3",
+    "gateway": "10.45.3.1"
+  },
+  "slice_action": "reused",
+  "decision_reason": "explicit service intent requested mmtc; weighted capability/runtime score selected mmtc",
+  "decision_candidates": [
+    {
+      "profile": "mmtc",
+      "slice_id": "slice-3",
+      "sst": 3,
+      "sd": "000001",
+      "dnn": "srsapn",
+      "score": 85.43,
+      "reason": "eligible_intent_match",
+      "requirement_fit": 100.0,
+      "qos_headroom": 53.8,
+      "health_load": 84.9,
+      "intent_affinity": 100.0,
+      "eligible": true
+    },
+    {
+      "profile": "urllc",
+      "slice_id": "slice-2",
+      "sst": 2,
+      "sd": "000001",
+      "dnn": "srsapn",
+      "score": 71.43,
+      "reason": "eligible_cross_class",
+      "requirement_fit": 90.0,
+      "qos_headroom": 73.9,
+      "health_load": 84.77,
+      "intent_affinity": 0.0,
+      "eligible": true
+    },
+    {
+      "profile": "embb",
+      "slice_id": "slice-1",
+      "sst": 1,
+      "sd": "000001",
+      "dnn": "srsapn",
+      "score": 65.54,
+      "reason": "eligible_cross_class",
+      "requirement_fit": 84.0,
+      "qos_headroom": 62.98,
+      "health_load": 80.99,
+      "intent_affinity": 0.0,
+      "eligible": true
+    }
+  ],
+  "source_session_active": false,
+  "target_session_active": true,
+  "active_interface": "oaitun_ue1p3",
+  "old_session_released": true,
+  "error": null
+}

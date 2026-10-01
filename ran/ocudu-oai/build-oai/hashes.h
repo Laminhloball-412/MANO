@@ -1,0 +1,26 @@
+// SPDX-FileCopyrightText: Copyright (C) 2021-2026 Software Radio Systems Limited
+// SPDX-License-Identifier: BSD-3-Clause-Open-MPI
+
+#pragma once
+
+namespace ocudu {
+
+#ifdef BUILD_TYPE_RELEASE
+static const char build_mode[] = "Release";
+#else
+#ifdef BUILD_TYPE_DEBUG
+static const char build_mode[] = "Debug";
+#else
+#ifdef BUILD_TYPE_RELWITHDEBINFO
+static const char build_mode[] = "RelWithDebInfo";
+#else
+static const char build_mode[] = "unknown";
+#endif
+#endif
+#endif
+
+static const char build_hash[] = "59fea6ced";
+
+static const char build_info[] = "commit 59fea6ced on branch codex/per-ue-prb-observability";
+
+} // namespace ocudu

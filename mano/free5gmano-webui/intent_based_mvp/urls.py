@@ -4,10 +4,22 @@ from . import views
 
 
 urlpatterns = [
-    path("", views.page, name="intent_attach_mvp"),
-    path("api/ues/", views.api_ues, name="intent_attach_mvp_ues"),
-    path("api/jobs/", views.api_submit, name="intent_attach_mvp_submit"),
-    path("api/jobs/<str:job_id>/", views.api_job, name="intent_attach_mvp_job"),
-    path("api/radio/status/", views.api_radio_status, name="intent_attach_mvp_radio_status"),
-    path("api/radio/disconnect/", views.api_radio_disconnect, name="intent_attach_mvp_radio_disconnect"),
+    path("", views.page, name="slice_provisioning"),
+    path("api/catalog/", views.api_catalog, name="slice_provisioning_catalog"),
+    path("api/intents/", views.api_submit, name="slice_provisioning_submit"),
+    path(
+        "api/intents/<str:intent_id>/",
+        views.api_job,
+        name="slice_provisioning_job",
+    ),
+    path(
+        "api/intents/<str:intent_id>/configuration/",
+        views.api_configuration,
+        name="slice_provisioning_configuration",
+    ),
+    path(
+        "api/instances/",
+        views.api_instances,
+        name="slice_provisioning_instances",
+    ),
 ]

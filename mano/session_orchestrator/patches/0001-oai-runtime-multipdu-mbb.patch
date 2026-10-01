@@ -1,0 +1,453 @@
+From 72d580cfb2000b3a474f35bb2b7d3ba5a6822621 Mon Sep 17 00:00:00 2001
+From: Laminhloball-412 <minhbdh120412@gmail.com>
+Date: Thu, 20 Aug 2026 04:01:46 +0000
+Subject: [PATCH] feat(nr-ue): support runtime multi-PDU make-before-break
+
+---
+ common/utils/telnetsrv/CMakeLists.txt   |   9 +-
+ common/utils/telnetsrv/telnetsrv_ciUE.c |  86 +++++++++++--
+ openair2/COMMON/rrc_messages_def.h      |   1 +
+ openair2/COMMON/rrc_messages_types.h    |   1 +
+ openair3/NAS/NR_UE/nr_nas_msg.c         | 154 +++++++++++++++++++++++-
+ openair3/NAS/NR_UE/nr_nas_msg.h         |   1 +
+ openair3/SECU/sha_256_hmac.c            |  11 +-
+ 7 files changed, 240 insertions(+), 23 deletions(-)
+
+diff --git a/common/utils/telnetsrv/CMakeLists.txt b/common/utils/telnetsrv/CMakeLists.txt
+index dc0a9e1..4a26a7f 100644
+--- a/common/utils/telnetsrv/CMakeLists.txt
++++ b/common/utils/telnetsrv/CMakeLists.txt
+@@ -37,7 +37,14 @@ add_dependencies(telnetsrv telnetsrv_ci)
+ 
+ message(STATUS "Add CI specific telnet functions for nrUE in telnetsrv_ciUE.so")
+ add_library(telnetsrv_ciUE MODULE telnetsrv_ciUE.c)
+-target_link_libraries(telnetsrv_ciUE PRIVATE asn1_nr_rrc_hdrs asn1_lte_rrc_hdrs UTIL NR_L2_UE nr_nas)
++# The nr-uesoftmodem exports these runtime symbols with -rdynamic. Linking the
++# implementation libraries here creates a second NAS singleton inside the
++# plugin, so commands mutate a shadow UE context instead of the running UE.
++target_link_libraries(telnetsrv_ciUE PRIVATE
++  asn1_nr_rrc_hdrs asn1_lte_rrc_hdrs UTIL
++  $<TARGET_PROPERTY:nr_nas,INTERFACE_LINK_LIBRARIES>)
++target_include_directories(telnetsrv_ciUE PRIVATE
++  $<TARGET_PROPERTY:nr_nas,INTERFACE_INCLUDE_DIRECTORIES>)
+ add_dependencies(telnetsrv telnetsrv_ciUE)
+ 
+ message(STATUS "Add bearer specific telnet functions in libtelnetsrv_bearer.so")
+diff --git a/common/utils/telnetsrv/telnetsrv_ciUE.c b/common/utils/telnetsrv/telnetsrv_ciUE.c
+index 13d191d..f78baf1 100644
+--- a/common/utils/telnetsrv/telnetsrv_ciUE.c
++++ b/common/utils/telnetsrv/telnetsrv_ciUE.c
+@@ -141,37 +141,97 @@ static int add_pdu_session(char *buf, int debug, telnet_printfunc_t prnt)
+   UNUSED(debug);
+   int ue_id = -1;
+   int pdusession_id = -1;
++  int sst = -1;
++  unsigned int sd = 0;
++  char dnn[103] = {0};
+ 
+   if (!buf) {
+-    ERROR_MSG_RET("Missing argument: expected PDUSessionID[,UE_ID]\n");
++    ERROR_MSG_RET("Missing argument: expected PDUSessionID[,UE_ID,SST,SD,DNN]\n");
+   }
+ 
+-  // Try parsing values in the form: "PDUSessionID[,UE_ID]"
+-  int n = sscanf(buf, "%d,%d", &pdusession_id, &ue_id);
++  // Legacy form uses the UICC default. Extended form selects a target slice.
++  int n = sscanf(buf, "%d,%d,%d,%x,%102s", &pdusession_id, &ue_id, &sst, &sd, dnn);
+   if (n == 1) {
+-    // Only PDUSessionID provided: use default UE ID
+     ue_id = get_default_ue_id();
+     if (ue_id < 0)
+       ERROR_MSG_RET("No default UE context found\n");
+-  } else if (n != 2) {
+-    ERROR_MSG_RET("Invalid format: expected PDUSessionID[,UE_ID]\n");
++  } else if (n != 2 && n != 5) {
++    ERROR_MSG_RET("Invalid format: expected PDUSessionID[,UE_ID,SST,SD,DNN]\n");
+   }
+ 
+-  if (pdusession_id < 0 || pdusession_id > 255)
+-    ERROR_MSG_RET("PDUSessionID must be in range [0,255]\n");
++  if (pdusession_id < 1 || pdusession_id > 255)
++    ERROR_MSG_RET("PDUSessionID must be in range [1,255]\n");
+   if (ue_id < 0)
+     ERROR_MSG_RET("UE_ID must be >= 0\n");
++  if (n == 5 && (sst < 1 || sst > 255 || sd > 0xffffff || dnn[0] == '\0'))
++    ERROR_MSG_RET("SST must be 1..255, SD must be 6 hex digits and DNN must be non-empty\n");
+ 
+   nr_ue_nas_t *nas = get_ue_nas_info(ue_id);
+   if (!nas)
+     ERROR_MSG_RET("No NAS context found for UE_ID %d\n", ue_id);
+ 
+   DevAssert(nas->uicc);
+-  nssai_t nssai = {nas->uicc->nssai_sst, nas->uicc->nssai_sd};
+-  pdu_session_config_t c = {pdusession_id, 1 /* = PDU_SESSION_TYPE_IPV4 */, nssai, nas->uicc->dnnStr};
++  for (int i = 0; i < nas->uicc->n_pdu_sessions; ++i) {
++    if (nas->uicc->pdu_sessions[i].id == pdusession_id)
++      ERROR_MSG_RET("PDU session ID %d already exists for UE %d\n", pdusession_id, ue_id);
++  }
++  if (nas->uicc->n_pdu_sessions >= 256)
++    ERROR_MSG_RET("PDU session table is full for UE %d\n", ue_id);
++
++  nssai_t nssai = {
++    n == 5 ? sst : nas->uicc->nssai_sst,
++    n == 5 ? (int)sd : nas->uicc->nssai_sd,
++  };
++  const char *selected_dnn = n == 5 ? dnn : nas->uicc->dnnStr;
++  pdu_session_config_t c = {
++    pdusession_id,
++    1 /* PDU_SESSION_TYPE_IPV4 */,
++    nssai,
++    strdup(selected_dnn),
++  };
++  if (!c.dnn)
++    ERROR_MSG_RET("Unable to allocate DNN for PDU session\n");
+   nas->uicc->pdu_sessions[nas->uicc->n_pdu_sessions++] = c;
+   request_pdusession(nas, &c);
+-  prnt("Triggered PDU session request for UE %d with ID %d\n", ue_id, pdusession_id);
++  prnt("Triggered PDU session request for UE %d ID %d SST %d SD %06x DNN %s\n",
++       ue_id,
++       pdusession_id,
++       nssai.sst,
++       nssai.sd,
++       c.dnn);
++  return 0;
++}
++
++static int release_pdu_session(char *buf, int debug, telnet_printfunc_t prnt)
++{
++  UNUSED(debug);
++  int ue_id = -1;
++  int pdusession_id = -1;
++  if (!buf)
++    ERROR_MSG_RET("Missing argument: expected PDUSessionID[,UE_ID]\n");
++
++  int n = sscanf(buf, "%d,%d", &pdusession_id, &ue_id);
++  if (n == 1) {
++    ue_id = get_default_ue_id();
++    if (ue_id < 0)
++      ERROR_MSG_RET("No default UE context found\n");
++  } else if (n != 2) {
++    ERROR_MSG_RET("Invalid format: expected PDUSessionID[,UE_ID]\n");
++  }
++  if (pdusession_id < 1 || pdusession_id > 255 || ue_id < 0)
++    ERROR_MSG_RET("PDU session ID must be 1..255 and UE ID must be non-negative\n");
++
++  nr_ue_nas_t *nas = get_ue_nas_info(ue_id);
++  if (!nas || !nas->uicc)
++    ERROR_MSG_RET("No NAS context found for UE_ID %d\n", ue_id);
++  bool found = false;
++  for (int i = 0; i < nas->uicc->n_pdu_sessions; ++i)
++    found |= nas->uicc->pdu_sessions[i].id == pdusession_id;
++  if (!found)
++    ERROR_MSG_RET("PDU session ID %d does not exist for UE %d\n", pdusession_id, ue_id);
++
++  request_pdusession_release(nas, pdusession_id);
++  prnt("Triggered PDU session release for UE %d ID %d\n", ue_id, pdusession_id);
+   return 0;
+ }
+ 
+@@ -183,7 +243,8 @@ static telnetshell_cmddef_t cicmds[] = {
+   {"force_crnti_ra", "", force_crnti_ra},
+   {"deregistration", "", force_deregistration},
+   {"get_max_dl_toa", "[ant]", get_dl_toa},
+-  {"add_pdu_session", "[PDUSessionID(int)],[UE_ID(int,opt)]", add_pdu_session},
++  {"add_pdu_session", "PDUSessionID[,UE_ID,SST,SD(hex),DNN]", add_pdu_session},
++  {"release_pdu_session", "PDUSessionID[,UE_ID]", release_pdu_session},
+   {"", "", NULL},
+ };
+ 
+@@ -196,4 +257,3 @@ static telnetshell_vardef_t civars[] = {
+ void add_ciUE_cmds(void) {
+   add_telnetcmd("ciUE", civars, cicmds);
+ }
+-
+diff --git a/openair2/COMMON/rrc_messages_def.h b/openair2/COMMON/rrc_messages_def.h
+index 51945b5..e084410 100644
+--- a/openair2/COMMON/rrc_messages_def.h
++++ b/openair2/COMMON/rrc_messages_def.h
+@@ -67,6 +67,7 @@ MESSAGE_DEF(NRRRC_FRAME_PROCESS,        MESSAGE_PRIORITY_MED,       NRRrcFramePr
+ // eNB: RLC -> RRC messages
+ MESSAGE_DEF(RLC_SDU_INDICATION,         MESSAGE_PRIORITY_MED,       RlcSduIndication,           rlc_sdu_indication)
+ MESSAGE_DEF(NAS_PDU_SESSION_REQ, MESSAGE_PRIORITY_MED, nas_pdu_session_req_t, nas_pdu_session_req)
++MESSAGE_DEF(NAS_PDU_SESSION_RELEASE_REQ, MESSAGE_PRIORITY_MED, nas_pdu_session_req_t, nas_pdu_session_release_req)
+ 
+ // UE: RLC -> RRC messages
+ MESSAGE_DEF(NR_RRC_RLC_MAXRTX,          MESSAGE_PRIORITY_MED,       RlcMaxRtxIndication,        nr_rlc_maxrtx_indication)
+diff --git a/openair2/COMMON/rrc_messages_types.h b/openair2/COMMON/rrc_messages_types.h
+index 21b663e..80852fc 100644
+--- a/openair2/COMMON/rrc_messages_types.h
++++ b/openair2/COMMON/rrc_messages_types.h
+@@ -86,6 +86,7 @@
+ #define NRDuDlReq(mSGpTR)      (mSGpTR)->ittiMsg.nr_du_dl_req
+ 
+ #define NAS_PDU_SESSION_REQ(mSGpTR) (mSGpTR)->ittiMsg.nas_pdu_session_req
++#define NAS_PDU_SESSION_RELEASE_REQ(mSGpTR) (mSGpTR)->ittiMsg.nas_pdu_session_release_req
+ 
+ #define NR_RRC_RLC_MAXRTX(mSGpTR) (mSGpTR)->ittiMsg.nr_rlc_maxrtx_indication
+ 
+diff --git a/openair3/NAS/NR_UE/nr_nas_msg.c b/openair3/NAS/NR_UE/nr_nas_msg.c
+index d6b919a..309b941 100644
+--- a/openair3/NAS/NR_UE/nr_nas_msg.c
++++ b/openair3/NAS/NR_UE/nr_nas_msg.c
+@@ -53,6 +53,8 @@
+ #include "ds/byte_array.h"
+ #include "key_nas_deriver.h"
+ #include "nr-uesoftmodem.h"
++#include "common/utils/tuntap_if.h"
++#include <linux/if_tun.h>
+ 
+ #if OPENSSL_VERSION_NUMBER >= 0x30000000L
+ #include "curve_25519.h"
+@@ -68,6 +70,11 @@ static const char hex[] = "0123456789abcdef";
+ 
+ static nr_ue_nas_t nr_ue_nas[MAX_NUM_NR_UE_INST] = {0};
+ 
++static void generatePduSessionReleaseMessage(nr_ue_nas_t *nas,
++                                             as_nas_info_t *initialNasMsg,
++                                             const pdu_session_config_t *pdu,
++                                             uint8_t message_type);
++
+ nr_ue_nas_t *get_nr_ue_nas_info(uint8_t ue_inst)
+ {
+   AssertFatal(ue_inst >= 0 && ue_inst < MAX_NUM_NR_UE_INST, "Invalid UE instance\n");
+@@ -1733,7 +1740,11 @@ static void handle_pdu_session_accept(const nr_ue_nas_t *nas, uint8_t *pdu_buffe
+ /**
+  * @brief Handle DL NAS Transport and process piggybacked 5GSM messages
+  */
+-void handleDownlinkNASTransport(const nr_ue_nas_t *nas, uint8_t * pdu_buffer, int pdu_length, int instance)
++void handleDownlinkNASTransport(nr_ue_nas_t *nas,
++                                as_nas_info_t *initialNasMsg,
++                                uint8_t *pdu_buffer,
++                                int pdu_length,
++                                int instance)
+ {
+   if (pdu_length < 17) {
+     LOG_E(NAS, "Received DL NAS Transport message too short (%d)\n", pdu_length);
+@@ -1743,6 +1754,31 @@ void handleDownlinkNASTransport(const nr_ue_nas_t *nas, uint8_t * pdu_buffer, in
+   if (msg_type == FGS_PDU_SESSION_ESTABLISHMENT_ACC) {
+     LOG_A(NAS, "Received PDU Session Establishment Accept in DL NAS Transport\n");
+     handle_pdu_session_accept(nas, pdu_buffer, pdu_length, instance);
++  } else if (msg_type == FGS_PDU_SESSION_RELEASE_COMMAND) {
++    const int pdu_session_id = *(pdu_buffer + 14);
++    int idx = -1;
++    for (int i = 0; i < nas->uicc->n_pdu_sessions; ++i) {
++      if (nas->uicc->pdu_sessions[i].id == pdu_session_id) {
++        idx = i;
++        break;
++      }
++    }
++    if (idx < 0) {
++      LOG_E(NAS, "Release Command for unknown PDU session ID %d\n", pdu_session_id);
++      return;
++    }
++    LOG_A(NAS, "Received PDU Session Release Command for ID %d\n", pdu_session_id);
++    generatePduSessionReleaseMessage(
++        nas, initialNasMsg, &nas->uicc->pdu_sessions[idx], FGS_PDU_SESSION_RELEASE_COMPLETE);
++
++    char ifname[IFNAMSIZ] = {0};
++    tuntap_generate_ue_ifname(ifname, IFF_TUN, instance, idx == 0 ? -1 : pdu_session_id);
++    tuntap_destroy(ifname);
++    free(nas->uicc->pdu_sessions[idx].dnn);
++    for (int i = idx; i + 1 < nas->uicc->n_pdu_sessions; ++i)
++      nas->uicc->pdu_sessions[i] = nas->uicc->pdu_sessions[i + 1];
++    nas->uicc->n_pdu_sessions--;
++    LOG_A(NAS, "PDU session ID %d released; interface %s is down\n", pdu_session_id, ifname);
+   } else {
+     LOG_E(NAS, "Received unexpected message in DLinformationTransfer %d\n", msg_type);
+   }
+@@ -1915,6 +1951,84 @@ static void generatePduSessionEstablishRequest(nr_ue_nas_t *nas, as_nas_info_t *
+   }
+ }
+ 
++static void generatePduSessionReleaseMessage(nr_ue_nas_t *nas,
++                                             as_nas_info_t *initialNasMsg,
++                                             const pdu_session_config_t *pdu,
++                                             uint8_t message_type)
++{
++  DevAssert(message_type == FGS_PDU_SESSION_RELEASE_REQ || message_type == FGS_PDU_SESSION_RELEASE_COMPLETE);
++  uint8_t sm_buffer[4] = {
++    FGS_SESSION_MANAGEMENT_MESSAGE,
++    pdu->id,
++    1, /* PTI */
++    message_type,
++  };
++
++  int size = 7;
++  fgmm_nas_msg_security_protected_t sp_msg = {0};
++  fgs_nas_message_security_header_t *sp_header = &sp_msg.header;
++  sp_header->protocol_discriminator = FGS_MOBILITY_MANAGEMENT_MESSAGE;
++  sp_header->security_header_type = INTEGRITY_PROTECTED_AND_CIPHERED;
++  sp_header->sequence_number = nas->security.nas_count_ul & 0xff;
++
++  fgmm_nas_message_plain_t *plain = &sp_msg.plain;
++  plain->header = set_mm_header(FGS_UPLINK_NAS_TRANSPORT, PLAIN_5GS_MSG);
++  size += sizeof(plain->header);
++
++  fgs_uplink_nas_transport_msg *mm_msg = &plain->mm_msg.uplink_nas_transport;
++  mm_msg->payloadcontainertype.iei = 0;
++  mm_msg->payloadcontainertype.type = 1;
++  size += 1;
++  mm_msg->fgspayloadcontainer.payloadcontainercontents.length = sizeof(sm_buffer);
++  mm_msg->fgspayloadcontainer.payloadcontainercontents.value = sm_buffer;
++  size += 2 + sizeof(sm_buffer);
++  mm_msg->pdusessionid = pdu->id;
++  mm_msg->requesttype = 1;
++  size += 3;
++
++  const bool has_sd = pdu->nssai.sd != 0xffffff;
++  const size_t nssai_len = has_sd ? 4 : 1;
++  mm_msg->snssai.length = nssai_len;
++  mm_msg->snssai.value = calloc_or_fail(nssai_len, 1);
++  mm_msg->snssai.value[0] = pdu->nssai.sst;
++  if (has_sd)
++    INT24_TO_BUFFER(pdu->nssai.sd, &mm_msg->snssai.value[1]);
++  size += 2 + nssai_len;
++
++  const int dnn_size = strlen(pdu->dnn);
++  mm_msg->dnn.value = calloc_or_fail(dnn_size + 1, 1);
++  mm_msg->dnn.length = dnn_size + 1;
++  mm_msg->dnn.value[0] = dnn_size;
++  memcpy(mm_msg->dnn.value + 1, pdu->dnn, dnn_size);
++  size += 2 + dnn_size + 1;
++
++  initialNasMsg->nas_data = malloc_or_fail(size);
++  const int security_header_len = nas_protected_security_header_encode(initialNasMsg->nas_data, sp_header, size);
++  initialNasMsg->length = security_header_len
++      + mm_msg_encode(plain, initialNasMsg->nas_data + security_header_len, size - security_header_len);
++  free(mm_msg->dnn.value);
++  free(mm_msg->snssai.value);
++
++  nas_stream_cipher_t cipher = {0};
++  uint8_t encrypted[initialNasMsg->length - 7];
++  cipher.context = nas->security_container->ciphering_context;
++  cipher.count = nas->security.nas_count_ul;
++  cipher.bearer = 1;
++  cipher.direction = 0;
++  cipher.message = initialNasMsg->nas_data + 7;
++  cipher.blength = (initialNasMsg->length - 7) << 3;
++  stream_compute_encrypt(nas->security_container->ciphering_algorithm, &cipher, encrypted);
++  memcpy(cipher.message, encrypted, initialNasMsg->length - 7);
++
++  uint8_t mac[NAS_INTEGRITY_SIZE] = {0};
++  cipher.context = nas->security_container->integrity_context;
++  cipher.count = nas->security.nas_count_ul++;
++  cipher.message = initialNasMsg->nas_data + 6;
++  cipher.blength = (initialNasMsg->length - 6) << 3;
++  stream_compute_integrity(nas->security_container->integrity_algorithm, &cipher, mac);
++  memcpy(initialNasMsg->nas_data + 2, mac, NAS_INTEGRITY_SIZE);
++}
++
+ static void send_nas_uplink_data_req(nr_ue_nas_t *nas, const as_nas_info_t *initial_nas_msg)
+ {
+   MessageDef *msg = itti_alloc_new_message(TASK_NAS_NRUE, nas->UE_id, NAS_UPLINK_DATA_REQ);
+@@ -1973,6 +2087,13 @@ void request_pdusession(nr_ue_nas_t *nas, const pdu_session_config_t *pdu)
+   itti_send_msg_to_task(TASK_NAS_NRUE, nas->UE_id, message_p);
+ }
+ 
++void request_pdusession_release(nr_ue_nas_t *nas, int pdu_session_id)
++{
++  MessageDef *message = itti_alloc_new_message(TASK_NAS_NRUE, nas->UE_id, NAS_PDU_SESSION_RELEASE_REQ);
++  NAS_PDU_SESSION_RELEASE_REQ(message).pdusession_id = pdu_session_id;
++  itti_send_msg_to_task(TASK_NAS_NRUE, nas->UE_id, message);
++}
++
+ static int get_user_nssai_idx(nssai_t ch_nssai, const nr_nas_msg_snssai_t allowed_nssai[NAS_MAX_NUMBER_SLICES])
+ {
+   for (int i = 0; i < NAS_MAX_NUMBER_SLICES; i++) {
+@@ -2257,6 +2378,28 @@ void *nas_nrue(void *args_p)
+         break;
+       }
+ 
++      case NAS_PDU_SESSION_RELEASE_REQ: {
++        const int pdu_session_id = NAS_PDU_SESSION_RELEASE_REQ(msg_p).pdusession_id;
++        const pdu_session_config_t *pdu = NULL;
++        for (int i = 0; i < nas->uicc->n_pdu_sessions; ++i) {
++          if (nas->uicc->pdu_sessions[i].id == pdu_session_id) {
++            pdu = &nas->uicc->pdu_sessions[i];
++            break;
++          }
++        }
++        if (!pdu) {
++          LOG_E(NAS, "Cannot release unknown PDU session ID %d\n", pdu_session_id);
++          break;
++        }
++        as_nas_info_t release = {0};
++        generatePduSessionReleaseMessage(nas, &release, pdu, FGS_PDU_SESSION_RELEASE_REQ);
++        if (release.length > 0) {
++          send_nas_uplink_data_req(nas, &release);
++          LOG_I(NAS, "Sent PDU Session Release Request for ID %d\n", pdu_session_id);
++        }
++        break;
++      }
++
+       case NR_NAS_CONN_ESTABLISH_IND: {
+         nas->fiveGMM_mode = FGS_CONNECTED;
+         LOG_I(NAS,
+@@ -2292,6 +2435,13 @@ void *nas_nrue(void *args_p)
+           handle_registration_accept(nas, ba.buf, ba.len);
+         } else if (msg_type == FGS_PDU_SESSION_ESTABLISHMENT_ACC) {
+           handle_pdu_session_accept(nas, ba.buf, ba.len, nas->UE_id);
++        } else if (msg_type == FGS_PDU_SESSION_RELEASE_COMMAND || msg_type == FGS_DOWNLINK_NAS_TRANSPORT) {
++          as_nas_info_t release_complete = {0};
++          handleDownlinkNASTransport(nas, &release_complete, ba.buf, ba.len, nas->UE_id);
++          if (release_complete.length > 0) {
++            send_nas_uplink_data_req(nas, &release_complete);
++            LOG_I(NAS, "Sent PDU Session Release Complete\n");
++          }
+         } else if (msg_type == FGS_SERVICE_ACCEPT) {
+           handle_service_accept(nas, &ba);
+         }
+@@ -2382,7 +2532,7 @@ void *nas_nrue(void *args_p)
+             handle_security_mode_command(nas, &initialNasMsg, pdu_buffer, pdu_length);
+             break;
+           case FGS_DOWNLINK_NAS_TRANSPORT:
+-            handleDownlinkNASTransport(nas, pdu_buffer, pdu_length, nas->UE_id);
++            handleDownlinkNASTransport(nas, &initialNasMsg, pdu_buffer, pdu_length, nas->UE_id);
+             break;
+           case FGS_REGISTRATION_ACCEPT:
+             handle_registration_accept(nas, pdu_buffer, pdu_length);
+diff --git a/openair3/NAS/NR_UE/nr_nas_msg.h b/openair3/NAS/NR_UE/nr_nas_msg.h
+index 4a50e5a..1370fe1 100644
+--- a/openair3/NAS/NR_UE/nr_nas_msg.h
++++ b/openair3/NAS/NR_UE/nr_nas_msg.h
+@@ -88,6 +88,7 @@ void nas_init_nrue(int num_ues);
+ int nas_itti_kgnb_refresh_req(instance_t instance, const uint8_t kgnb[32]);
+ void nr_ue_create_ip_if(const char *ifnameprefix, const char *ipv4, const char *ipv6, int ue_id, int pdu_session_id);
+ void request_pdusession(nr_ue_nas_t *nas, const pdu_session_config_t *pdu);
++void request_pdusession_release(nr_ue_nas_t *nas, int pdu_session_id);
+ nr_ue_nas_t *get_nr_ue_nas_info(uint8_t ue_inst);
+ 
+ #endif /* __NR_NAS_MSG_SIM_H__*/
+diff --git a/openair3/SECU/sha_256_hmac.c b/openair3/SECU/sha_256_hmac.c
+index 2c43684..4e7ae08 100644
+--- a/openair3/SECU/sha_256_hmac.c
++++ b/openair3/SECU/sha_256_hmac.c
+@@ -20,13 +20,11 @@ void sha_256_hmac(const uint8_t key[32], byte_array_t data, size_t len, uint8_t
+   DevAssert(data.len != 0);
+   DevAssert(len != 0);
+ 
+-  OSSL_LIB_CTX* library_context = OSSL_LIB_CTX_new();
+-  DevAssert(library_context != NULL);
+-
+-  // A property query used for selecting the MAC implementation.
++  // Use OpenSSL's process-wide provider context. Creating and destroying a
++  // provider context for every KDF is unreliable when NAS and RRC derive keys
++  // concurrently during runtime PDU-session DRB reconfiguration.
+   const char* propq = NULL;
+-  // Fetch the HMAC implementation
+-  EVP_MAC* mac = EVP_MAC_fetch(library_context, "HMAC", propq);
++  EVP_MAC* mac = EVP_MAC_fetch(NULL, "HMAC", propq);
+   DevAssert(mac != NULL);
+ 
+   // Create a context for the HMAC operation
+@@ -54,7 +52,6 @@ void sha_256_hmac(const uint8_t key[32], byte_array_t data, size_t len, uint8_t
+   // OpenSSL free functions will ignore NULL arguments
+   EVP_MAC_CTX_free(mctx);
+   EVP_MAC_free(mac);
+-  OSSL_LIB_CTX_free(library_context);
+ }
+ 
+ #elif OPENSSL_VERSION_NUMBER >= 0x10100000L
+-- 
+2.43.0
+

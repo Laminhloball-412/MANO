@@ -18,7 +18,7 @@
  * and at http://www.gnu.org/licenses/.
  *
  */
-
+#include <sstream>
 #include "srsue/hdr/ue.h"
 #include "srsran/build_info.h"
 #include "srsran/common/standard_streams.h"
@@ -32,8 +32,11 @@
 #include "srsue/hdr/stack/ue_stack_lte.h"
 #include "srsue/hdr/stack/ue_stack_nr.h"
 #include <algorithm>
+#include <cctype>
+#include <exception>
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace srsran;
 
@@ -292,7 +295,110 @@ int ue::parse_args(const all_args_t& args_)
     // Update NAS-5G args
     args.stack.nas_5g.ia5g = args.stack.nas.eia;
     args.stack.nas_5g.ea5g = args.stack.nas.eea;
-    args.stack.nas_5g.pdu_session_cfgs.push_back({args.stack.nas.apn_name});
+    auto trim = [](const std::string& value) {
+      const size_t first = value.find_first_not_of(" \t");
+      if (first == std::string::npos) {
+        return std::string{};
+      }
+      const size_t last = value.find_last_not_of(" \t");
+      return value.substr(first, last - first + 1);
+    };
+    auto split = [&trim](const std::string& value, char delim) {
+      std::vector<std::string> result;
+      std::stringstream        stream(value);
+      std::string              item;
+      while (std::getline(stream, item, delim)) {
+        result.push_back(trim(item));
+      }
+      if (!value.empty() && value.back() == delim) {
+        result.emplace_back();
+      }
+      return result;
+    };
+    auto parse_uint = [](const std::string& value,
+                         int                base,
+                         uint32_t           min_value,
+                         uint32_t           max_value,
+                         uint32_t&          output) {
+      try {
+        size_t        parsed = 0;
+        unsigned long number = std::stoul(value, &parsed, base);
+        if (parsed != value.size() || number < min_value || number > max_value) {
+          return false;
+        }
+        output = static_cast<uint32_t>(number);
+        return true;
+      } catch (const std::exception&) {
+        return false;
+      }
+    };
+
+    auto& nas5g     = args.stack.nas_5g;
+    auto apn_list   = split(nas5g.apn_list, ',');
+    auto proto_list = split(nas5g.apn_protocol_list, ',');
+    auto sst_list   = split(nas5g.nssai_sst_list, ',');
+    auto sd_list    = split(nas5g.nssai_sd_list, ',');
+    nas5g.pdu_session_cfgs.clear();
+
+    if (!apn_list.empty()) {
+      constexpr size_t max_pdu_sessions = 15;
+      if (apn_list.size() > max_pdu_sessions || proto_list.size() != apn_list.size() ||
+          sst_list.size() != apn_list.size() || sd_list.size() != apn_list.size()) {
+        logger.error("Invalid multi-PDU lists: APN=%zu protocol=%zu SST=%zu SD=%zu (maximum=%zu)",
+                     apn_list.size(),
+                     proto_list.size(),
+                     sst_list.size(),
+                     sd_list.size(),
+                     max_pdu_sessions);
+        srsran::console("Invalid multi-PDU configuration: list lengths must match and contain at most 15 sessions.\n");
+        return SRSRAN_ERROR;
+      }
+
+      for (size_t i = 0; i < apn_list.size(); ++i) {
+        const bool valid_dnn = !apn_list[i].empty() && apn_list[i].size() <= 100 &&
+                               std::all_of(apn_list[i].begin(), apn_list[i].end(), [](unsigned char character) {
+                                 return std::isalnum(character) || character == '-' || character == '.';
+                               });
+        uint32_t sst = 0;
+        uint32_t sd  = 0;
+        if (!valid_dnn || !parse_uint(sst_list[i], 10, 1, 255, sst) ||
+            !parse_uint(sd_list[i], 16, 0, 0xFFFFFF, sd)) {
+          logger.error("Invalid PDU session %zu: DNN='%s' SST='%s' SD='%s'",
+                       i + 1,
+                       apn_list[i].c_str(),
+                       sst_list[i].c_str(),
+                       sd_list[i].c_str());
+          srsran::console("Invalid DNN/SST/SD in multi-PDU session %zu.\n", i + 1);
+          return SRSRAN_ERROR;
+        }
+        if (proto_list[i] != "ipv4") {
+          logger.error("Unsupported PDU protocol '%s' in session %zu; this multi-session GW supports IPv4 only",
+                       proto_list[i].c_str(),
+                       i + 1);
+          srsran::console("Only ipv4 is supported by the current multi-PDU gateway.\n");
+          return SRSRAN_ERROR;
+        }
+
+        pdu_session_cfg_t session_cfg;
+        session_cfg.apn_name  = apn_list[i];
+        session_cfg.apn_type  = ipv4;
+        session_cfg.nssai_sst = static_cast<int>(sst);
+        session_cfg.nssai_sd  = static_cast<int>(sd);
+        nas5g.pdu_session_cfgs.push_back(session_cfg);
+      }
+    } else {
+      if (args.stack.nas.apn_name.empty() || nas5g.nssai_sst < 1 || nas5g.nssai_sst > 255 ||
+          nas5g.nssai_sd < 0 || nas5g.nssai_sd > 0xFFFFFF) {
+        logger.error("Invalid legacy PDU session configuration");
+        return SRSRAN_ERROR;
+      }
+      pdu_session_cfg_t session_cfg;
+      session_cfg.apn_name  = args.stack.nas.apn_name;
+      session_cfg.apn_type  = ipv4;
+      session_cfg.nssai_sst = nas5g.nssai_sst;
+      session_cfg.nssai_sd  = nas5g.nssai_sd;
+      nas5g.pdu_session_cfgs.push_back(session_cfg);
+    }
   }
 
   // Validate the CFR args
@@ -327,13 +433,13 @@ int ue::parse_args(const all_args_t& args_)
 
 void ue::stop()
 {
-  // tear down UE in reverse order
-  if (stack) {
-    stack->stop();
-  }
-
+  // Stop TUN workers before the stack they submit uplink SDUs to.
   if (gw_inst) {
     gw_inst->stop();
+  }
+
+  if (stack) {
+    stack->stop();
   }
 
   if (phy) {

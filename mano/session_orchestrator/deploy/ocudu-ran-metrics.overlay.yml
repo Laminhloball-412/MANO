@@ -1,0 +1,15 @@
+metrics:
+  enable_json: true
+  enable_verbose: true
+  periodicity:
+    du_report_period: 1000
+  layers:
+    enable_sched: true
+    enable_sched_ue: true
+
+remote_control:
+  enabled: true
+  bind_addr: 127.0.0.1
+  port: 8001
+  metrics:
+    enable_json: true

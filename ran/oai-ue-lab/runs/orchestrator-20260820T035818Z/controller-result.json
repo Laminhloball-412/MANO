@@ -1,0 +1,87 @@
+{
+  "flow_id": "flow-143ed0790719",
+  "state": "ROLLED_BACK",
+  "intent": {
+    "service": "control",
+    "ue_id": 1,
+    "duration_seconds": 3,
+    "packet_size_bytes": 120,
+    "message_rate_per_second": 10.0
+  },
+  "events": [
+    {
+      "at": "2026-08-20T03:58:33.277561+00:00",
+      "state": "DEFAULT_ACTIVE",
+      "detail": "default PDU remains active"
+    },
+    {
+      "at": "2026-08-20T03:58:33.277739+00:00",
+      "state": "OBSERVING",
+      "detail": "measuring real traffic on default PDU"
+    },
+    {
+      "at": "2026-08-20T03:58:37.310938+00:00",
+      "state": "DECIDING",
+      "detail": "selecting S-NSSAI/DNN from intent and observed metrics"
+    },
+    {
+      "at": "2026-08-20T03:58:37.312564+00:00",
+      "state": "ENSURING_SLICE",
+      "detail": "checking slice-2"
+    },
+    {
+      "at": "2026-08-20T03:58:37.446351+00:00",
+      "state": "ESTABLISHING",
+      "detail": "establishing PDU session 2; old PDU is retained"
+    },
+    {
+      "at": "2026-08-20T03:58:37.448252+00:00",
+      "state": "ROLLED_BACK",
+      "detail": "old PDU retained; target transition was not committed"
+    }
+  ],
+  "source": {
+    "name": "default",
+    "namespace": "slice-1",
+    "sst": 1,
+    "sd": "000001",
+    "dnn": "srsapn",
+    "gateway": "10.45.1.1",
+    "pdu_session_id": 1,
+    "tun_pattern": "oaitun_ue1",
+    "protected": true,
+    "max_rtt_ms": 200.0,
+    "max_jitter_ms": 100.0,
+    "max_loss_percent": 5.0,
+    "min_throughput_mbps": 0.0
+  },
+  "target": {
+    "name": "urllc",
+    "namespace": "slice-2",
+    "sst": 2,
+    "sd": "000001",
+    "dnn": "srsapn",
+    "gateway": "10.45.2.1",
+    "pdu_session_id": 2,
+    "tun_pattern": "oaitun_ue1p2",
+    "protected": true,
+    "max_rtt_ms": 250,
+    "max_jitter_ms": 100,
+    "max_loss_percent": 5,
+    "min_throughput_mbps": 0.0
+  },
+  "metrics": {
+    "throughput_mbps": 0.023714353394760114,
+    "rtt_ms": 76.975,
+    "jitter_ms": 29.951,
+    "loss_percent": 0.0,
+    "packet_size_bytes": 120,
+    "message_rate_per_second": 10.014507345760183,
+    "samples": 30,
+    "interface": "oaitun_ue1",
+    "gateway": "10.45.1.1"
+  },
+  "slice_action": "reused",
+  "old_session_released": false,
+  "error": "[Errno 111] Connection refused"
+}

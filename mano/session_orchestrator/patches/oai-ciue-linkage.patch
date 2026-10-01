@@ -1,0 +1,20 @@
+diff --git a/common/utils/telnetsrv/CMakeLists.txt b/common/utils/telnetsrv/CMakeLists.txt
+index 616140dc7f..9eea100001 100644
+--- a/common/utils/telnetsrv/CMakeLists.txt
++++ b/common/utils/telnetsrv/CMakeLists.txt
+@@ -37,7 +37,10 @@ add_dependencies(telnetsrv telnetsrv_ci)
+ 
+ message(STATUS "Add CI specific telnet functions for nrUE in telnetsrv_ciUE.so")
+ add_library(telnetsrv_ciUE MODULE telnetsrv_ciUE.c)
+-target_link_libraries(telnetsrv_ciUE PRIVATE asn1_nr_rrc_hdrs asn1_lte_rrc_hdrs UTIL NR_L2_UE nr_nas)
++# The nr-uesoftmodem exports these runtime symbols with -rdynamic. Linking the
++# implementation libraries here creates a second NAS singleton inside the
++# plugin, so commands mutate a shadow UE context instead of the running UE.
++target_link_libraries(telnetsrv_ciUE PRIVATE
++  asn1_nr_rrc_hdrs asn1_lte_rrc_hdrs UTIL
++  $<TARGET_PROPERTY:nr_nas,INTERFACE_LINK_LIBRARIES>)
++target_include_directories(telnetsrv_ciUE PRIVATE
++  $<TARGET_PROPERTY:nr_nas,INTERFACE_INCLUDE_DIRECTORIES>)
+ add_dependencies(telnetsrv telnetsrv_ciUE)
+ 
+ message(STATUS "Add bearer specific telnet functions in libtelnetsrv_bearer.so")

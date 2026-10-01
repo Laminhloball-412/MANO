@@ -1,0 +1,1 @@
+oaitun_ue1       UNKNOWN        10.45.1.29/24 fe80::24ee:806e:cc62:34ba/64 

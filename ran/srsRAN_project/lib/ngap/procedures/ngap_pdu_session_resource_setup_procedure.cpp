@@ -81,6 +81,21 @@ void ngap_pdu_session_resource_setup_procedure::operator()(coro_context<async_ta
     logger.log_warning("Some or all PDUSessionResourceSetupItems failed to setup");
   }
 
+  for (const auto& pdu_session : response.pdu_session_res_setup_response_items) {
+    for (const auto& qos_flow :
+         pdu_session.pdu_session_resource_setup_response_transfer.dlqos_flow_per_tnl_info.associated_qos_flow_list) {
+      logger.log_info("PDU session QoS accepted: operation=setup psi={} qfi={}",
+                      pdu_session_id_to_uint(pdu_session.pdu_session_id),
+                      qos_flow_id_to_uint(qos_flow.qos_flow_id));
+    }
+    for (const auto& qos_flow :
+         pdu_session.pdu_session_resource_setup_response_transfer.qos_flow_failed_to_setup_list) {
+      logger.log_warning("PDU session QoS failed: operation=setup psi={} qfi={}",
+                         pdu_session_id_to_uint(pdu_session.pdu_session_id),
+                         qos_flow_id_to_uint(qos_flow.qos_flow_id));
+    }
+  }
+
   if (send_pdu_session_resource_setup_response()) {
     logger.log_debug("\"{}\" finished successfully", name());
   } else {

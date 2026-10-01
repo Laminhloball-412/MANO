@@ -21,6 +21,7 @@
  */
 
 #include "ngap_impl.h"
+#include "ngap_qos_logging.h"
 #include "log_helpers.h"
 #include "ngap_asn1_helpers.h"
 #include "ngap_asn1_utils.h"
@@ -563,6 +564,12 @@ void ngap_impl::handle_pdu_session_resource_setup_request(const asn1::ngap::pdu_
     ue_ctxt.logger.log_warning("Conversion of PDUSessionResourceSetupRequest failed");
     send_error_indication(tx_pdu_notifier, logger, ue_ctxt.ue_ids.ran_ue_id, ue_ctxt.ue_ids.amf_ue_id, {});
     return;
+  }
+  for (const auto& pdu_session : msg.pdu_session_res_setup_items) {
+    for (const auto& qos_flow : pdu_session.qos_flow_setup_request_items) {
+      ue_ctxt.logger.log_info("{}", format_ngap_qos_flow_request(
+          "setup", pdu_session.pdu_session_id, pdu_session.s_nssai, qos_flow));
+    }
   }
   msg.ue_aggregate_maximum_bit_rate_dl = ue_ctxt.aggregate_maximum_bit_rate_dl;
   msg.ue_aggregate_maximum_bit_rate_ul = ue_ctxt.aggregate_maximum_bit_rate_ul;

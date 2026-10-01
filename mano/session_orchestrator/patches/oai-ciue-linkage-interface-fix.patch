@@ -1,0 +1,16 @@
+diff --git a/common/utils/telnetsrv/CMakeLists.txt b/common/utils/telnetsrv/CMakeLists.txt
+index 9eea100002..9eea100003 100644
+--- a/common/utils/telnetsrv/CMakeLists.txt
++++ b/common/utils/telnetsrv/CMakeLists.txt
+@@ -41,6 +41,10 @@ add_library(telnetsrv_ciUE MODULE telnetsrv_ciUE.c)
+ # implementation libraries here creates a second NAS singleton inside the
+ # plugin, so commands mutate a shadow UE context instead of the running UE.
+-target_link_libraries(telnetsrv_ciUE PRIVATE asn1_nr_rrc_hdrs asn1_lte_rrc_hdrs UTIL)
++target_link_libraries(telnetsrv_ciUE PRIVATE
++  asn1_nr_rrc_hdrs asn1_lte_rrc_hdrs UTIL
++  $<TARGET_PROPERTY:nr_nas,INTERFACE_LINK_LIBRARIES>)
++target_include_directories(telnetsrv_ciUE PRIVATE
++  $<TARGET_PROPERTY:nr_nas,INTERFACE_INCLUDE_DIRECTORIES>)
+ add_dependencies(telnetsrv telnetsrv_ciUE)
+ 
+ message(STATUS "Add bearer specific telnet functions in libtelnetsrv_bearer.so")

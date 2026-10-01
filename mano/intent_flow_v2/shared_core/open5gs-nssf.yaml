@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: open5gs-nssf
+  namespace: share
+data:
+  open5gs-nssf: |-
+    logger:
+      file:
+        path: /open5gs/install/var/log/open5gs/nssf.log
+
+    global:
+      max:
+        ue: 1024
+        peer: 1024
+
+    nssf:
+      sbi:
+        server:
+          - address: 0.0.0.0
+            port: 7777
+            advertise: nssf-svc.share.svc.cluster.local
+        client:
+          nrf:
+            - uri: http://nrf-svc.share.svc.cluster.local:7777
+          nsi:
+            - uri: http://nrf-svc.share.svc.cluster.local:7777
+              s_nssai:
+                sst: 1
+                sd: "000001"
+            - uri: http://nrf-svc.share.svc.cluster.local:7777
+              s_nssai:
+                sst: 2
+                sd: "000001"
+            - uri: http://nrf-svc.share.svc.cluster.local:7777
+              s_nssai:
+                sst: 3
+                sd: "000001"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nssf-svc
+  namespace: share
+  labels:
+    app: nssf-svc
+spec:
+  selector:
+    app: nssf-svc
+  ports:
+    - name: sbi
+      port: 7777
+      targetPort: sbi
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open5gs-nssf
+  namespace: share
+  labels:
+    app: nssf-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nssf-svc
+  template:
+    metadata:
+      labels:
+        app: nssf-svc
+    spec:
+      containers:
+        - name: open5gs-nssf
+          image: nguyen0105/open5gs:v2.7.7
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - sleep 5 && /open5gs-entrypoint.sh && ./install/bin/open5gs-nssfd
+          ports:
+            - name: sbi
+              containerPort: 7777
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: sbi
+            initialDelaySeconds: 8
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 256Mi
+          volumeMounts:
+            - name: open5gs-nssf
+              mountPath: /open5gs/install/etc/open5gs/nssf.yaml
+              subPath: nssf.yaml
+      volumes:
+        - name: open5gs-nssf
+          configMap:
+            name: open5gs-nssf
+            items:
+              - key: open5gs-nssf
+                path: nssf.yaml

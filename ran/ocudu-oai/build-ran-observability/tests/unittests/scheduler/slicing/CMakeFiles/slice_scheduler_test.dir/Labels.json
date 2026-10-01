@@ -1,0 +1,19 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/slicing/slice_scheduler_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/slicing/slice_ue_repository_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"sched"
+		],
+		"name" : "slice_scheduler_test"
+	}
+}

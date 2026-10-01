@@ -1,0 +1,2 @@
+/home/ubuntu/ran/codex-baseline-after-reset/20260815-060545/ue-console.log:19:RRC Connected
+/home/ubuntu/ran/codex-baseline-after-reset/20260815-060545/ue-console.log:20:PDU Session Establishment successful. IP: 10.45.1.2

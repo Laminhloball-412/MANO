@@ -35,6 +35,7 @@ set(SOURCES
         ngap_paging_test.cpp
         ngap_error_indication_test.cpp
         ngap_handover_test.cpp
+        ngap_qos_logging_test.cpp
         )
 
 add_executable(ngap_test ${SOURCES})

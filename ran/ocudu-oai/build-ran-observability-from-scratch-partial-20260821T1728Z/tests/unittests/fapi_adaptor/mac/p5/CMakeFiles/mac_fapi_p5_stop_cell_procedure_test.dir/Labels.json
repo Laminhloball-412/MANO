@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/fapi_adaptor/mac/p5/mac_fapi_p5_stop_cell_procedure_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"fapi_adaptor"
+		],
+		"name" : "mac_fapi_p5_stop_cell_procedure_test"
+	}
+}

@@ -1,0 +1,106 @@
+{% extends 'bar.html' %}
+{% load static %}
+{% block title %}Business Intent - BK MANO{% endblock %}
+{% block body_class %}business-intent-page{% endblock %}
+{% block js %}<link href="{% static 'intent_based_mvp/business_intent.css' %}?v=catalog-search-1" rel="stylesheet">{% endblock %}
+{% block content %}
+<main class="container-fluid business-console" id="main-content">
+  <header class="business-header">
+    <div>
+      <h1>Business Intent - BK MANO</h1>
+      <p>Submit a service request and review the resulting slice.</p>
+    </div>
+    <a class="structured-link" href="/Intent_Attach/">Structured form</a>
+  </header>
+
+  <div id="business-error" class="business-alert business-alert-error" role="alert" tabindex="-1" hidden></div>
+  <div id="business-message" class="business-alert business-alert-info" role="status" aria-live="polite" hidden></div>
+
+  <div class="business-workspace">
+    <section class="business-panel business-input-panel" aria-labelledby="business-input-heading">
+      <div class="section-heading">
+        <h2 id="business-input-heading">Request</h2>
+      </div>
+      <form id="business-form">
+        <label for="business-service-search">Search services</label>
+        <input id="business-service-search" type="search" placeholder="Search by service name" autocomplete="off" aria-controls="business-example" disabled>
+
+        <label for="business-example">Service suggestions</label>
+        <select id="business-example" disabled>
+          <option value="">Loading services...</option>
+        </select>
+
+        <label for="business-requirement">Request</label>
+        <textarea id="business-requirement" rows="7" required placeholder="Example: video streaming for 20 users, 60 minutes"></textarea>
+
+        <div class="optional-fields">
+          <div>
+            <label for="business-scale">Scale <span>optional</span></label>
+            <input id="business-scale" type="number" min="1" step="1" inputmode="numeric" placeholder="Automatic">
+          </div>
+          <div>
+            <label for="business-duration">Duration in minutes <span>optional</span></label>
+            <input id="business-duration" type="number" min="1" step="1" inputmode="numeric" placeholder="Automatic">
+          </div>
+        </div>
+
+        <div class="business-actions">
+          <button class="button button-secondary" id="business-preview" type="submit">Analyze</button>
+          <button class="button button-primary" id="business-deploy" type="button" disabled>Provision slice</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="business-panel" aria-labelledby="understanding-heading">
+      <div class="section-heading">
+        <h2 id="understanding-heading">Intent analysis</h2>
+      </div>
+      <div id="understanding-empty" class="empty-state">No analysis result yet.</div>
+      <div id="understanding-content" hidden>
+        <dl id="understanding-list" class="evidence-list"></dl>
+        <div id="matched-phrases" class="phrase-list" aria-label="Matched phrases"></div>
+      </div>
+    </section>
+
+    <section class="business-panel" aria-labelledby="technical-heading">
+      <div class="section-heading">
+        <h2 id="technical-heading">Slice configuration</h2>
+      </div>
+      <div id="technical-empty" class="empty-state">No configuration yet.</div>
+      <dl id="technical-list" class="evidence-list evidence-columns" hidden></dl>
+    </section>
+
+    <section class="business-panel business-lifecycle" aria-labelledby="lifecycle-heading">
+      <div class="section-heading section-heading-with-status">
+        <h2 id="lifecycle-heading">Provisioning</h2>
+        <span id="business-stage" class="stage-badge">Waiting for analysis</span>
+      </div>
+      <ol id="business-events" class="event-list">
+        <li class="empty-state">No provisioning job yet.</li>
+      </ol>
+    </section>
+
+    <section class="business-panel" aria-labelledby="nssf-heading">
+      <div class="section-heading">
+        <h2 id="nssf-heading">Core registration</h2>
+      </div>
+      <div id="core-empty" class="empty-state">No core verification yet.</div>
+      <dl id="core-list" class="evidence-list" hidden></dl>
+    </section>
+
+    <section class="business-panel business-ready" aria-labelledby="ready-heading">
+      <div class="section-heading">
+        <h2 id="ready-heading">UE access</h2>
+      </div>
+      <div id="ready-empty" class="empty-state">No UE access details yet.</div>
+      <dl id="ready-list" class="evidence-list" hidden></dl>
+      <p class="scope-note">QoS enforcement requires radio and QFI evidence.</p>
+    </section>
+  </div>
+</main>
+{% endblock %}
+{% block foot_js %}
+<script src="{% static 'intent_based_mvp/business_intent_session.js' %}?v=session-1"></script>
+<script src="{% static 'intent_based_mvp/business_intent_catalog.js' %}?v=catalog-search-1"></script>
+<script src="{% static 'intent_based_mvp/business_intent.js' %}?v=catalog-search-1"></script>
+{% endblock %}

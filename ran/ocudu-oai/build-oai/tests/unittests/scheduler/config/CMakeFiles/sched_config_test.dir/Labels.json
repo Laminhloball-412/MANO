@@ -1,0 +1,19 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/config/csi_helper_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/config/pucch_resource_generator_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"sched"
+		],
+		"name" : "sched_config_test"
+	}
+}

@@ -165,7 +165,10 @@ void rrc_nr::connection_reconf_no_ho_proc::then(const srsran::proc_state_t& resu
           rrc_handle.rrc_eutra->nr_notify_reconfiguration_failure();
         }
         break;
-      default:
+        case reconf_initiator_t::nr:
+        Warning("Reconfiguration failure not implemented for initiator %d", initiator);
+        break;
+        default:
         Warning("Reconfiguration failure not implemented for initiator %d", initiator);
         break;
     }

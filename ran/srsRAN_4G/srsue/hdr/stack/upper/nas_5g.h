@@ -119,6 +119,7 @@ private:
   srsran::timer_handler::unique_timer t3511; // started when registration failure due to lower layer failure
   srsran::timer_handler::unique_timer t3521; // started when detach request is sent
   srsran::timer_handler::unique_timer reregistration_timer; // started to trigger delayed re-attach
+  srsran::timer_handler::unique_timer pdu_session_timer; // schedules the next PDU session on the NAS task loop
 
   // Values according to TS 24.501 Sec 10.2
   const uint32_t t3502_duration_ms                = 12 * 60 * 1000; // 12m
@@ -126,6 +127,7 @@ private:
   const uint32_t t3511_duration_ms                = 10 * 1000;      // 10s
   const uint32_t t3521_duration_ms                = 15 * 1000;      // 15s
   const uint32_t reregistration_timer_duration_ms = 2 * 1000;       // 2s (arbitrarily chosen to delay re-attach)
+  const uint32_t pdu_session_delay_ms             = 2 * 1000;
 
   srsran::proc_manager_list_t callbacks;
 
@@ -160,6 +162,7 @@ private:
   int  apply_security_config(srsran::unique_byte_buffer_t& pdu, uint8_t sec_hdr_type);
   bool check_replayed_ue_security_capabilities(srsran::nas_5g::ue_security_capability_t& caps);
   void set_nssai(srsran::nas_5g::s_nssai_t& s_nssai);
+  void set_nssai(srsran::nas_5g::s_nssai_t& s_nssai, const pdu_session_cfg_t&    session_cfg);
 
   // message handler
   int handle_registration_accept(srsran::nas_5g::registration_accept_t& registration_accept);

@@ -1,0 +1,11 @@
+{
+	"sources" : [],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"format"
+		],
+		"name" : "rebuild_cache"
+	}
+}

@@ -1,0 +1,14 @@
+# TYPE ansa_ue_throughput_mbps gauge
+ansa_ue_throughput_mbps{ue_id="1",service="control",flow_id="flow-5256bc74d6da"} 0.023575024783612022
+# TYPE ansa_ue_rtt_ms gauge
+ansa_ue_rtt_ms{ue_id="1",service="control",flow_id="flow-5256bc74d6da"} 59.591
+# TYPE ansa_ue_jitter_ms gauge
+ansa_ue_jitter_ms{ue_id="1",service="control",flow_id="flow-5256bc74d6da"} 24.358
+# TYPE ansa_ue_packet_loss_percent gauge
+ansa_ue_packet_loss_percent{ue_id="1",service="control",flow_id="flow-5256bc74d6da"} 0.0
+# TYPE ansa_ue_packet_size_bytes gauge
+ansa_ue_packet_size_bytes{ue_id="1",service="control",flow_id="flow-5256bc74d6da"} 120
+# TYPE ansa_ue_message_rate_per_second gauge
+ansa_ue_message_rate_per_second{ue_id="1",service="control",flow_id="flow-5256bc74d6da"} 9.955669249836157
+# TYPE ansa_intent_flow_info gauge
+ansa_intent_flow_info{flow_id="flow-5256bc74d6da",state="COMPLETED"} 1

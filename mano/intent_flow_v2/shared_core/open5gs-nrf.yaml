@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: open5gs-nrf
+  namespace: share
+data:
+  open5gs-nrf: |-
+    logger:
+      file:
+        path: /open5gs/install/var/log/open5gs/nrf.log
+
+    global:
+      max:
+        ue: 1024
+        peer: 1024
+
+    db_uri: mongodb://mongodb-svc.share.svc.cluster.local/open5gs
+
+    nrf:
+      serving:
+        - plmn_id:
+            mcc: 460
+            mnc: 99
+      sbi:
+        server:
+          - address: 0.0.0.0
+            port: 7777
+            advertise: nrf-svc.share.svc.cluster.local

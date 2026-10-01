@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/fapi_adaptor/mac/p7/fapi_to_mac_indications_fastpath_translator_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"fapi_adaptor"
+		],
+		"name" : "fapi_to_mac_indications_fastpath_translator_test"
+	}
+}

@@ -22,3 +22,55 @@
 
 # Isolated implementation worktrees
 .worktrees/
+
+# ============================
+# Local VM / generated data
+# ============================
+.bash_history
+.bash_logout
+.bashrc
+.config/
+.codex/
+.copilot/
+.docker/
+.dotnet/
+.gitconfig
+.gnuradio/
+.kube/
+.lesshst
+.local/
+.profile
+.ssh/
+.sudo_as_admin_successful
+.viminfo
+.vscode-server/
+.wget-hsts
+*.tar.gz
+
+# MANO generated/runtime data
+mano/backups/
+mano/runtime/
+mano/test-artifacts/
+mano/kube5gnfvo/VnfPackage/
+mano/ue-service-portal/runtime/
+
+# Build outputs
+ran/srsRAN_project/build-qos-test/
+
+# Temporary/safety copies
+UI_before_*/
+UI_feature_review/
+UI_feature_review_v22/
+UI_feature_review_v220_backup/
+UI_open5gs_sync_v23_stage/
+UI_slice_dev/
+UI_slice_dev_before_v2/
+UI_ue_dashboard_backup.*/
+UI_ue_dashboard_v24_stage/
+srsRAN_4G_before_multi_pdu_safety_*/
+srsue_multi_pdu_safety_v1/
+ran/oran-sc-ric/.env
+
+# Environment files
+ran/ocudu-oai/docker/.env
+ran/ocudu-oai/docs/.env

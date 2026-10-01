@@ -31,6 +31,7 @@
 #include "srsran/srslog/srslog.h"
 #include "tft_packet_filter.h"
 #include <atomic>
+#include <map>
 #include <mutex>
 #include <net/if.h>
 #include <netinet/in.h>
@@ -49,6 +50,19 @@ struct gw_args_t {
   std::string tun_dev_netmask;
 };
 
+struct gw_session_t {
+  int32_t            tun_fd     = -1;
+  int32_t            sock       = -1;
+  uint32_t           ip_addr    = 0;
+  uint8_t            session_id = 0;
+  std::atomic<bool>  if_up      = {false}; // Đã đồng bộ kiểu atomic giống bản gốc
+  struct ifreq       ifr        = {};
+  std::string        tun_name;
+  std::atomic<bool>  run_enable{false};
+  std::thread        worker;
+  uint8_t            eps_bearer_id = NOT_ASSIGNED;
+};
+
 class gw : public gw_interface_stack, public srsran::thread
 {
 public:
@@ -56,7 +70,7 @@ public:
   ~gw();
   int  init(const gw_args_t& args_, stack_interface_gw* stack);
   void stop();
-
+  void add_bearer_mapping(uint32_t lcid, uint8_t pdu_session_id) override;
   void get_metrics(gw_metrics_t& m, const uint32_t nof_tti);
 
   // PDCP interface
@@ -83,18 +97,17 @@ private:
   std::atomic<bool> running    = {false};
   std::atomic<bool> run_enable = {false};
   int32_t           netns_fd   = 0;
-  int32_t           tun_fd     = 0;
-  struct ifreq      ifr        = {};
-  int32_t           sock       = 0;
-  std::atomic<bool> if_up      = {false};
+
+  std::map<uint8_t, std::shared_ptr<gw_session_t>> sessions;
+  std::map<uint32_t, int>                          lcid_to_tun_fd;
+  std::map<uint32_t, uint8_t>                      lcid_to_session;
+  std::map<uint8_t, uint32_t>                      session_to_lcid;
 
   static const int NOT_ASSIGNED          = -1;
-  int32_t          default_eps_bearer_id = NOT_ASSIGNED;
   std::mutex       gw_mutex;
 
   srslog::basic_logger& logger;
 
-  uint32_t current_ip_addr = 0;
   uint8_t  current_if_id[8];
 
   uint32_t                                       ul_tput_bytes = 0;
@@ -102,12 +115,14 @@ private:
   std::chrono::high_resolution_clock::time_point metrics_tp; // stores time when last metrics have been taken
 
   void run_thread();
-  int  init_if(char* err_str);
-  int  setup_if_addr4(uint32_t ip_addr, char* err_str);
+  int setup_if_addr4(std::shared_ptr<gw_session_t> session, uint32_t ip_addr, char* err_str);
   int  setup_if_addr6(uint8_t* ipv6_if_id, char* err_str);
   bool find_ipv6_addr(struct in6_addr* in6_out);
   void del_ipv6_addr(struct in6_addr* in6p);
 
+  void run_session(std::shared_ptr<gw_session_t> session);
+  void stop_session(uint8_t session_id);
+  int  init_if(std::shared_ptr<gw_session_t> session, char* err_str);
   // MBSFN
   int                mbsfn_sock_fd                   = 0;  // Sink UDP socket file descriptor
   struct sockaddr_in mbsfn_sock_addr                 = {}; // Target address

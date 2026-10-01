@@ -1,0 +1,2 @@
+oaitun_ue1       UNKNOWN        10.45.1.7/24 fe80::3bbf:874d:1e8d:4540/64 
+oaitun_ue1p2     UNKNOWN        10.45.2.4/24 fe80::fcf3:f25c:2824:d591/64 

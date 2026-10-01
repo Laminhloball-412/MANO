@@ -1,0 +1,8 @@
+{
+  "ocudu_websocket_url": "ws://127.0.0.1:8001/",
+  "listen_host": "0.0.0.0",
+  "listen_port": 9107,
+  "stale_after_seconds": 3,
+  "reconnect_min_seconds": 1,
+  "reconnect_max_seconds": 30
+}

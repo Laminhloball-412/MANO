@@ -1,0 +1,16 @@
+[Unit]
+Description=ANSA PDU session orchestration metrics
+After=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+StateDirectory=ansa-session-orchestrator
+StateDirectoryMode=0750
+WorkingDirectory=/home/ubuntu/mano
+ExecStart=/usr/bin/python3 -m session_orchestrator.cli --config /home/ubuntu/mano/session_orchestrator/config.json serve
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

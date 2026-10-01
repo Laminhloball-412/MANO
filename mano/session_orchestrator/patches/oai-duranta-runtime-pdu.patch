@@ -1,0 +1,89 @@
+diff --git a/common/utils/telnetsrv/telnetsrv_ciUE.c b/common/utils/telnetsrv/telnetsrv_ciUE.c
+index 13d191d..143dff8 100644
+--- a/common/utils/telnetsrv/telnetsrv_ciUE.c
++++ b/common/utils/telnetsrv/telnetsrv_ciUE.c
+@@ -141,37 +141,64 @@ static int add_pdu_session(char *buf, int debug, telnet_printfunc_t prnt)
+   UNUSED(debug);
+   int ue_id = -1;
+   int pdusession_id = -1;
++  int sst = -1;
++  unsigned int sd = 0;
++  char dnn[103] = {0};
+ 
+   if (!buf) {
+-    ERROR_MSG_RET("Missing argument: expected PDUSessionID[,UE_ID]\n");
++    ERROR_MSG_RET("Missing argument: expected PDUSessionID[,UE_ID,SST,SD,DNN]\n");
+   }
+ 
+-  // Try parsing values in the form: "PDUSessionID[,UE_ID]"
+-  int n = sscanf(buf, "%d,%d", &pdusession_id, &ue_id);
++  // Legacy form uses the UICC default. Extended form selects a target slice.
++  int n = sscanf(buf, "%d,%d,%d,%x,%102s", &pdusession_id, &ue_id, &sst, &sd, dnn);
+   if (n == 1) {
+-    // Only PDUSessionID provided: use default UE ID
+     ue_id = get_default_ue_id();
+     if (ue_id < 0)
+       ERROR_MSG_RET("No default UE context found\n");
+-  } else if (n != 2) {
+-    ERROR_MSG_RET("Invalid format: expected PDUSessionID[,UE_ID]\n");
++  } else if (n != 2 && n != 5) {
++    ERROR_MSG_RET("Invalid format: expected PDUSessionID[,UE_ID,SST,SD,DNN]\n");
+   }
+ 
+-  if (pdusession_id < 0 || pdusession_id > 255)
+-    ERROR_MSG_RET("PDUSessionID must be in range [0,255]\n");
++  if (pdusession_id < 1 || pdusession_id > 255)
++    ERROR_MSG_RET("PDUSessionID must be in range [1,255]\n");
+   if (ue_id < 0)
+     ERROR_MSG_RET("UE_ID must be >= 0\n");
++  if (n == 5 && (sst < 1 || sst > 255 || sd > 0xffffff || dnn[0] == '\0'))
++    ERROR_MSG_RET("SST must be 1..255, SD must be 6 hex digits and DNN must be non-empty\n");
+ 
+   nr_ue_nas_t *nas = get_ue_nas_info(ue_id);
+   if (!nas)
+     ERROR_MSG_RET("No NAS context found for UE_ID %d\n", ue_id);
+ 
+   DevAssert(nas->uicc);
+-  nssai_t nssai = {nas->uicc->nssai_sst, nas->uicc->nssai_sd};
+-  pdu_session_config_t c = {pdusession_id, 1 /* = PDU_SESSION_TYPE_IPV4 */, nssai, nas->uicc->dnnStr};
++  for (int i = 0; i < nas->uicc->n_pdu_sessions; ++i) {
++    if (nas->uicc->pdu_sessions[i].id == pdusession_id)
++      ERROR_MSG_RET("PDU session ID %d already exists for UE %d\n", pdusession_id, ue_id);
++  }
++  if (nas->uicc->n_pdu_sessions >= 256)
++    ERROR_MSG_RET("PDU session table is full for UE %d\n", ue_id);
++
++  nssai_t nssai = {
++    n == 5 ? sst : nas->uicc->nssai_sst,
++    n == 5 ? (int)sd : nas->uicc->nssai_sd,
++  };
++  const char *selected_dnn = n == 5 ? dnn : nas->uicc->dnnStr;
++  pdu_session_config_t c = {
++    pdusession_id,
++    1 /* PDU_SESSION_TYPE_IPV4 */,
++    nssai,
++    strdup(selected_dnn),
++  };
++  if (!c.dnn)
++    ERROR_MSG_RET("Unable to allocate DNN for PDU session\n");
+   nas->uicc->pdu_sessions[nas->uicc->n_pdu_sessions++] = c;
+   request_pdusession(nas, &c);
+-  prnt("Triggered PDU session request for UE %d with ID %d\n", ue_id, pdusession_id);
++  prnt("Triggered PDU session request for UE %d ID %d SST %d SD %06x DNN %s\n",
++       ue_id,
++       pdusession_id,
++       nssai.sst,
++       nssai.sd,
++       c.dnn);
+   return 0;
+ }
+ 
+@@ -183,7 +210,7 @@ static telnetshell_cmddef_t cicmds[] = {
+   {"force_crnti_ra", "", force_crnti_ra},
+   {"deregistration", "", force_deregistration},
+   {"get_max_dl_toa", "[ant]", get_dl_toa},
+-  {"add_pdu_session", "[PDUSessionID(int)],[UE_ID(int,opt)]", add_pdu_session},
++  {"add_pdu_session", "PDUSessionID[,UE_ID,SST,SD(hex),DNN]", add_pdu_session},
+   {"", "", NULL},
+ };
+ 

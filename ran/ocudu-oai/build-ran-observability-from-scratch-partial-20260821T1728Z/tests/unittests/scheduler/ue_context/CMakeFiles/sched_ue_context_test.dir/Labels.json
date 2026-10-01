@@ -1,0 +1,52 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/ue_context/ue_channel_state_manager_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/ue_context/ue_configuration_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/ue_context/ue_drx_controller_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/ue_context/ue_repository_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/ue_context/logical_channel_system_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/ue_context/ta_management_system_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/ue_context/pucch_power_control_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/ue_context/pusch_power_control_test.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/build-ran-observability/lib/scheduler/cell/CMakeFiles/sched_cell.dir/vrb_alloc.cpp.o"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/build-ran-observability/lib/scheduler/cell/CMakeFiles/sched_cell.dir/resource_block_group.cpp.o"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/build-ran-observability/lib/scheduler/cell/CMakeFiles/sched_cell.dir/resource_grid.cpp.o"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/build-ran-observability/lib/scheduler/cell/CMakeFiles/sched_cell.dir/scheduler_prb.cpp.o"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/build-ran-observability/lib/scheduler/cell/CMakeFiles/sched_cell.dir/cell_harq_manager.cpp.o"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"sched"
+		],
+		"name" : "sched_ue_context_test"
+	}
+}

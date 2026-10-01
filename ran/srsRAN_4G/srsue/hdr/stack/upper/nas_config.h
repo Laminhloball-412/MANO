@@ -69,8 +69,12 @@ public:
   std::vector<pdu_session_cfg_t> pdu_session_cfgs;
   // slicing configuration
   bool enable_slicing;
-  int  nssai_sst;
-  int  nssai_sd;
+  int nssai_sst;
+  int nssai_sd;
+  std::string apn_list;
+  std::string apn_protocol_list;
+  std::string nssai_sst_list;
+  std::string nssai_sd_list;
 };
 
 } // namespace srsue

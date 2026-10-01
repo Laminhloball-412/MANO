@@ -1,0 +1,4 @@
+# Directory labels
+ fapi
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/fapi/p7/builders/tx_data_request_test.cpp

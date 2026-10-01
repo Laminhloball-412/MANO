@@ -1,0 +1,54 @@
+{% extends 'bar.html' %}
+{% block title %}Auto Slice{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h3 mb-1 text-gray-800">Auto Slice</h1>
+      <div class="text-muted">Render VNF, NSD and NRM descriptors, upload templates, and allocate an NSSI. SD is assigned within each SST.</div>
+    </div>
+    <button class="btn btn-sm btn-outline-primary" onclick="loadAutoSliceStatus()"><i class="fas fa-sync-alt"></i> Refresh</button>
+  </div>
+
+  <div id="auto-slice-alert" class="alert alert-info">Loading BK-MANO status...</div>
+
+  <div class="row" id="profile-cards">
+    <div class="col-xl-4 col-md-6 mb-4">
+      <div class="card border-left-primary shadow h-100 py-2"><div class="card-body">
+        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">eMBB</div>
+        <div class="h5 mb-2 font-weight-bold text-gray-800">SST 01 &middot; SD <span id="sd-embb">------</span></div>
+        <div class="small text-muted">Enhanced Mobile Broadband</div>
+        <div class="small font-weight-bold mb-3">Next namespace: <span id="ns-embb">---</span></div>
+        <button class="btn btn-primary auto-create" data-type="embb" onclick="createAutoSlice('embb')">Create &amp; Allocate eMBB</button>
+      </div></div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+      <div class="card border-left-danger shadow h-100 py-2"><div class="card-body">
+        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">URLLC</div>
+        <div class="h5 mb-2 font-weight-bold text-gray-800">SST 02 &middot; SD <span id="sd-urllc">------</span></div>
+        <div class="small text-muted">Ultra-Reliable Low-Latency Communications</div>
+        <div class="small font-weight-bold mb-3">Next namespace: <span id="ns-urllc">---</span></div>
+        <button class="btn btn-danger auto-create" data-type="urllc" onclick="createAutoSlice('urllc')">Create &amp; Allocate URLLC</button>
+      </div></div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+      <div class="card border-left-success shadow h-100 py-2"><div class="card-body">
+        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">mMTC</div>
+        <div class="h5 mb-2 font-weight-bold text-gray-800">SST 03 &middot; SD <span id="sd-mmtc">------</span></div>
+        <div class="small text-muted">Massive Machine Type Communications</div>
+        <div class="small font-weight-bold mb-3">Next namespace: <span id="ns-mmtc">---</span></div>
+        <button class="btn btn-success auto-create" data-type="mmtc" onclick="createAutoSlice('mmtc')">Create &amp; Allocate mMTC</button>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Slices managed by Auto Slice</h6></div>
+    <div class="card-body"><div class="table-responsive"><table class="table table-bordered table-hover">
+      <thead><tr><th>Namespace</th><th>Type</th><th>SST</th><th>SD</th><th>Status</th><th>NSSI</th><th>Action</th></tr></thead>
+      <tbody id="auto-slice-table"><tr><td colspan="7" class="text-center text-muted">Loading...</td></tr></tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}
+{% block foot_js %}<script src="/static/js/nm_js/auto_slice.js"></script>{% endblock %}

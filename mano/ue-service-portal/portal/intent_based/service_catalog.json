@@ -1,0 +1,2565 @@
+{
+  "catalog_version": "2.0",
+  "duration_minutes": {
+    "minimum": 1,
+    "maximum": 10080
+  },
+  "priorities": {
+    "normal": {
+      "arp_priority": 8,
+      "allocation_preference": 2
+    },
+    "high": {
+      "arp_priority": 4,
+      "allocation_preference": 1
+    },
+    "critical": {
+      "arp_priority": 2,
+      "allocation_preference": 0
+    }
+  },
+  "priority_phrases": {
+    "normal": [
+      "normal priority",
+      "no priority",
+      "best effort",
+      "bình thường",
+      "không ưu tiên"
+    ],
+    "high": [
+      "high priority",
+      "important",
+      "ưu tiên cao",
+      "quan trọng"
+    ],
+    "critical": [
+      "critical",
+      "emergency",
+      "mission critical",
+      "life safety",
+      "khẩn cấp",
+      "tối quan trọng",
+      "an toàn tính mạng"
+    ]
+  },
+  "services": {
+    "broadband": {
+      "label": "Broadband Internet",
+      "scale_label": "Concurrent users",
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "business_phrases": [
+        "broadband",
+        "internet",
+        "web browsing",
+        "download",
+        "file transfer",
+        "email",
+        "e-mail",
+        "erp",
+        "point of sale",
+        "pos terminal",
+        "cloud access",
+        "office application",
+        "enterprise application",
+        "truy cập internet",
+        "duyệt web",
+        "tải xuống",
+        "thư điện tử",
+        "ứng dụng doanh nghiệp"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard",
+          "basic",
+          "tiêu chuẩn",
+          "cơ bản"
+        ],
+        "high": [
+          "high speed",
+          "large download",
+          "tốc độ cao",
+          "tải dung lượng lớn"
+        ],
+        "critical": [
+          "business critical",
+          "không gián đoạn",
+          "nghiệp vụ trọng yếu"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 9,
+        "arp_priority": 8,
+        "resource_type": "NON_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 90,
+        "packet_delay_budget_ms": 300,
+        "packet_error_rate": "1e-6",
+        "example_service": "TCP-based data and buffered video",
+        "mapping_basis": "PROJECT_PROFILE_USING_STANDARDIZED_5QI",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 5,
+          "guaranteed_ratio": 0.1,
+          "burst_ratio": 1,
+          "max_latency_ms": 300,
+          "max_jitter_ms": 100,
+          "max_packet_loss_percent": 2,
+          "min_reliability_percent": 99,
+          "message_rate_per_unit": 10
+        },
+        "high": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 20,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 200,
+          "max_jitter_ms": 75,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 20
+        },
+        "critical": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 50,
+          "guaranteed_ratio": 0.3,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 150,
+          "max_jitter_ms": 50,
+          "max_packet_loss_percent": 0.5,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 50
+        }
+      }
+    },
+    "voice_call": {
+      "label": "Conversational voice and VoIP",
+      "scale_label": "Concurrent calls",
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "business_phrases": [
+        "voice call",
+        "phone call",
+        "voip",
+        "voice over ip",
+        "audio call",
+        "sip call",
+        "telephone service",
+        "cuộc gọi thoại",
+        "gọi điện",
+        "thoại qua ip"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard",
+          "basic",
+          "tiêu chuẩn",
+          "cơ bản"
+        ],
+        "high": [
+          "high quality voice",
+          "hd voice",
+          "wideband voice",
+          "thoại chất lượng cao"
+        ],
+        "critical": [
+          "emergency voice",
+          "critical voice",
+          "thoại khẩn cấp"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 1,
+        "arp_priority": 4,
+        "resource_type": "GBR",
+        "gfbr_mbps": 0.064,
+        "mfbr_mbps": 0.128,
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 20,
+        "packet_delay_budget_ms": 100,
+        "packet_error_rate": "1e-2",
+        "example_service": "Conversational Voice",
+        "mapping_basis": "DIRECT_3GPP_EXAMPLE",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 0.128,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 30,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 50
+        },
+        "high": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 0.256,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 20,
+          "max_packet_loss_percent": 0.5,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 100
+        },
+        "critical": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 0.256,
+          "guaranteed_ratio": 1,
+          "burst_ratio": 1,
+          "max_latency_ms": 75,
+          "max_jitter_ms": 10,
+          "max_packet_loss_percent": 0.1,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 100
+        }
+      }
+    },
+    "video_call": {
+      "label": "Conversational video call",
+      "scale_label": "Concurrent participants",
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "business_phrases": [
+        "video call",
+        "video conference",
+        "video conferencing",
+        "online meeting",
+        "virtual meeting",
+        "microsoft teams",
+        "teams meeting",
+        "teams call",
+        "zoom conference",
+        "zoom meeting",
+        "zoom call",
+        "google meet",
+        "telemedicine video",
+        "cuộc gọi video",
+        "họp trực tuyến",
+        "hội nghị truyền hình"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard",
+          "basic",
+          "sd video",
+          "tiêu chuẩn"
+        ],
+        "high": [
+          "high quality",
+          "full hd",
+          "1080p",
+          "chất lượng cao"
+        ],
+        "critical": [
+          "telemedicine",
+          "uninterrupted",
+          "không gián đoạn"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 2,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 2,
+        "arp_priority": 4,
+        "resource_type": "GBR",
+        "gfbr_mbps": 1,
+        "mfbr_mbps": 4,
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 40,
+        "packet_delay_budget_ms": 150,
+        "packet_error_rate": "1e-3",
+        "example_service": "Conversational Video (Live Streaming)",
+        "mapping_basis": "DIRECT_3GPP_EXAMPLE",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 2,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1.5,
+          "max_latency_ms": 150,
+          "max_jitter_ms": 30,
+          "max_packet_loss_percent": 0.1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 50
+        },
+        "high": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 4,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1.5,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 20,
+          "max_packet_loss_percent": 0.1,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 100
+        },
+        "critical": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 6,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.5,
+          "max_latency_ms": 75,
+          "max_jitter_ms": 10,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 150
+        }
+      }
+    },
+    "video_streaming": {
+      "label": "Buffered video streaming",
+      "scale_label": "Concurrent viewers",
+      "scale": {
+        "minimum": 1,
+        "maximum": 1000
+      },
+      "business_phrases": [
+        "buffered video",
+        "video streaming",
+        "streaming video",
+        "progressive video",
+        "video theo yêu cầu",
+        "video có bộ đệm",
+        "xem video"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard",
+          "basic",
+          "tiêu chuẩn",
+          "cơ bản"
+        ],
+        "high": [
+          "high quality",
+          "full hd",
+          "4k",
+          "chất lượng cao"
+        ],
+        "critical": [
+          "uninterrupted",
+          "không gián đoạn",
+          "dịch vụ trọng yếu"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 8,
+        "arp_priority": 6,
+        "resource_type": "NON_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 80,
+        "packet_delay_budget_ms": 300,
+        "packet_error_rate": "1e-6",
+        "example_service": "Buffered Streaming and TCP-based traffic",
+        "mapping_basis": "DIRECT_3GPP_EXAMPLE",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 2,
+          "guaranteed_ratio": 0.1,
+          "burst_ratio": 1,
+          "max_latency_ms": 300,
+          "max_jitter_ms": 100,
+          "max_packet_loss_percent": 2,
+          "min_reliability_percent": 99,
+          "message_rate_per_unit": 2
+        },
+        "high": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 4,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1,
+          "max_latency_ms": 300,
+          "max_jitter_ms": 75,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 4
+        },
+        "critical": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 6,
+          "guaranteed_ratio": 0.3,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 200,
+          "max_jitter_ms": 50,
+          "max_packet_loss_percent": 0.5,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 6
+        }
+      }
+    },
+    "live_video": {
+      "label": "Live video",
+      "scale_label": "Concurrent viewers",
+      "scale": {
+        "minimum": 1,
+        "maximum": 1000
+      },
+      "business_phrases": [
+        "live video streaming",
+        "live stream",
+        "live streaming",
+        "live video",
+        "cctv video streaming",
+        "cctv streaming",
+        "cctv",
+        "surveillance camera",
+        "security camera",
+        "video surveillance",
+        "remote camera",
+        "camera trực tiếp",
+        "camera giám sát",
+        "video trực tiếp",
+        "phát trực tiếp"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard",
+          "basic",
+          "tiêu chuẩn",
+          "cơ bản"
+        ],
+        "high": [
+          "high quality",
+          "full hd",
+          "4k",
+          "chất lượng cao"
+        ],
+        "critical": [
+          "uninterrupted",
+          "broadcast critical",
+          "không gián đoạn",
+          "phát sóng trọng yếu"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 7,
+        "arp_priority": 4,
+        "resource_type": "NON_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 70,
+        "packet_delay_budget_ms": 100,
+        "packet_error_rate": "1e-3",
+        "example_service": "Voice, Live Video, and Interactive Gaming",
+        "mapping_basis": "DIRECT_3GPP_EXAMPLE",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 2,
+          "guaranteed_ratio": 0.25,
+          "burst_ratio": 1,
+          "max_latency_ms": 150,
+          "max_jitter_ms": 50,
+          "max_packet_loss_percent": 2,
+          "min_reliability_percent": 99,
+          "message_rate_per_unit": 2
+        },
+        "high": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 4,
+          "guaranteed_ratio": 0.25,
+          "burst_ratio": 1,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 30,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 4
+        },
+        "critical": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 6,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 75,
+          "max_jitter_ms": 20,
+          "max_packet_loss_percent": 0.5,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 6
+        }
+      }
+    },
+    "immersive_media": {
+      "label": "Immersive AR/VR media",
+      "scale_label": "Concurrent headsets",
+      "scale": {
+        "minimum": 1,
+        "maximum": 1000
+      },
+      "business_phrases": [
+        "ar/vr",
+        "augmented reality",
+        "virtual reality",
+        "mixed reality",
+        "extended reality",
+        "ar headset",
+        "vr headset",
+        "xr headset",
+        "immersive media",
+        "360 degree video",
+        "thực tế tăng cường",
+        "thực tế ảo"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard",
+          "basic",
+          "tiêu chuẩn"
+        ],
+        "high": [
+          "high resolution",
+          "4k",
+          "high quality",
+          "độ phân giải cao"
+        ],
+        "critical": [
+          "motion critical",
+          "ultra low latency",
+          "độ trễ rất thấp"
+        ]
+      },
+      "default_quality": "high",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 80,
+        "arp_priority": 4,
+        "resource_type": "NON_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 68,
+        "packet_delay_budget_ms": 10,
+        "packet_error_rate": "1e-6",
+        "example_service": "Low Latency eMBB applications and Augmented Reality",
+        "mapping_basis": "DIRECT_3GPP_EXAMPLE",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 25,
+          "guaranteed_ratio": 0.25,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 10,
+          "max_packet_loss_percent": 0.1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 100
+        },
+        "high": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 50,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 20,
+          "max_jitter_ms": 5,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 200
+        },
+        "critical": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 100,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 10,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 500
+        }
+      }
+    },
+    "interactive_control": {
+      "label": "Interactive control",
+      "scale_label": "Controlled endpoints",
+      "scale": {
+        "minimum": 1,
+        "maximum": 1000
+      },
+      "business_phrases": [
+        "robot",
+        "robot control",
+        "remote control",
+        "real time",
+        "real-time",
+        "ultra low latency",
+        "factory automation",
+        "smart factory",
+        "plc machine",
+        "plc control",
+        "industrial control",
+        "process automation",
+        "remote surgery",
+        "điều khiển",
+        "thời gian thực",
+        "độ trễ rất thấp",
+        "nhà máy",
+        "tự động hóa công nghiệp"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard control",
+          "điều khiển thông thường"
+        ],
+        "high": [
+          "low latency",
+          "fast response",
+          "độ trễ thấp",
+          "phản hồi nhanh"
+        ],
+        "critical": [
+          "real time",
+          "real-time",
+          "ultra low latency",
+          "ultra-low latency",
+          "high reliability",
+          "thời gian thực",
+          "độ trễ rất thấp",
+          "độ tin cậy cao"
+        ]
+      },
+      "default_quality": "high",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 3,
+        "arp_priority": 2,
+        "resource_type": "GBR",
+        "gfbr_mbps": 0.25,
+        "mfbr_mbps": 0.5,
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 30,
+        "packet_delay_budget_ms": 50,
+        "packet_error_rate": "1e-3",
+        "example_service": "Real Time Gaming, V2X, electricity distribution, and process automation monitoring",
+        "mapping_basis": "PROJECT_PROFILE_USING_STANDARDIZED_5QI",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.1,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 15,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 20
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.25,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 20,
+          "max_jitter_ms": 5,
+          "max_packet_loss_percent": 0.1,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 50
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.5,
+          "guaranteed_ratio": 1,
+          "burst_ratio": 1.5,
+          "max_latency_ms": 10,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 100
+        }
+      }
+    },
+    "v2x": {
+      "label": "Vehicle-to-everything communication",
+      "scale_label": "Connected vehicles",
+      "scale": {
+        "minimum": 1,
+        "maximum": 100000
+      },
+      "business_phrases": [
+        "v2x",
+        "vehicle to everything",
+        "vehicle-to-everything",
+        "connected vehicle",
+        "autonomous vehicle",
+        "self driving car",
+        "cooperative driving",
+        "roadside unit",
+        "intelligent transport",
+        "xe tự hành",
+        "xe kết nối",
+        "giao thông thông minh"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard",
+          "basic",
+          "tiêu chuẩn"
+        ],
+        "high": [
+          "low latency",
+          "cooperative",
+          "độ trễ thấp"
+        ],
+        "critical": [
+          "collision avoidance",
+          "safety critical",
+          "tránh va chạm",
+          "an toàn trọng yếu"
+        ]
+      },
+      "default_quality": "high",
+      "default_scale": 10,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 3,
+        "arp_priority": 2,
+        "resource_type": "GBR",
+        "gfbr_mbps": 0.25,
+        "mfbr_mbps": 0.5,
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 30,
+        "packet_delay_budget_ms": 50,
+        "packet_error_rate": "1e-3",
+        "example_service": "V2X messages",
+        "mapping_basis": "DIRECT_3GPP_EXAMPLE",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.1,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 10,
+          "max_packet_loss_percent": 0.1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 20
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.25,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 20,
+          "max_jitter_ms": 5,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 50
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.5,
+          "guaranteed_ratio": 1,
+          "burst_ratio": 1.5,
+          "max_latency_ms": 10,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.001,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 100
+        }
+      }
+    },
+    "low_latency_gaming": {
+      "label": "Low-latency gaming",
+      "scale_label": "Concurrent players",
+      "scale": {
+        "minimum": 1,
+        "maximum": 1000
+      },
+      "business_phrases": [
+        "real time gaming",
+        "real-time gaming",
+        "low latency gaming",
+        "interactive gaming",
+        "cloud gaming",
+        "game thời gian thực",
+        "chơi game độ trễ thấp"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard",
+          "tiêu chuẩn"
+        ],
+        "high": [
+          "low latency",
+          "fast response",
+          "độ trễ thấp",
+          "phản hồi nhanh"
+        ],
+        "critical": [
+          "ultra low latency",
+          "ultra-low latency",
+          "độ trễ rất thấp"
+        ]
+      },
+      "default_quality": "high",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 3,
+        "arp_priority": 4,
+        "resource_type": "GBR",
+        "gfbr_mbps": 1,
+        "mfbr_mbps": 2,
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 30,
+        "packet_delay_budget_ms": 50,
+        "packet_error_rate": "1e-3",
+        "example_service": "Real Time Gaming",
+        "mapping_basis": "DIRECT_3GPP_EXAMPLE",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 1,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 15,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 20
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 2,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 20,
+          "max_jitter_ms": 5,
+          "max_packet_loss_percent": 0.1,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 50
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 4,
+          "guaranteed_ratio": 1,
+          "burst_ratio": 1.5,
+          "max_latency_ms": 10,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 100
+        }
+      }
+    },
+    "sensor_telemetry": {
+      "label": "Massive sensor telemetry",
+      "scale_label": "Sensor devices",
+      "scale": {
+        "minimum": 1,
+        "maximum": 1000000
+      },
+      "business_phrases": [
+        "sensor",
+        "sensors",
+        "smart meter",
+        "smart metering",
+        "telemetry",
+        "massive iot",
+        "large number of devices",
+        "asset tracking",
+        "fleet tracking",
+        "logistics fleet",
+        "warehouse asset",
+        "smart agriculture",
+        "soil sensor",
+        "smart city",
+        "environmental monitoring",
+        "wearable telemetry",
+        "cảm biến",
+        "đồng hồ thông minh",
+        "theo dõi tài sản",
+        "nông nghiệp thông minh",
+        "thành phố thông minh",
+        "thiết bị số lượng lớn"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "periodic",
+          "standard monitoring",
+          "định kỳ",
+          "giám sát thông thường"
+        ],
+        "high": [
+          "high frequency",
+          "fast alert",
+          "tần suất cao",
+          "cảnh báo nhanh"
+        ],
+        "critical": [
+          "emergency alert",
+          "no data loss",
+          "cảnh báo khẩn cấp",
+          "không được mất dữ liệu"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1000,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 9,
+        "arp_priority": 12,
+        "resource_type": "NON_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 90,
+        "packet_delay_budget_ms": 300,
+        "packet_error_rate": "1e-6",
+        "example_service": "Generic default data QoS",
+        "mapping_basis": "PROJECT_PROFILE_USING_STANDARDIZED_5QI",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "mmtc",
+          "throughput_per_unit_mbps": 0.001,
+          "guaranteed_ratio": 0.1,
+          "burst_ratio": 2,
+          "max_latency_ms": 500,
+          "max_jitter_ms": 200,
+          "max_packet_loss_percent": 5,
+          "min_reliability_percent": 95,
+          "message_rate_per_unit": 0.1
+        },
+        "high": {
+          "preferred_template": "mmtc",
+          "throughput_per_unit_mbps": 0.005,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 2,
+          "max_latency_ms": 250,
+          "max_jitter_ms": 100,
+          "max_packet_loss_percent": 2,
+          "min_reliability_percent": 99,
+          "message_rate_per_unit": 1
+        },
+        "critical": {
+          "preferred_template": "mmtc",
+          "throughput_per_unit_mbps": 0.01,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 2,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 50,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 5
+        }
+      }
+    },
+    "mission_critical_voice": {
+      "label": "Mission-critical push-to-talk voice",
+      "scale_label": "Concurrent responders",
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "business_phrases": [
+        "mission critical voice",
+        "mission critical push to talk",
+        "push to talk",
+        "mcptt",
+        "public safety voice",
+        "firefighter radio",
+        "first responder voice",
+        "thoại nhiệm vụ trọng yếu",
+        "bộ đàm khẩn cấp"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard",
+          "tiêu chuẩn"
+        ],
+        "high": [
+          "public safety",
+          "first responder",
+          "an toàn công cộng"
+        ],
+        "critical": [
+          "mission critical",
+          "emergency",
+          "nhiệm vụ trọng yếu",
+          "khẩn cấp"
+        ]
+      },
+      "default_quality": "critical",
+      "default_scale": 10,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 65,
+        "arp_priority": 2,
+        "resource_type": "GBR",
+        "gfbr_mbps": 0.064,
+        "mfbr_mbps": 0.128,
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 7,
+        "packet_delay_budget_ms": 75,
+        "packet_error_rate": "1e-2",
+        "example_service": "Mission Critical user plane Push To Talk voice",
+        "mapping_basis": "DIRECT_3GPP_EXAMPLE",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.128,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 20,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 50
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.128,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 75,
+          "max_jitter_ms": 10,
+          "max_packet_loss_percent": 0.5,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 100
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.128,
+          "guaranteed_ratio": 1,
+          "burst_ratio": 1,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 5,
+          "max_packet_loss_percent": 0.1,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 100
+        }
+      }
+    },
+    "mission_critical_video": {
+      "label": "Mission-critical video",
+      "scale_label": "Concurrent responders",
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "business_phrases": [
+        "mission critical video",
+        "public safety video",
+        "first responder video",
+        "emergency response video",
+        "mcvideo",
+        "video nhiệm vụ trọng yếu",
+        "video an toàn công cộng"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard",
+          "tiêu chuẩn"
+        ],
+        "high": [
+          "public safety",
+          "first responder",
+          "an toàn công cộng"
+        ],
+        "critical": [
+          "mission critical",
+          "emergency",
+          "nhiệm vụ trọng yếu",
+          "khẩn cấp"
+        ]
+      },
+      "default_quality": "critical",
+      "default_scale": 10,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 67,
+        "arp_priority": 2,
+        "resource_type": "GBR",
+        "gfbr_mbps": 1,
+        "mfbr_mbps": 4,
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 15,
+        "packet_delay_budget_ms": 100,
+        "packet_error_rate": "1e-3",
+        "example_service": "Mission Critical Video user plane",
+        "mapping_basis": "DIRECT_3GPP_EXAMPLE",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 2,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 20,
+          "max_packet_loss_percent": 0.1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 50
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 4,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 75,
+          "max_jitter_ms": 10,
+          "max_packet_loss_percent": 0.05,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 100
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 6,
+          "guaranteed_ratio": 1,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 5,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 150
+        }
+      }
+    },
+    "priority_alarm": {
+      "label": "Priority sensor alarm",
+      "scale_label": "Sensor devices",
+      "scale": {
+        "minimum": 1,
+        "maximum": 1000000
+      },
+      "business_phrases": [
+        "priority alarm",
+        "sensor alarm",
+        "emergency alert",
+        "critical alert",
+        "cảnh báo ưu tiên",
+        "cảnh báo cảm biến",
+        "cảnh báo khẩn cấp"
+      ],
+      "quality_phrases": {
+        "standard": [
+          "standard alert",
+          "cảnh báo thông thường"
+        ],
+        "high": [
+          "fast alert",
+          "cảnh báo nhanh"
+        ],
+        "critical": [
+          "emergency",
+          "critical",
+          "khẩn cấp",
+          "tối quan trọng"
+        ]
+      },
+      "default_quality": "high",
+      "default_scale": 1000,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 8,
+        "arp_priority": 4,
+        "resource_type": "NON_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 80,
+        "packet_delay_budget_ms": 300,
+        "packet_error_rate": "1e-6",
+        "example_service": "Generic non-GBR data QoS",
+        "mapping_basis": "PROJECT_PROFILE_USING_STANDARDIZED_5QI",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "mmtc",
+          "throughput_per_unit_mbps": 0.001,
+          "guaranteed_ratio": 0.1,
+          "burst_ratio": 2,
+          "max_latency_ms": 300,
+          "max_jitter_ms": 100,
+          "max_packet_loss_percent": 2,
+          "min_reliability_percent": 99,
+          "message_rate_per_unit": 0.1
+        },
+        "high": {
+          "preferred_template": "mmtc",
+          "throughput_per_unit_mbps": 0.005,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 2,
+          "max_latency_ms": 200,
+          "max_jitter_ms": 75,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 1
+        },
+        "critical": {
+          "preferred_template": "mmtc",
+          "throughput_per_unit_mbps": 0.01,
+          "guaranteed_ratio": 0.5,
+          "burst_ratio": 2,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 50,
+          "max_packet_loss_percent": 0.1,
+          "min_reliability_percent": 99.99,
+          "message_rate_per_unit": 5
+        }
+      }
+    },
+    "ims_signalling": {
+      "label": "IMS signalling",
+      "scale_label": "Concurrent signalling sessions",
+      "business_phrases": [
+        "ims signalling",
+        "ims signaling",
+        "sip registration signalling",
+        "sip registration signaling"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 5,
+        "arp_priority": 4,
+        "resource_type": "NON_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 10,
+        "packet_delay_budget_ms": 100,
+        "packet_error_rate": "1e-6",
+        "example_service": "IMS Signalling",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 0.05,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 25,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 100
+        },
+        "high": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 0.075,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 25,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 150
+        },
+        "critical": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 0.1,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 25,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 200
+        }
+      }
+    },
+    "ai_ml_model_download": {
+      "label": "AI/ML model download",
+      "scale_label": "Concurrent model downloads",
+      "business_phrases": [
+        "ai ml model download",
+        "ai/ml model download",
+        "model topology download",
+        "model weight download",
+        "image recognition model download"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 6,
+        "arp_priority": 8,
+        "resource_type": "NON_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 60,
+        "packet_delay_budget_ms": 300,
+        "packet_error_rate": "1e-6",
+        "example_service": "AI/ML model download for image recognition",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 10,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1,
+          "max_latency_ms": 300,
+          "max_jitter_ms": 30,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 20
+        },
+        "high": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 15,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 300,
+          "max_jitter_ms": 30,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 30
+        },
+        "critical": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 20,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 300,
+          "max_jitter_ms": 30,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 40
+        }
+      }
+    },
+    "non_critical_push_to_talk": {
+      "label": "Non-mission-critical push-to-talk voice",
+      "scale_label": "Concurrent push-to-talk users",
+      "business_phrases": [
+        "non mission critical push to talk",
+        "non-mission-critical push-to-talk",
+        "non critical ptt",
+        "non mission critical ptt"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 66,
+        "arp_priority": 6,
+        "resource_type": "GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 20,
+        "packet_delay_budget_ms": 100,
+        "packet_error_rate": "1e-2",
+        "example_service": "Non-Mission-Critical user plane Push To Talk voice",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 0.064,
+        "mfbr_mbps": 0.128
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 0.128,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 25,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 100
+        },
+        "high": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 0.192,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 25,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 150
+        },
+        "critical": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 0.256,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 100,
+          "max_jitter_ms": 25,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 200
+        }
+      }
+    },
+    "live_uplink_streaming": {
+      "label": "Live uplink streaming",
+      "scale_label": "Concurrent uplink streams",
+      "business_phrases": [
+        "live uplink streaming",
+        "uplink live stream",
+        "live camera uplink",
+        "uplink broadcast stream"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 71,
+        "arp_priority": 6,
+        "resource_type": "GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 56,
+        "packet_delay_budget_ms": 150,
+        "packet_error_rate": "1e-6",
+        "example_service": "Live Uplink Streaming",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 2,
+        "mfbr_mbps": 6
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 4,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 150,
+          "max_jitter_ms": 30,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 100
+        },
+        "high": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 6,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 150,
+          "max_jitter_ms": 30,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 150
+        },
+        "critical": {
+          "preferred_template": "embb",
+          "throughput_per_unit_mbps": 8,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 150,
+          "max_jitter_ms": 30,
+          "max_packet_loss_percent": 1,
+          "min_reliability_percent": 99.9,
+          "message_rate_per_unit": 200
+        }
+      }
+    },
+    "mission_critical_signalling": {
+      "label": "Mission-critical delay-sensitive signalling",
+      "scale_label": "Concurrent responders",
+      "business_phrases": [
+        "mission critical delay sensitive signalling",
+        "mission critical signalling",
+        "mission critical signaling",
+        "mcptt signalling",
+        "mcptt signaling"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 69,
+        "arp_priority": 2,
+        "resource_type": "NON_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 5,
+        "packet_delay_budget_ms": 60,
+        "packet_error_rate": "1e-6",
+        "example_service": "Mission Critical delay sensitive signalling",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.05,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1,
+          "max_latency_ms": 60,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 200
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.075,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 60,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 300
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.1,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 60,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 400
+        }
+      }
+    },
+    "mission_critical_data": {
+      "label": "Mission-critical data",
+      "scale_label": "Concurrent responders",
+      "business_phrases": [
+        "mission critical data",
+        "public safety data",
+        "first responder data"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 70,
+        "arp_priority": 2,
+        "resource_type": "NON_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 55,
+        "packet_delay_budget_ms": 200,
+        "packet_error_rate": "1e-6",
+        "example_service": "Mission Critical Data",
+        "arp_source": "PROJECT_OPERATOR_POLICY"
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 2,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1,
+          "max_latency_ms": 200,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 100
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 3,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 200,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 150
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 4,
+          "guaranteed_ratio": 0.2,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 200,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 200
+        }
+      }
+    },
+    "electricity_distribution_medium_voltage": {
+      "label": "Medium-voltage electricity distribution",
+      "scale_label": "Grid endpoints",
+      "business_phrases": [
+        "medium voltage electricity distribution",
+        "electricity distribution medium voltage",
+        "medium voltage grid control"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 3,
+        "arp_priority": 2,
+        "resource_type": "GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 30,
+        "packet_delay_budget_ms": 50,
+        "packet_error_rate": "1e-3",
+        "example_service": "Electricity distribution - medium voltage",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 0.1,
+        "mfbr_mbps": 0.5
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.25,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 100
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.375,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 150
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.5,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 200
+        }
+      }
+    },
+    "process_automation_monitoring": {
+      "label": "Process automation monitoring",
+      "scale_label": "Monitored process endpoints",
+      "business_phrases": [
+        "process automation monitoring",
+        "industrial process monitoring",
+        "process control monitoring"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 3,
+        "arp_priority": 3,
+        "resource_type": "GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 30,
+        "packet_delay_budget_ms": 50,
+        "packet_error_rate": "1e-3",
+        "example_service": "Process automation monitoring",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 0.1,
+        "mfbr_mbps": 0.5
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.25,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 100
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.375,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 150
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.5,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 50,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 200
+        }
+      }
+    },
+    "discrete_automation": {
+      "label": "Discrete automation",
+      "scale_label": "Automation controllers",
+      "business_phrases": [
+        "discrete automation",
+        "discrete manufacturing automation",
+        "factory discrete control"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 82,
+        "arp_priority": 2,
+        "resource_type": "DELAY_CRITICAL_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 19,
+        "packet_delay_budget_ms": 10,
+        "packet_error_rate": "1e-4",
+        "example_service": "Discrete Automation",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 0.1,
+        "mfbr_mbps": 0.5
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.25,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 10,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 500
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.375,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 10,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 750
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.5,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 10,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 1000
+        }
+      }
+    },
+    "intelligent_transport": {
+      "label": "Intelligent transport systems",
+      "scale_label": "Connected vehicles",
+      "business_phrases": [
+        "intelligent transport systems",
+        "intelligent transportation system",
+        "its vehicle communication"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 84,
+        "arp_priority": 3,
+        "resource_type": "DELAY_CRITICAL_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 24,
+        "packet_delay_budget_ms": 30,
+        "packet_error_rate": "1e-5",
+        "example_service": "Intelligent transport systems",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 0.25,
+        "mfbr_mbps": 1
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.5,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 30,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 200
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.75,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 30,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 300
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 1,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 30,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 400
+        }
+      }
+    },
+    "electricity_distribution_high_voltage": {
+      "label": "High-voltage electricity distribution",
+      "scale_label": "Grid endpoints",
+      "business_phrases": [
+        "high voltage electricity distribution",
+        "electricity distribution high voltage",
+        "high voltage grid protection"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 85,
+        "arp_priority": 1,
+        "resource_type": "DELAY_CRITICAL_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 21,
+        "packet_delay_budget_ms": 5,
+        "packet_error_rate": "1e-5",
+        "example_service": "Electricity Distribution - high voltage",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 0.1,
+        "mfbr_mbps": 0.5
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.25,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 500
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.375,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 750
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.5,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 1000
+        }
+      }
+    },
+    "remote_driving": {
+      "label": "V2X remote driving",
+      "scale_label": "Remotely driven vehicles",
+      "business_phrases": [
+        "remote driving",
+        "remote vehicle driving",
+        "teleoperated vehicle",
+        "vehicle teleoperation"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 85,
+        "arp_priority": 2,
+        "resource_type": "DELAY_CRITICAL_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 21,
+        "packet_delay_budget_ms": 5,
+        "packet_error_rate": "1e-5",
+        "example_service": "V2X Remote Driving",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 1,
+        "mfbr_mbps": 4
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 2,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 500
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 3,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 750
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 4,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 1000
+        }
+      }
+    },
+    "advanced_driving": {
+      "label": "V2X advanced driving",
+      "scale_label": "Connected vehicles",
+      "business_phrases": [
+        "advanced driving collision avoidance",
+        "advanced driving",
+        "high automation platooning",
+        "collision avoidance platooning"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 86,
+        "arp_priority": 2,
+        "resource_type": "DELAY_CRITICAL_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 18,
+        "packet_delay_budget_ms": 5,
+        "packet_error_rate": "1e-4",
+        "example_service": "V2X Advanced Driving",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 0.5,
+        "mfbr_mbps": 2
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 1,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 500
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 1.5,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 750
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 2,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 1000
+        }
+      }
+    },
+    "motion_tracking": {
+      "label": "Interactive motion tracking",
+      "scale_label": "Tracked users or devices",
+      "business_phrases": [
+        "interactive motion tracking",
+        "motion tracking data",
+        "real time motion tracking"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 87,
+        "arp_priority": 4,
+        "resource_type": "DELAY_CRITICAL_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 25,
+        "packet_delay_budget_ms": 5,
+        "packet_error_rate": "1e-3",
+        "example_service": "Interactive Service - Motion tracking data",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 0.25,
+        "mfbr_mbps": 1
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.5,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 500
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 0.75,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 750
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 1,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 5,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 1000
+        }
+      }
+    },
+    "split_ai_ml_inference": {
+      "label": "Split AI/ML inference",
+      "scale_label": "Concurrent inference flows",
+      "business_phrases": [
+        "split ai ml inference",
+        "split ai/ml inference",
+        "uplink split ai ml image recognition",
+        "distributed ai inference"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 88,
+        "arp_priority": 4,
+        "resource_type": "DELAY_CRITICAL_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 25,
+        "packet_delay_budget_ms": 10,
+        "packet_error_rate": "1e-3",
+        "example_service": "Split AI/ML inference - UL image recognition",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 1,
+        "mfbr_mbps": 4
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 2,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 10,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 300
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 3,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 10,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 450
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 4,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 10,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 600
+        }
+      }
+    },
+    "edge_visual_rendering": {
+      "label": "Cloud/edge visual rendering",
+      "scale_label": "Concurrent rendering sessions",
+      "business_phrases": [
+        "visual content for edge rendering",
+        "edge visual rendering",
+        "cloud visual rendering",
+        "split rendering visual content"
+      ],
+      "scale": {
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "quality_phrases": {
+        "standard": [
+          "standard service",
+          "standard quality"
+        ],
+        "high": [
+          "high quality",
+          "high priority"
+        ],
+        "critical": [
+          "critical service",
+          "mission critical"
+        ]
+      },
+      "default_quality": "standard",
+      "default_scale": 1,
+      "default_duration_minutes": 60,
+      "qos": {
+        "five_qi": 89,
+        "arp_priority": 4,
+        "resource_type": "DELAY_CRITICAL_GBR",
+        "five_qi_source": "3GPP_TS_23_501_TABLE_5_7_4_1",
+        "five_qi_priority_level": 25,
+        "packet_delay_budget_ms": 15,
+        "packet_error_rate": "1e-4",
+        "example_service": "Visual content for cloud/edge/split rendering",
+        "arp_source": "PROJECT_OPERATOR_POLICY",
+        "gfbr_mbps": 2,
+        "mfbr_mbps": 6
+      },
+      "qualities": {
+        "standard": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 4,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1,
+          "max_latency_ms": 15,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 200
+        },
+        "high": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 6,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.2,
+          "max_latency_ms": 15,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 300
+        },
+        "critical": {
+          "preferred_template": "urllc",
+          "throughput_per_unit_mbps": 8,
+          "guaranteed_ratio": 0.75,
+          "burst_ratio": 1.25,
+          "max_latency_ms": 15,
+          "max_jitter_ms": 2,
+          "max_packet_loss_percent": 0.01,
+          "min_reliability_percent": 99.999,
+          "message_rate_per_unit": 400
+        }
+      }
+    }
+  },
+  "templates": {
+    "embb": {
+      "label": "eMBB",
+      "sst": 1,
+      "dnn": "srsapn",
+      "default_qos": {
+        "five_qi": 9,
+        "arp_priority": 8,
+        "resource_type": "NON_GBR"
+      },
+      "guaranteed_throughput_mbps": 100,
+      "max_throughput_mbps": 1000,
+      "latency_ms": 30,
+      "jitter_ms": 15,
+      "packet_loss_percent": 1,
+      "reliability_percent": 99.9,
+      "max_sessions": 1000,
+      "max_message_rate_per_second": 100000,
+      "session_ambr_max_mbps": 1000,
+      "selection_cost": 2,
+      "evidence_status": "DECLARED"
+    },
+    "urllc": {
+      "label": "URLLC",
+      "sst": 2,
+      "dnn": "srsapn",
+      "default_qos": {
+        "five_qi": 7,
+        "arp_priority": 4,
+        "resource_type": "NON_GBR"
+      },
+      "guaranteed_throughput_mbps": 50,
+      "max_throughput_mbps": 100,
+      "latency_ms": 5,
+      "jitter_ms": 2,
+      "packet_loss_percent": 0.01,
+      "reliability_percent": 99.999,
+      "max_sessions": 1000,
+      "max_message_rate_per_second": 500000,
+      "session_ambr_max_mbps": 100,
+      "selection_cost": 3,
+      "evidence_status": "DECLARED"
+    },
+    "mmtc": {
+      "label": "mMTC",
+      "sst": 3,
+      "dnn": "srsapn",
+      "default_qos": {
+        "five_qi": 9,
+        "arp_priority": 12,
+        "resource_type": "NON_GBR"
+      },
+      "guaranteed_throughput_mbps": 2,
+      "max_throughput_mbps": 10,
+      "latency_ms": 200,
+      "jitter_ms": 100,
+      "packet_loss_percent": 5,
+      "reliability_percent": 95,
+      "max_sessions": 1000000,
+      "max_message_rate_per_second": 1000000,
+      "session_ambr_max_mbps": 10,
+      "selection_cost": 1,
+      "evidence_status": "DECLARED"
+    }
+  },
+  "catalog_revision": "2026-09-10-3gpp-standard-services",
+  "standards_reference": {
+    "document": "3GPP TS 23.501",
+    "table": "5.7.4-1",
+    "note": "5QI characteristics and example services come from 3GPP. ARP values are project operator policy."
+  }
+}
+

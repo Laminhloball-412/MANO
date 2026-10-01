@@ -2,6 +2,14 @@ from __future__ import annotations
 
 from copy import deepcopy
 
+from .service_intent import load_catalog
+
+
+class NoFeasibleTemplate(ValueError):
+    def __init__(self, candidates):
+        super().__init__("NO_FEASIBLE_TEMPLATE: no slice candidate satisfies all SLA constraints")
+        self.candidates = candidates
+
 
 SLICE_PROFILES = {
     "embb": {
@@ -263,4 +271,158 @@ def choose_slice_from_observed(observed_kpis, allowed_slice_types=None):
             "Only slice profiles permitted by this subscriber were considered",
             "Input represents a 30-second aggregated Prometheus observation",
         ],
+    }
+
+
+def _at_least(actual, required):
+    return {
+        "passed": float(actual) >= float(required),
+        "required": float(required),
+        "capability": float(actual),
+        "operator": ">=",
+    }
+
+
+def _at_most(actual, maximum):
+    return {
+        "passed": float(actual) <= float(maximum),
+        "required": float(maximum),
+        "capability": float(actual),
+        "operator": "<=",
+    }
+
+
+def _candidate(template_name, template, sla, instance=None):
+    instance = instance or {}
+    action = "REUSE" if instance else "ALLOCATE"
+    residual = float(
+        instance.get("residual_throughput_mbps", template["max_throughput_mbps"])
+    )
+    remaining_sessions = int(
+        instance.get("remaining_sessions", template["max_sessions"])
+    )
+    healthy = bool(instance.get("healthy", True))
+    checks = {
+        "peak_throughput": _at_least(
+            min(residual, template["max_throughput_mbps"]),
+            sla["peak_throughput_mbps"],
+        ),
+        "min_throughput": _at_least(
+            min(residual, template["guaranteed_throughput_mbps"]),
+            sla["min_throughput_mbps"],
+        ),
+        "latency": _at_most(template["latency_ms"], sla["max_latency_ms"]),
+        "jitter": _at_most(template["jitter_ms"], sla["max_jitter_ms"]),
+        "packet_loss": _at_most(
+            template["packet_loss_percent"], sla["max_packet_loss_percent"]
+        ),
+        "reliability": _at_least(
+            template["reliability_percent"], sla["min_reliability_percent"]
+        ),
+        "sessions": _at_least(remaining_sessions, sla["expected_sessions"]),
+        "message_rate": _at_least(
+            template["max_message_rate_per_second"],
+            sla["message_rate_per_second"],
+        ),
+        "health": {
+            "passed": healthy,
+            "required": "operational",
+            "capability": "operational" if healthy else "unhealthy",
+            "operator": "==",
+        },
+    }
+    failed = [name for name, check in checks.items() if not check["passed"]]
+    peak = max(float(sla["peak_throughput_mbps"]), 1e-9)
+    overprovision = max(0.0, residual / peak - 1.0)
+    passed_ratio = sum(check["passed"] for check in checks.values()) / len(checks)
+    evidence = instance.get("evidence_status", template["evidence_status"])
+    default_qos = template.get("default_qos") or {}
+    five_qi = template.get("five_qi")
+    if five_qi is None:
+        five_qi = default_qos["five_qi"]
+    arp_priority = template.get("default_arp_priority")
+    if arp_priority is None:
+        arp_priority = default_qos["arp_priority"]
+    return {
+        "candidate_id": instance.get("candidate_id")
+        or instance.get("namespace")
+        or "template:{}".format(template_name),
+        "action": action,
+        "template_family": template_name,
+        "label": template["label"],
+        "namespace": instance.get("namespace"),
+        "sst": int(instance.get("sst", template["sst"])),
+        "sd": instance.get("sd"),
+        "dnn": template["dnn"],
+        "five_qi": int(five_qi),
+        "arp_priority": int(arp_priority),
+        "selection_cost": template["selection_cost"],
+        "residual_throughput_mbps": residual,
+        "remaining_sessions": remaining_sessions,
+        "evidence_status": evidence,
+        "eligible": not failed,
+        "checks": checks,
+        "failed_checks": failed,
+        "overprovision_ratio": round(overprovision, 6),
+        "suitability_percent": round(100.0 * passed_ratio, 2),
+        "suitability_role": "EXPLANATORY_ONLY",
+        "capabilities": deepcopy(template),
+    }
+
+
+def decide_slice(technical_sla, instances=None, catalog=None):
+    catalog = catalog or load_catalog()
+    instances = instances or []
+    candidates = []
+    for instance in instances:
+        family = instance.get("template_family")
+        if family not in catalog["templates"]:
+            continue
+        candidates.append(
+            _candidate(family, catalog["templates"][family], technical_sla, instance)
+        )
+    for name, template in catalog["templates"].items():
+        candidates.append(_candidate(name, template, technical_sla))
+
+    eligible = [candidate for candidate in candidates if candidate["eligible"]]
+    candidates.sort(
+        key=lambda candidate: (
+            0 if candidate["eligible"] else 1,
+            0
+            if candidate["template_family"]
+            == technical_sla["preferred_template"]
+            else 1,
+            0 if candidate["action"] == "REUSE" else 1,
+            candidate["selection_cost"],
+            candidate["overprovision_ratio"],
+            candidate["candidate_id"],
+        )
+    )
+    if not eligible:
+        raise NoFeasibleTemplate(candidates)
+
+    selected = min(
+        eligible,
+        key=lambda candidate: (
+            0
+            if candidate["template_family"]
+            == technical_sla["preferred_template"]
+            else 1,
+            0 if candidate["action"] == "REUSE" else 1,
+            candidate["selection_cost"],
+            candidate["overprovision_ratio"],
+            candidate["candidate_id"],
+        ),
+    )
+    reasons = [
+        "All hard SLA constraints passed for {}".format(selected["candidate_id"]),
+        "Reuse was preferred" if selected["action"] == "REUSE" else "No reusable instance ranked ahead of this template",
+        "Suitability is explanatory only; feasibility gates control eligibility",
+    ]
+    return {
+        "technical_sla": deepcopy(technical_sla),
+        "decision_action": selected["action"],
+        "selected_candidate": selected,
+        "candidates": candidates,
+        "reasons": reasons,
     }

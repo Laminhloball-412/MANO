@@ -5,6 +5,43 @@ metadata:
   name: kube5gnfvo
 ---
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kube5gnfvo-mysql-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: kube5gnfvo-local
+  hostPath:
+    path: /var/lib/kube5gnfvo-mysql
+    type: DirectoryOrCreate
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - 5g-free
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kube5gnfvo-mysql-data
+  namespace: kube5gnfvo
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: kube5gnfvo-local
+  volumeName: kube5gnfvo-mysql-pv
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mysql-initdb-config
@@ -62,7 +99,8 @@ spec:
           periodSeconds: 5
       volumes:
       - name: mysql-data
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: kube5gnfvo-mysql-data
       - name: mysql-initdb
         configMap:
           name: mysql-initdb-config

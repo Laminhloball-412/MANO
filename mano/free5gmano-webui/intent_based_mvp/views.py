@@ -1,6 +1,5 @@
 import json
 import os
-from datetime import datetime, timezone
 
 import requests
 from django.http import JsonResponse
@@ -9,7 +8,25 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 
-UE_INTENT_API = os.environ.get("UE_INTENT_API", "http://127.0.0.1:8890")
+SLICE_INTENT_API = os.environ.get(
+    "SLICE_INTENT_API", os.environ.get("UE_INTENT_API", "http://127.0.0.1:8890")
+)
+SERVICE_INTENT_FIELDS = {
+    "schema_version",
+    "service_type",
+    "quality",
+    "scale",
+    "priority",
+    "duration_minutes",
+    "execution_mode",
+}
+BUSINESS_INTENT_FIELDS = {
+    "schema_version",
+    "business_requirement",
+    "scale",
+    "duration_minutes",
+    "execution_mode",
+}
 
 
 def page(request):
@@ -26,10 +43,24 @@ def page(request):
     )
 
 
+def business_page(request):
+    return render(
+        request,
+        "intent_based_mvp/business_intent.html",
+        {
+            "business_intent_active": "active",
+            "generic_template_link_status": "nav-link collapsed",
+            "generic_template_expanded": "false",
+            "nssi_view_link_status": "nav-link collapsed",
+            "nssi_view_expanded": "false",
+        },
+    )
+
+
 def _proxy(method, path, payload=None, timeout=30):
     response = requests.request(
         method,
-        UE_INTENT_API.rstrip("/") + path,
+        SLICE_INTENT_API.rstrip("/") + path,
         json=payload,
         timeout=timeout,
     )
@@ -37,69 +68,123 @@ def _proxy(method, path, payload=None, timeout=30):
         body = response.json()
     except ValueError:
         return JsonResponse(
-            {"ok": False, "error": "UE Intent API returned a non-JSON response"},
+            {"ok": False, "error": "Slice Intent API returned a non-JSON response"},
             status=502,
         )
     return JsonResponse(body, status=response.status_code, safe=isinstance(body, dict))
 
 
-@require_http_methods(["GET"])
-def api_ues(request):
-    return _proxy("GET", "/api/intent-attach/ues/")
-
-
-def _normalize_simulation(document):
+def _normalize_service_intent(document):
     if not isinstance(document, dict):
         raise ValueError("Request body must be a JSON object")
-    source = document.get("input_source", "prometheus_simulation")
-    if source != "prometheus_simulation":
-        raise ValueError("MVP currently accepts input_source=prometheus_simulation only")
-    ue = document.get("ue") or {}
-    service = document.get("service") or {}
-    observed = document.get("observed_kpis") or {}
-    if not ue.get("ue_id"):
-        raise ValueError("ue.ue_id is required")
-    if not service.get("name"):
-        raise ValueError("service.name is required")
-    return {
-        "schema_version": "1.0",
-        "input_source": "prometheus_simulation",
-        "submitted_at": datetime.now(timezone.utc).isoformat(),
-        "ue": {"ue_id": int(ue["ue_id"])},
-        "service": {
-            "name": str(service["name"]).strip(),
-            "category": str(service.get("category", "custom")).strip(),
-        },
-        "measurement_window": {
-            "seconds": 30,
-            "samples": 30,
-            "aggregation": "avg_and_p95",
-        },
-        "observed_kpis": observed,
+    unknown = set(document) - SERVICE_INTENT_FIELDS
+    if unknown:
+        raise ValueError("Unsupported Service Intent fields: {}".format(sorted(unknown)))
+    required = {
+        "service_type",
+        "quality",
+        "scale",
+        "priority",
+        "duration_minutes",
     }
+    missing = required - set(document)
+    if missing:
+        raise ValueError("Missing Service Intent fields: {}".format(sorted(missing)))
+    return {
+        "schema_version": "2.0",
+        "service_type": str(document["service_type"]).strip().lower(),
+        "quality": str(document["quality"]).strip().lower(),
+        "scale": document["scale"],
+        "priority": str(document["priority"]).strip().lower(),
+        "duration_minutes": document["duration_minutes"],
+        "execution_mode": str(document.get("execution_mode", "dry_run"))
+        .strip()
+        .lower(),
+    }
+
+
+def _normalize_business_intent(document):
+    if not isinstance(document, dict):
+        raise ValueError("Request body must be a JSON object")
+    unknown = set(document) - BUSINESS_INTENT_FIELDS
+    if unknown:
+        raise ValueError("Unsupported Business Intent fields: {}".format(sorted(unknown)))
+    requirement = str(document.get("business_requirement", "")).strip()
+    if not requirement:
+        raise ValueError("business_requirement is required")
+    schema_version = str(document.get("schema_version", "2.0")).strip()
+    if schema_version != "2.0":
+        raise ValueError("schema_version must be 2.0")
+    normalized = {
+        "schema_version": schema_version,
+        "business_requirement": requirement,
+        "execution_mode": str(document.get("execution_mode", "dry_run"))
+        .strip()
+        .lower(),
+    }
+    for field in ("scale", "duration_minutes"):
+        if document.get(field) not in (None, ""):
+            normalized[field] = document[field]
+    return normalized
+
+
+@require_http_methods(["GET"])
+def api_catalog(request):
+    return _proxy("GET", "/api/slice-intents/catalog/")
 
 
 @csrf_exempt
 @require_http_methods(["POST"])
 def api_submit(request):
     try:
-        normalized = _normalize_simulation(json.loads(request.body or b"{}"))
+        normalized = _normalize_service_intent(json.loads(request.body or b"{}"))
     except (ValueError, TypeError, json.JSONDecodeError) as error:
         return JsonResponse({"ok": False, "error": str(error)}, status=400)
-    return _proxy("POST", "/api/intent-attach/jobs/", normalized)
+    return _proxy("POST", "/api/slice-intents/", normalized)
 
 
 @require_http_methods(["GET"])
-def api_job(request, job_id):
-    return _proxy("GET", "/api/intent-attach/jobs/{}/".format(job_id))
+def api_job(request, intent_id):
+    return _proxy("GET", "/api/slice-intents/{}/".format(intent_id))
 
 
 @require_http_methods(["GET"])
-def api_radio_status(request):
-    return _proxy("GET", "/api/radio/status/")
+def api_configuration(request, intent_id):
+    return _proxy(
+        "GET", "/api/slice-intents/{}/configuration/".format(intent_id)
+    )
+
+
+@require_http_methods(["GET"])
+def api_instances(request):
+    return _proxy("GET", "/api/slice-instances/")
 
 
 @csrf_exempt
 @require_http_methods(["POST"])
-def api_radio_disconnect(request):
-    return _proxy("POST", "/api/radio/disconnect/", {})
+def api_business_translate(request):
+    try:
+        normalized = _normalize_business_intent(json.loads(request.body or b"{}"))
+    except (ValueError, TypeError, json.JSONDecodeError) as error:
+        return JsonResponse({"ok": False, "error": str(error)}, status=400)
+    return _proxy("POST", "/api/business-intents/translate/", normalized)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def api_business_submit(request):
+    try:
+        normalized = _normalize_business_intent(json.loads(request.body or b"{}"))
+    except (ValueError, TypeError, json.JSONDecodeError) as error:
+        return JsonResponse({"ok": False, "error": str(error)}, status=400)
+    return _proxy("POST", "/api/business-intents/", normalized)
+
+
+@require_http_methods(["GET"])
+def api_business_job(request, intent_id):
+    return _proxy("GET", "/api/slice-intents/{}/".format(intent_id))
+
+
+@require_http_methods(["GET"])
+def api_business_instances(request):
+    return _proxy("GET", "/api/slice-instances/")

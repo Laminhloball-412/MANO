@@ -1,5 +1,6 @@
 import requests
 from free5gmano_webui import settings
+from .intent_payload import build_runtime_intent
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -65,17 +66,18 @@ def build_grafana_url():
         'from': 'now-1h',
         'to': 'now',
         'timezone': 'browser',
-        'var-slice_filter': '$__all',
-        'refresh': '15s',
+        'var-ue': '$__all',
+        'var-pdu': '$__all',
+        'var-service': '$__all',
+        'var-flow': '$__all',
+        'var-profile': '$__all',
+        'var-slice': '$__all',
+        'refresh': '5s',
         'theme': 'light',
     }
 
-    datasource_uid = get_grafana_datasource_uid()
-    if datasource_uid:
-        params['var-datasource'] = datasource_uid
-
     return (
-        f'{settings.GRAFANA_BASE_URL}/d/'
+        f'{settings.GRAFANA_PUBLIC_URL.rstrip("/")}/d/'
         f'{settings.GRAFANA_DASHBOARD_UID}/'
         f'{settings.GRAFANA_DASHBOARD_SLUG}?'
         f'{urlencode(params)}&kiosk'
@@ -139,12 +141,10 @@ def auto_slice_create(request):
                 int(requested_sd, 16)
             except ValueError:
                 raise ValueError('sd must contain exactly 6 hexadecimal characters')
-        intent = {
-            'intent_id': (
-                f'web-{slice_type}-{int(time.time())}-{uuid.uuid4().hex[:8]}'
-            ),
-            'slice_type': slice_type,
-        }
+        intent = build_runtime_intent(
+            payload,
+            intent_id=f'web-{slice_type}-{int(time.time())}-{uuid.uuid4().hex[:8]}',
+        )
         if requested_sst is not None:
             intent['sst'] = expected_sst
         if requested_sd is not None:
@@ -163,7 +163,8 @@ def auto_slice_create(request):
             key: result.get(key)
             for key in (
                 'intent_id', 'slice_type', 'namespace', 'sst', 'sd',
-                'status', 'nssi_id', 'pods',
+                'status', 'nssi_id', 'pods', 'deployment_configuration',
+                'core_registration', 'core_registration_error',
             )
         }
         return JsonResponse({'ok': True, 'data': summary})

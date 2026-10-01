@@ -6,6 +6,7 @@ import ast
 import contextlib
 import copy
 import json
+import math
 import os
 import re
 import shutil
@@ -22,12 +23,27 @@ from urllib.parse import urlparse
 
 import requests
 
+from core_slice_registry import CoreSliceRegistry, desired_snssai
 from renderer import (
     clean_failed_run,
     render_nrm_package,
     render_packages,
     validate_source_packages,
 )
+
+
+DEFAULT_QOS_BY_SLICE = {
+    "embb": {"five_qi": 9, "arp_priority": 8, "resource_type": "NON_GBR"},
+    "urllc": {"five_qi": 7, "arp_priority": 4, "resource_type": "NON_GBR"},
+    "mmtc": {"five_qi": 9, "arp_priority": 12, "resource_type": "NON_GBR"},
+}
+# Accepted declarative 5QI profiles for this orchestration demo. These values are
+# carried into evidence/manifests; acceptance does not claim core or radio enforcement.
+SUPPORTED_5QI_BY_SLICE = {
+    "embb": {1, 2, 7, 8, 9, 80},
+    "urllc": {3, 7, 65, 67},
+    "mmtc": {8, 9},
+}
 
 
 ROOT = Path(__file__).resolve().parent
@@ -361,6 +377,7 @@ class Plan:
     ipv4_gateway: str
     ipv6_subnet: str | None
     ipv6_gateway: str | None
+    deployment_configuration: dict[str, Any]
 
     def as_dict(self) -> dict[str, Any]:
         return copy.deepcopy(self.__dict__)
@@ -423,8 +440,184 @@ def classify_intent(intent: dict[str, Any]) -> tuple[str, list[str]]:
     )
 
 
+def _finite_nonnegative(value: Any, field: str) -> float:
+    if isinstance(value, bool):
+        raise ValueError(f"{field} must be numeric")
+    try:
+        number = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{field} must be numeric") from exc
+    if not math.isfinite(number) or number < 0:
+        raise ValueError(f"{field} must be finite and non-negative")
+    return number
+
+
+def _exact_integer(value: Any, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{field} must be an integer")
+    number = float(value)
+    if not math.isfinite(number) or not number.is_integer():
+        raise ValueError(f"{field} must be a finite integer")
+    return int(number)
+
+
+def normalize_runtime_qos(
+    value: dict[str, Any], slice_type: str, field: str
+) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise ValueError(f"{field} must be an object")
+    five_qi = _exact_integer(value.get("five_qi"), f"{field}.five_qi")
+    arp_priority = _exact_integer(
+        value.get("arp_priority"), f"{field}.arp_priority"
+    )
+    if five_qi not in SUPPORTED_5QI_BY_SLICE[slice_type]:
+        raise ValueError(f"{field}.five_qi {five_qi} is not supported by {slice_type}")
+    if not 1 <= arp_priority <= 15:
+        raise ValueError(f"{field}.arp_priority must be in 1..15")
+    resource_type = str(value.get("resource_type", "")).upper()
+    if resource_type not in {"GBR", "NON_GBR"}:
+        raise ValueError(f"{field}.resource_type must be GBR or NON_GBR")
+    normalized = copy.deepcopy(value)
+    normalized.update(
+        five_qi=five_qi,
+        arp_priority=arp_priority,
+        resource_type=resource_type,
+    )
+    if resource_type == "GBR":
+        gfbr = _finite_nonnegative(value.get("gfbr_mbps"), f"{field}.gfbr_mbps")
+        mfbr = _finite_nonnegative(value.get("mfbr_mbps"), f"{field}.mfbr_mbps")
+        if gfbr <= 0 or mfbr < gfbr:
+            raise ValueError(f"{field} requires positive GFBR and MFBR >= GFBR")
+        normalized.update(gfbr_mbps=gfbr, mfbr_mbps=mfbr)
+    return normalized
+
+
+def deployment_configuration(
+    intent: dict[str, Any], slice_type: str
+) -> dict[str, Any]:
+    technical = intent.get("technical_sla")
+    policy = intent.get("deployment_policy")
+    if technical is None and policy is None:
+        return {
+            "template_family": slice_type,
+            "evidence_status": "DECLARED",
+        }
+    if not isinstance(technical, dict) or not isinstance(policy, dict):
+        raise ValueError("technical_sla and deployment_policy must be supplied together")
+    if policy.get("template_family") != slice_type:
+        raise ValueError("deployment_policy.template_family does not match slice_type")
+    numeric_technical = (
+        "min_throughput_mbps",
+        "target_throughput_mbps",
+        "peak_throughput_mbps",
+        "max_latency_ms",
+        "max_jitter_ms",
+        "max_packet_loss_percent",
+        "min_reliability_percent",
+    )
+    configuration = {
+        name: _finite_nonnegative(technical.get(name), f"technical_sla.{name}")
+        for name in numeric_technical
+    }
+    expected_sessions = _finite_nonnegative(
+        technical.get("expected_sessions"), "technical_sla.expected_sessions"
+    )
+    if not expected_sessions.is_integer():
+        raise ValueError("technical_sla.expected_sessions must be an integer")
+    default_qos = normalize_runtime_qos(
+        policy.get("default_qos", DEFAULT_QOS_BY_SLICE[slice_type]),
+        slice_type,
+        "deployment_policy.default_qos",
+    )
+    legacy_service_qos = {
+        "five_qi": policy.get("five_qi"),
+        "arp_priority": policy.get("arp_priority"),
+        "resource_type": policy.get("resource_type", "NON_GBR"),
+        "gfbr_mbps": policy.get("gfbr_mbps"),
+        "mfbr_mbps": policy.get("mfbr_mbps"),
+    }
+    service_qos = normalize_runtime_qos(
+        policy.get("service_qos", legacy_service_qos),
+        slice_type,
+        "deployment_policy.service_qos",
+    )
+    session_ambr = _finite_nonnegative(
+        policy.get("session_ambr_mbps"),
+        "deployment_policy.session_ambr_mbps",
+    )
+    if session_ambr <= 0:
+        raise ValueError("deployment_policy.session_ambr_mbps must be positive")
+    configuration.update(
+        {
+            "template_family": slice_type,
+            "dnn": str(policy.get("dnn", "")).strip(),
+            "five_qi": service_qos["five_qi"],
+            "arp_priority": service_qos["arp_priority"],
+            "session_ambr_mbps": session_ambr,
+            "downlink_limit_mbps": _finite_nonnegative(
+                policy.get("downlink_limit_mbps"),
+                "deployment_policy.downlink_limit_mbps",
+            ),
+            "expected_sessions": int(expected_sessions),
+            "evidence_status": str(policy.get("evidence_status", "DECLARED")),
+            "default_qos": default_qos,
+            "service_qos": service_qos,
+            "qos_evidence": copy.deepcopy(
+                policy.get(
+                    "qos_evidence",
+                    {
+                        "core_policy_status": "DECLARED_NOT_ENFORCED",
+                        "radio_status": "NOT_VERIFIED",
+                    },
+                )
+            ),
+        }
+    )
+    if configuration["evidence_status"] not in {
+        "DECLARED",
+        "ENFORCED",
+        "BENCHMARKED",
+    }:
+        raise ValueError("deployment_policy.evidence_status is invalid")
+    if not configuration["dnn"]:
+        raise ValueError("deployment_policy.dnn is required")
+    return configuration
+
+
+def nrm_overrides_from_configuration(configuration: dict[str, Any]) -> dict[str, str]:
+    required = {
+        "target_throughput_mbps",
+        "peak_throughput_mbps",
+        "max_latency_ms",
+        "max_jitter_ms",
+        "max_packet_loss_percent",
+        "min_reliability_percent",
+    }
+    if not required.issubset(configuration):
+        return {}
+
+    def number(name: str) -> str:
+        return format(float(configuration[name]), "g")
+
+    return {
+        "expDataRateDL": f"{number('peak_throughput_mbps')} Mbps",
+        "expDataRateUL": f"{number('peak_throughput_mbps')} Mbps",
+        "areaTrafficCapDL": f"{number('target_throughput_mbps')} Mbps",
+        "areaTrafficCapUL": f"{number('target_throughput_mbps')} Mbps",
+        "latency": f"{number('max_latency_ms')} ms",
+        "jitter": f"{number('max_jitter_ms')} ms",
+        "packetLoss": f"{number('max_packet_loss_percent')}%",
+        "reliability": f"{number('min_reliability_percent')}%",
+    }
+
+
 class Orchestrator:
-    def __init__(self, config: dict[str, Any], config_path: Path):
+    def __init__(
+        self,
+        config: dict[str, Any],
+        config_path: Path,
+        core_registry: CoreSliceRegistry | None = None,
+    ):
         self.config = config
         self.config_path = config_path
         self.api = Api(config)
@@ -432,6 +625,82 @@ class Orchestrator:
         self.output_root = (ROOT / config["output_dir"]).resolve()
         self.prefix = config.get("namespace_prefix", "slice-")
         self.max_slots = int(config.get("max_slots", 10))
+        self.core_registry = core_registry or CoreSliceRegistry(config)
+
+    def register_core_slice(
+        self,
+        store: StateStore,
+        record: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Register an allocated slice in AMF/NSSF without deleting it on failure."""
+
+        record["status"] = "REGISTERING_NSSF"
+        record.setdefault("events", []).append(
+            {"at": now(), "event": "core_registration_started"}
+        )
+        store.save()
+        try:
+            pairs = desired_snssai(
+                store.data,
+                self.config.get("shared_amf_baseline_snssai", []),
+                {(record["sst"], record["sd"])},
+            )
+            evidence = self.core_registry.reconcile(pairs)
+            record["status"] = "VERIFYING_NSSF"
+            record["core_registration"] = evidence
+            store.save()
+            record["events"].append(
+                {
+                    "at": now(),
+                    "event": "nssf_registration_verified",
+                    "snssai": evidence["snssai"],
+                }
+            )
+            record["status"] = "READY_FOR_UE"
+            record.pop("core_registration_error", None)
+            store.save()
+        except Exception as error:
+            record["status"] = "REGISTRATION_FAILED"
+            record["core_registration_error"] = str(error)
+            backup_dir = getattr(self.core_registry, "last_backup_dir", None)
+            if backup_dir:
+                record["core_registration_backup_dir"] = str(backup_dir)
+            record["events"].append(
+                {
+                    "at": now(),
+                    "event": "nssf_registration_failed",
+                    "reason": str(error),
+                }
+            )
+            store.save()
+        return record
+
+    def core_pairs(self, state: dict[str, Any] | None = None) -> list[tuple[int, str]]:
+        return desired_snssai(
+            state if state is not None else self.state.load(),
+            self.config.get("shared_amf_baseline_snssai", []),
+        )
+
+    def core_status(self) -> dict[str, Any]:
+        """Read AMF/NSSF/NRF state without changing cluster resources."""
+
+        pairs = self.core_pairs()
+        try:
+            evidence = self.core_registry.verify(pairs)
+        except Exception as error:
+            return {
+                "verified": False,
+                "snssai": [
+                    {"sst": sst, "sd": sd} for sst, sd in pairs
+                ],
+                "error": str(error),
+            }
+        return evidence
+
+    def core_reconcile(self) -> dict[str, Any]:
+        """Apply the desired S-NSSAI set and return complete verification evidence."""
+
+        return self.core_registry.reconcile(self.core_pairs())
 
     def all_namespace_slots(self) -> dict[int, str]:
         result = run(
@@ -497,6 +766,34 @@ class Orchestrator:
                 return slot
         raise RuntimeError(f"No free slot in 1..{self.max_slots}: {occupied}")
 
+    def choose_requested_slot(
+        self,
+        intent: dict[str, Any],
+        state: dict[str, Any],
+    ) -> int:
+        """Use an explicit slot when a caller has a stable data-plane mapping.
+
+        Interactive Auto Slice requests keep the original first-free behavior.
+        The session orchestrator supplies a slot because its UE PDU ID, TUN,
+        gateway and subscriber S-NSSAI are intentionally pre-provisioned as one
+        consistent lab profile.
+        """
+        requested = intent.get("slot")
+        if requested is None:
+            return self.choose_slot(state)
+        try:
+            slot = int(requested)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"slot must be an integer: {requested}") from exc
+        if slot < 1 or slot > self.max_slots:
+            raise ValueError(f"slot must be in 1..{self.max_slots}: {slot}")
+        occupied = self.occupied_slots(state)
+        if slot in occupied:
+            raise RuntimeError(
+                f"Requested slot {slot} is already occupied by {occupied[slot]}"
+            )
+        return slot
+
     def make_plan(
         self,
         intent: dict[str, Any],
@@ -504,7 +801,7 @@ class Orchestrator:
     ) -> tuple[Plan, list[str]]:
         slice_type, reasons = classify_intent(intent)
         profile = self.config["profiles"][slice_type]
-        slot = self.choose_slot(state)
+        slot = self.choose_requested_slot(intent, state)
         namespace = f"{self.prefix}{slot}"
         intent_id = str(intent.get("intent_id") or f"intent-{uuid.uuid4()}")
         ipv4_subnet = profile.get("ipv4_subnet", "10.45.{slot}.0/24").format(
@@ -541,6 +838,9 @@ class Orchestrator:
                 ipv4_gateway=ipv4_gateway,
                 ipv6_subnet=ipv6_subnet,
                 ipv6_gateway=ipv6_gateway,
+                deployment_configuration=deployment_configuration(
+                    intent, slice_type
+                ),
             ),
             reasons,
         )
@@ -1183,6 +1483,24 @@ class Orchestrator:
                     "          nf_type: smf",
                 ]
             )
+        for job in self.config.get("monitoring_extra_scrape_jobs", []):
+            job_name = str(job["job_name"])
+            targets = [str(target) for target in job.get("targets", [])]
+            if not targets:
+                raise ValueError(
+                    f"monitoring extra scrape job has no targets: {job_name}"
+                )
+            prometheus_lines.extend(["", f"  - job_name: {job_name}"])
+            if job.get("scrape_interval"):
+                prometheus_lines.append(
+                    f"    scrape_interval: {job['scrape_interval']}"
+                )
+            prometheus_lines.extend(
+                ["    static_configs:", "      - targets:"]
+            )
+            prometheus_lines.extend(
+                f"          - {target}" for target in targets
+            )
         prometheus_data = "\n".join(prometheus_lines) + "\n"
 
         changed_deployments: list[str] = []
@@ -1547,9 +1865,22 @@ class Orchestrator:
                     ipv6_subnet=plan.ipv6_subnet,
                     ipv6_gateway=plan.ipv6_gateway,
                     output_root=work / "rendered",
+                    default_qos=plan.deployment_configuration.get("default_qos"),
+                    service_qos=plan.deployment_configuration.get("service_qos"),
+                    session_ambr_mbps=plan.deployment_configuration.get(
+                        "session_ambr_mbps"
+                    ),
                 )
                 nrm_profile = self.config["profiles"][plan.slice_type].get(
                     "nrm", {}
+                )
+                performance_overrides = dict(
+                    nrm_profile.get("performance_overrides") or {}
+                )
+                performance_overrides.update(
+                    nrm_overrides_from_configuration(
+                        plan.deployment_configuration
+                    )
                 )
                 nrm_manifest = render_nrm_package(
                     nrm_zip=source_nrm,
@@ -1564,9 +1895,7 @@ class Orchestrator:
                         "characteristics",
                         f"Automatically rendered {plan.slice_type} slice.",
                     ),
-                    performance_overrides=nrm_profile.get(
-                        "performance_overrides"
-                    ),
+                    performance_overrides=performance_overrides or None,
                 )
                 manifest["nrm"] = nrm_manifest
                 manifest["outputs"]["nrm_zip"] = nrm_manifest["output"]
@@ -1651,8 +1980,7 @@ class Orchestrator:
                 store.save()
                 issues = self.runtime_checks(plan.namespace)
                 record["verification_issues"] = issues
-                record["status"] = "DEGRADED" if issues else "READY"
-                record["completed_at"] = now()
+                record["status"] = "DEGRADED" if issues else "VERIFYING"
                 record["events"].append(
                     {
                         "at": now(),
@@ -1660,6 +1988,10 @@ class Orchestrator:
                         "issues": issues,
                     }
                 )
+                store.save()
+                if not issues:
+                    self.register_core_slice(store, record)
+                record["completed_at"] = now()
                 store.save()
                 self.record_monitoring_sync(store, record)
                 return record
@@ -1934,7 +2266,36 @@ class Orchestrator:
                 )
                 store.save()
                 self.record_monitoring_sync(store, record)
-            return {**plan, "status": "DELETED", "normal_error": normal_error}
+                try:
+                    core_evidence = self.core_registry.reconcile(
+                        self.core_pairs(store.data)
+                    )
+                    record["events"].append(
+                        {
+                            "at": now(),
+                            "event": "core_registration_reconciled_after_delete",
+                            "snssai": core_evidence["snssai"],
+                        }
+                    )
+                    record["core_registration_after_delete"] = core_evidence
+                except Exception as error:
+                    record["core_reconcile_error"] = str(error)
+                    record["events"].append(
+                        {
+                            "at": now(),
+                            "event": "core_registration_reconcile_failed_after_delete",
+                            "reason": str(error),
+                        }
+                    )
+                store.save()
+            return {
+                **plan,
+                "status": "DELETED",
+                "normal_error": normal_error,
+                "core_registration": (
+                    record.get("core_registration_after_delete") if record else None
+                ),
+            }
 
     def status(self) -> dict[str, Any]:
         state = self.state.load()
@@ -1974,6 +2335,8 @@ class Orchestrator:
                     "sd",
                     "status",
                     "nssi_id",
+                    "core_registration",
+                    "core_registration_error",
                 )
             }
             for namespace, record in status["tracked_slices"].items()
@@ -1996,6 +2359,7 @@ class Orchestrator:
                 }
             )
         status["profiles"] = profiles
+        status["shared_core"] = self.core_status()
         return status
 
     def doctor(self) -> dict[str, Any]:
@@ -2008,6 +2372,22 @@ class Orchestrator:
             ).returncode
             == 0,
             "profiles": {},
+        }
+        nssf_manifest = Path(
+            self.config.get("shared_nssf_manifest", "shared_core/open5gs-nssf.yaml")
+        )
+        if not nssf_manifest.is_absolute():
+            nssf_manifest = ROOT / nssf_manifest
+        shared_core = self.core_status()
+        checks["shared_core"] = {
+            **shared_core,
+            "manifest": str(nssf_manifest),
+            "manifest_valid": nssf_manifest.is_file(),
+            "status": (
+                "OK"
+                if nssf_manifest.is_file() and shared_core.get("verified")
+                else "FAILED"
+            ),
         }
         with tempfile.TemporaryDirectory(prefix="intent-flow-doctor-") as temp:
             temporary = Path(temp)
@@ -2068,6 +2448,7 @@ class Orchestrator:
         checks["status"] = (
             "OK"
             if checks["kubectl"]
+            and checks["shared_core"]["status"] == "OK"
             and all(
                 value["status"] == "OK"
                 for value in checks["profiles"].values()
@@ -2125,6 +2506,14 @@ def parser() -> argparse.ArgumentParser:
     )
 
     commands.add_parser("status", help="Reconcile state, API instances and namespaces")
+    commands.add_parser(
+        "core-status",
+        help="Read-only verification of shared AMF/NSSF S-NSSAI state",
+    )
+    commands.add_parser(
+        "core-reconcile",
+        help="Reconcile desired S-NSSAI entries into shared AMF and NSSF",
+    )
     commands.add_parser(
         "web-status",
         help="WebUI status plus next namespace/SD preview for each profile",
@@ -2190,6 +2579,10 @@ def main() -> int:
             )
         elif args.command == "status":
             output = orchestrator.status()
+        elif args.command == "core-status":
+            output = orchestrator.core_status()
+        elif args.command == "core-reconcile":
+            output = orchestrator.core_reconcile()
         elif args.command == "web-status":
             output = orchestrator.web_status()
         elif args.command == "sync-monitoring":

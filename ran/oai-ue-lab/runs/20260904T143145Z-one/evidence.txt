@@ -1,0 +1,31 @@
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/gnb.log:ocuduLog error - Invalid format string: "PRACH: {:s} {:s} {}"
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761479.053362 [NR_RRC] I create TASK_RRC_NRUE 
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761479.053368 [UTIL]   I threadCreate() for TASK_RRC_NRUE: creating thread (no affinity, default priority)
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761479.053734 [SIM]    I will request PDU session ID 1, type 1, DNN srsapn, NSSAI 1.     1
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761479.055593 [UTIL]   I threadCreate() for SYNC__actor: creating thread (no affinity, default priority)
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.016457 [NR_PHY] W Starting sync detection
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.016469 [PHY]    I [UE thread Synch] Running Initial Synch 
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.103569 [PHY]    W Initial sync: pbch not decoded, ssb index 0
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.134039 [PHY]    W Initial sync: pbch not decoded, ssb index 0
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.190354 [PHY]    A Initial sync: pbch decoded sucessfully, ssb index 0
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.264080 [PHY]    I [UE0] In synch, rx_offset 298 samples
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.264237 [PHY]    A Initial sync successful, PCI: 1
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.264279 [NR_RRC] I [UE 0] BCCH update: phyCellID 0->1, arfcn_ssb 0->632256
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.264322 [PHY]    I Got synch: hw_slot_offset 0, carrier off 0 Hz
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.304264 [PHY]    A UE synchronized! decoded_frame_rx=110 UE->init_sync_frame=1 trashed_frames=6
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.304349 [PHY]    I Resynchronizing RX by 298 samples
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.326119 [PHY]    E Frame 118, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.432657 [PHY]    E Frame 120, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.535592 [PHY]    E Frame 122, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.601459 [PHY]    E Frame 124, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.656629 [PHY]    E Frame 126, slot 10, SSB Index 0. Error decoding PBCH!
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.690212 [NR_RRC] A SIB1 decoded
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.765509 [NR_RRC] I [UE0][RAPROC] Logical Channel DL-CCCH (SRB0), Received NR_RRCSetup
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.765618 [NR_RRC] I State = NR_RRC_CONNECTED
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.765640 [NAS]    I Generate Initial NAS Message: Registration Request
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761483.765648 [NR_RRC] I [UE 0][RAPROC] Logical Channel UL-DCCH (SRB1), Generating RRCSetupComplete (bytes33)
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761484.093133 [NAS]    I [UE 0] Received NAS_DOWNLINK_DATA_IND type FGS_AUTHENTICATION_REJECT with length 3
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761484.093150 [NAS]    E Received Authentication Reject message from the network
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761484.093152 [NAS]    E Could not decode Authentication Reject
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761484.096377 [NR_RRC] I [UE 0] Received RRC Release (gNB 0)
+/home/ubuntu/ran/oai-ue-lab/runs/20260904T143145Z-one/oai-ue.log:1761484.413228 [NR_RRC] I RRC moved into IDLE state

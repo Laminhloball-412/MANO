@@ -1,0 +1,22 @@
+# Directory labels
+ f1ap
+ f1ap_du
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/build-oai/tests/unittests/f1ap/du/CMakeFiles/f1ap_du_test.dir/Unity/unity_1_cxx.cxx
+/home/ubuntu/ran/ocudu-oai/build-oai/tests/unittests/f1ap/du/CMakeFiles/f1ap_du_test.dir/Unity/unity_0_cxx.cxx
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_setup_procedure_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_dl_rrc_message_transfer_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_ue_config_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_ue_context_setup_procedure_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_ue_context_release_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_ue_context_modification_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_reset_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_ul_rrc_message_transfer_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_gnbdu_config_update_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_gnbcu_config_update_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_positioning_exchange_procedure_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_trp_information_exchange_procedure_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_positioning_measurement_procedure_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_paging_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_write_replace_warning_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/f1ap/du/f1ap_du_ref_time_info_report_test.cpp

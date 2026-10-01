@@ -1,0 +1,154 @@
+# TYPE ansa_ue_throughput_mbps gauge
+ansa_ue_throughput_mbps{ue_id="1",service="video",flow_id="flow-9da7f3a5956d"} 0.5660056175327774
+# TYPE ansa_ue_rtt_ms gauge
+ansa_ue_rtt_ms{ue_id="1",service="video",flow_id="flow-9da7f3a5956d"} 81.844
+# TYPE ansa_ue_jitter_ms gauge
+ansa_ue_jitter_ms{ue_id="1",service="video",flow_id="flow-9da7f3a5956d"} 22.371
+# TYPE ansa_ue_packet_loss_percent gauge
+ansa_ue_packet_loss_percent{ue_id="1",service="video",flow_id="flow-9da7f3a5956d"} 0.0
+# TYPE ansa_ue_packet_size_bytes gauge
+ansa_ue_packet_size_bytes{ue_id="1",service="video",flow_id="flow-9da7f3a5956d"} 1200
+# TYPE ansa_ue_message_rate_per_second gauge
+ansa_ue_message_rate_per_second{ue_id="1",service="video",flow_id="flow-9da7f3a5956d"} 28.80728916595977
+# TYPE ansa_intent_flow_info gauge
+ansa_intent_flow_info{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",state="COMPLETED"} 1
+# TYPE ansa_pdu_session_info gauge
+ansa_pdu_session_info{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",pdu_session_id="1",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",interface="oaitun_ue1",role="source",state="active"} 1
+# TYPE ansa_pdu_session_info gauge
+ansa_pdu_session_info{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",pdu_session_id="1",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",interface="oaitun_ue1",role="target",state="inactive"} 1
+# TYPE ansa_intent_slice_selected_info gauge
+ansa_intent_slice_selected_info{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="embb",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",reason="explicit service intent requested embb; weighted capability/runtime score selected embb"} 1
+# TYPE ansa_intent_slice_score gauge
+ansa_intent_slice_score{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="embb",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",reason="eligible_intent_match"} 81.61
+# TYPE ansa_intent_slice_eligible gauge
+ansa_intent_slice_eligible{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="embb",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",reason="eligible_intent_match"} 1
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="embb",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",reason="eligible_intent_match",component="requirement_fit"} 100.0
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="embb",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",reason="eligible_intent_match",component="qos_headroom"} 41.67
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="embb",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",reason="eligible_intent_match",component="health_load"} 80.99
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="embb",slice_id="slice-1",sst="1",sd="000001",dnn="srsapn",reason="eligible_intent_match",component="intent_affinity"} 100.0
+# TYPE ansa_intent_slice_score gauge
+ansa_intent_slice_score{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="urllc",slice_id="slice-2",sst="2",sd="000001",dnn="srsapn",reason="eligible_cross_class"} 71.94
+# TYPE ansa_intent_slice_eligible gauge
+ansa_intent_slice_eligible{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="urllc",slice_id="slice-2",sst="2",sd="000001",dnn="srsapn",reason="eligible_cross_class"} 1
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="urllc",slice_id="slice-2",sst="2",sd="000001",dnn="srsapn",reason="eligible_cross_class",component="requirement_fit"} 100.0
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="urllc",slice_id="slice-2",sst="2",sd="000001",dnn="srsapn",reason="eligible_cross_class",component="qos_headroom"} 59.93
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="urllc",slice_id="slice-2",sst="2",sd="000001",dnn="srsapn",reason="eligible_cross_class",component="health_load"} 84.77
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="urllc",slice_id="slice-2",sst="2",sd="000001",dnn="srsapn",reason="eligible_cross_class",component="intent_affinity"} 0.0
+# TYPE ansa_intent_slice_score gauge
+ansa_intent_slice_score{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="mmtc",slice_id="slice-3",sst="3",sd="000001",dnn="srsapn",reason="eligible_cross_class"} 51.93
+# TYPE ansa_intent_slice_eligible gauge
+ansa_intent_slice_eligible{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="mmtc",slice_id="slice-3",sst="3",sd="000001",dnn="srsapn",reason="eligible_cross_class"} 1
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="mmtc",slice_id="slice-3",sst="3",sd="000001",dnn="srsapn",reason="eligible_cross_class",component="requirement_fit"} 75.0
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="mmtc",slice_id="slice-3",sst="3",sd="000001",dnn="srsapn",reason="eligible_cross_class",component="qos_headroom"} 19.8
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="mmtc",slice_id="slice-3",sst="3",sd="000001",dnn="srsapn",reason="eligible_cross_class",component="health_load"} 84.9
+# TYPE ansa_intent_slice_score_component gauge
+ansa_intent_slice_score_component{ue_id="1",service="video",flow_id="flow-9da7f3a5956d",profile="mmtc",slice_id="slice-3",sst="3",sd="000001",dnn="srsapn",reason="eligible_cross_class",component="intent_affinity"} 0.0
+# TYPE ansa_slice_health gauge
+ansa_slice_health{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 1
+# TYPE ansa_slice_ready_pods gauge
+ansa_slice_ready_pods{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 3
+# TYPE ansa_slice_total_pods gauge
+ansa_slice_total_pods{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 3
+# TYPE ansa_slice_container_restarts_total gauge
+ansa_slice_container_restarts_total{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 22
+# TYPE ansa_slice_cpu_usage_cores gauge
+ansa_slice_cpu_usage_cores{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 0.003
+# TYPE ansa_slice_cpu_limit_cores gauge
+ansa_slice_cpu_limit_cores{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 0.3
+# TYPE ansa_slice_cpu_load_ratio gauge
+ansa_slice_cpu_load_ratio{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 0.01
+# TYPE ansa_slice_memory_usage_bytes gauge
+ansa_slice_memory_usage_bytes{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 153092096.0
+# TYPE ansa_slice_memory_limit_bytes gauge
+ansa_slice_memory_limit_bytes{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 805306368.0
+# TYPE ansa_slice_memory_load_ratio gauge
+ansa_slice_memory_load_ratio{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 0.19010416666666666
+# TYPE ansa_slice_capacity_mbps gauge
+ansa_slice_capacity_mbps{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 100
+# TYPE ansa_slice_max_pdu_sessions gauge
+ansa_slice_max_pdu_sessions{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 64
+# TYPE ansa_slice_max_message_rate_per_second gauge
+ansa_slice_max_message_rate_per_second{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 2000
+# TYPE ansa_slice_baseline_rtt_ms gauge
+ansa_slice_baseline_rtt_ms{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 100
+# TYPE ansa_slice_baseline_jitter_ms gauge
+ansa_slice_baseline_jitter_ms{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 50
+# TYPE ansa_slice_baseline_loss_percent gauge
+ansa_slice_baseline_loss_percent{slice_id="slice-1",profile="embb",sst="1",sd="000001",dnn="srsapn"} 2
+# TYPE ansa_slice_health gauge
+ansa_slice_health{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 1
+# TYPE ansa_slice_ready_pods gauge
+ansa_slice_ready_pods{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 3
+# TYPE ansa_slice_total_pods gauge
+ansa_slice_total_pods{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 3
+# TYPE ansa_slice_container_restarts_total gauge
+ansa_slice_container_restarts_total{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 23
+# TYPE ansa_slice_cpu_usage_cores gauge
+ansa_slice_cpu_usage_cores{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 0.003
+# TYPE ansa_slice_cpu_limit_cores gauge
+ansa_slice_cpu_limit_cores{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 0.30000000000000004
+# TYPE ansa_slice_cpu_load_ratio gauge
+ansa_slice_cpu_load_ratio{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 0.009999999999999998
+# TYPE ansa_slice_memory_usage_bytes gauge
+ansa_slice_memory_usage_bytes{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 122683392.0
+# TYPE ansa_slice_memory_limit_bytes gauge
+ansa_slice_memory_limit_bytes{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 805306368.0
+# TYPE ansa_slice_memory_load_ratio gauge
+ansa_slice_memory_load_ratio{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 0.15234375
+# TYPE ansa_slice_capacity_mbps gauge
+ansa_slice_capacity_mbps{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 20
+# TYPE ansa_slice_max_pdu_sessions gauge
+ansa_slice_max_pdu_sessions{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 32
+# TYPE ansa_slice_max_message_rate_per_second gauge
+ansa_slice_max_message_rate_per_second{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 5000
+# TYPE ansa_slice_baseline_rtt_ms gauge
+ansa_slice_baseline_rtt_ms{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 50
+# TYPE ansa_slice_baseline_jitter_ms gauge
+ansa_slice_baseline_jitter_ms{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 20
+# TYPE ansa_slice_baseline_loss_percent gauge
+ansa_slice_baseline_loss_percent{slice_id="slice-2",profile="urllc",sst="2",sd="000001",dnn="srsapn"} 0.5
+# TYPE ansa_slice_health gauge
+ansa_slice_health{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 1
+# TYPE ansa_slice_ready_pods gauge
+ansa_slice_ready_pods{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 3
+# TYPE ansa_slice_total_pods gauge
+ansa_slice_total_pods{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 3
+# TYPE ansa_slice_container_restarts_total gauge
+ansa_slice_container_restarts_total{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 0
+# TYPE ansa_slice_cpu_usage_cores gauge
+ansa_slice_cpu_usage_cores{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 0.003
+# TYPE ansa_slice_cpu_limit_cores gauge
+ansa_slice_cpu_limit_cores{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 0.30000000000000004
+# TYPE ansa_slice_cpu_load_ratio gauge
+ansa_slice_cpu_load_ratio{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 0.009999999999999998
+# TYPE ansa_slice_memory_usage_bytes gauge
+ansa_slice_memory_usage_bytes{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 121634816.0
+# TYPE ansa_slice_memory_limit_bytes gauge
+ansa_slice_memory_limit_bytes{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 805306368.0
+# TYPE ansa_slice_memory_load_ratio gauge
+ansa_slice_memory_load_ratio{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 0.15104166666666666
+# TYPE ansa_slice_capacity_mbps gauge
+ansa_slice_capacity_mbps{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 10
+# TYPE ansa_slice_max_pdu_sessions gauge
+ansa_slice_max_pdu_sessions{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 1000
+# TYPE ansa_slice_max_message_rate_per_second gauge
+ansa_slice_max_message_rate_per_second{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 10000
+# TYPE ansa_slice_baseline_rtt_ms gauge
+ansa_slice_baseline_rtt_ms{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 200
+# TYPE ansa_slice_baseline_jitter_ms gauge
+ansa_slice_baseline_jitter_ms{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 100
+# TYPE ansa_slice_baseline_loss_percent gauge
+ansa_slice_baseline_loss_percent{slice_id="slice-3",profile="mmtc",sst="3",sd="000001",dnn="srsapn"} 2
+# TYPE ansa_slice_collector_success gauge
+ansa_slice_collector_success 1

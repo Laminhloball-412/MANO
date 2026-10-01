@@ -1,0 +1,12 @@
+scheduler_metrics_handler_test 10 0.00204261
+scheduler_json_metrics_test.serializes_exact_cell_capacity_and_per_ue_prb_usage 6 0.000401224
+gnb_remote_control_config_test.roundtrips_nested_metrics_enable_json 2 0.0188414
+gnb_default_config_test.roundtrip 1 0.0678079
+gnb_example_config_test.roundtrip/"gnb_rf_b200_tdd_n78_20mhz.yml" 1 0.0540406
+gnb_example_config_test.roundtrip/"gnb_rf_b210_fdd_srsUE.yml" 1 0.0562877
+gnb_example_config_test.roundtrip/"gnb_rf_n310_fdd_n3_20mhz.yml" 1 0.0547173
+gnb_example_config_test.roundtrip/"gnb_custom_cell_properties.yml" 1 0.0546972
+gnb_example_config_test.roundtrip/"gnb_ru_picocom_scb_tdd_n78_20mhz.yml" 1 0.0539911
+gnb_example_config_test.roundtrip/"gnb_ru_ran550_tdd_n78_100mhz_4x2.yml" 1 0.0547464
+gnb_example_config_test.roundtrip/"gnb_ru_rpqn4800e_tdd_n78_20mhz_2x2.yml" 1 0.054134
+---

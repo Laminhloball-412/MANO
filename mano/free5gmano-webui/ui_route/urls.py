@@ -8,6 +8,7 @@ from ui_route.pdu_session_flow import (
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
+    url(r'^Business_Intent/', include('intent_based_mvp.business_urls')),
     url(r'^Intent_Attach/', include('intent_based_mvp.urls')),
     url(r'^dashboard/$', dashboard),
     url(r'^Auto_Slice/$', auto_slice),

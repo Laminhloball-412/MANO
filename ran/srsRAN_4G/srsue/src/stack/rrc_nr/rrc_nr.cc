@@ -2061,8 +2061,8 @@ bool rrc_nr::apply_drb_add_mod(const drb_to_add_mod_s& drb_cfg)
     const auto& sdap_cfg = drb_cfg.cn_assoc.sdap_cfg();
 
     // Check supported configuration
-    if (sdap_cfg.sdap_hdr_dl.value == sdap_cfg_s::sdap_hdr_dl_opts::present || !sdap_cfg.default_drb ||
-        sdap_cfg.mapped_qos_flows_to_add.size() != 1) {
+    if (sdap_cfg.sdap_hdr_dl.value == sdap_cfg_s::sdap_hdr_dl_opts::present ||
+       sdap_cfg.mapped_qos_flows_to_add.size() != 1) {
       logger.error(
           "Configuring SDAP: only UL headder is supported. Default DRB must be set and number of QoS flows must be 1");
       return false;

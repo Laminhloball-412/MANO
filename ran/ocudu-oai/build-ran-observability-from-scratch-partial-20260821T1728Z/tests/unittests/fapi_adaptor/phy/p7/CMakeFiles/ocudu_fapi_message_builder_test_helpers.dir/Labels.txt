@@ -1,0 +1,4 @@
+# Directory labels
+ fapi_adaptor
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/fapi_adaptor/phy/p7/message_builder_helpers.cpp
