@@ -1,5 +1,0 @@
-# Directory labels
- du_high
- apps
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/apps/units/flexible_du/du_high/du_high_remote_commands_test.cpp

@@ -1,4 +1,0 @@
-# Directory labels
- phy
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/phy/upper/rx_buffer_pool_test.cpp

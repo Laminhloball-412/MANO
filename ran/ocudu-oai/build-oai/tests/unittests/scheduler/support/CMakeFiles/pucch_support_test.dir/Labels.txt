@@ -1,5 +1,0 @@
-# Directory labels
- sched
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/support/pucch/pucch_collision_info_test.cpp
-/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/support/pucch/pucch_default_resource_test.cpp

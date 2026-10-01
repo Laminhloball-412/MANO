@@ -1,4 +1,0 @@
-# Directory labels
- pdcp
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/sdap/sdap_rx_test.cpp

@@ -1,3 +1,0 @@
-scheduler_metrics_handler_test 8 0.0109485
-scheduler_json_metrics_test.serializes_exact_cell_capacity_and_per_ue_prb_usage 4 0.00124714
----

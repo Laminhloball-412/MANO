@@ -1,4 +1,0 @@
-# Directory labels
- ofh
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/ofh/slot_symbol_point_test.cpp

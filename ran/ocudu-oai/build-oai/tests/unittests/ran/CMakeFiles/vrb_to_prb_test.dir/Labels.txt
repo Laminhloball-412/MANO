@@ -1,4 +1,0 @@
-# Directory labels
- ran
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/ran/resource_allocation/vrb_to_prb_test.cpp

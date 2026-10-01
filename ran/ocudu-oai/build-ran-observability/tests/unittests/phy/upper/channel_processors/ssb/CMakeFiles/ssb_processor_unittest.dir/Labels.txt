@@ -1,4 +1,0 @@
-# Directory labels
- phy
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/phy/upper/channel_processors/ssb/ssb_processor_unittest.cpp

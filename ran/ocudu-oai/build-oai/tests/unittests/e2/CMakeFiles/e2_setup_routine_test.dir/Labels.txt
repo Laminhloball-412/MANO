@@ -1,4 +1,0 @@
-# Directory labels
- e2ap
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/e2/e2_setup_routine_test.cpp

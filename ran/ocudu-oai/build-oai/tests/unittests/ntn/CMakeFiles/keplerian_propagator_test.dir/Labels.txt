@@ -1,4 +1,0 @@
-# Directory labels
- ntn
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/ntn/keplerian_propagator_test.cpp

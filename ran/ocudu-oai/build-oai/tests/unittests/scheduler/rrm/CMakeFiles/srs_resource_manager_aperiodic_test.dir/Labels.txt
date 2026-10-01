@@ -1,4 +1,0 @@
-# Directory labels
- sched
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/rrm/srs_resource_manager_aperiodic_test.cpp

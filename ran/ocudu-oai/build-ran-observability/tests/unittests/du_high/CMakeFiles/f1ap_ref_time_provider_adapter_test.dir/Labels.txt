@@ -1,4 +1,0 @@
-# Directory labels
- du_high
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/du_high/f1ap_ref_time_provider_adapter_test.cpp

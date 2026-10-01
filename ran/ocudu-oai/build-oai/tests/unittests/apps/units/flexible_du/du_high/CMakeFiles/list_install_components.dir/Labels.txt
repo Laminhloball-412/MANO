@@ -1,4 +1,0 @@
-# Directory labels
- du_high
- apps
-# Source files and their labels

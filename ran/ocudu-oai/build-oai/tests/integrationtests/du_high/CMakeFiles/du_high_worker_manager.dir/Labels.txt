@@ -1,8 +1,0 @@
-# Directory labels
- du_high
- integrationtest
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/integrationtests/du_high/test_utils/du_high_worker_manager.cpp
-/home/ubuntu/ran/ocudu-oai/tests/integrationtests/du_high/test_utils/du_high_env_simulator.cpp
-/home/ubuntu/ran/ocudu-oai/tests/integrationtests/du_high/test_utils/du_high_ue_simulator.cpp
-/home/ubuntu/ran/ocudu-oai/tests/integrationtests/du_high/test_utils/du_high_sim_dependencies.cpp

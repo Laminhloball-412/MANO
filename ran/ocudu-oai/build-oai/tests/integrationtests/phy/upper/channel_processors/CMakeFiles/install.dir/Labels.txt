@@ -1,5 +1,0 @@
-# Directory labels
- phy
- tsan
- NO_MEMCHECK
-# Source files and their labels

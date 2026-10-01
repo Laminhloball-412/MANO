@@ -1,4 +1,0 @@
-# Directory labels
- fapi_adaptor
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/fapi_adaptor/phy/p7/pdu_translators/dl_pdsch_pdu_test.cpp

@@ -1,3 +1,0 @@
-# Directory labels
- ntn
-# Source files and their labels

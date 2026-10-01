@@ -1,6 +1,0 @@
-# Directory labels
- adt
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/adt/ring_buffer_test.cpp
-/home/ubuntu/ran/ocudu-oai/tests/unittests/adt/blocking_queue_test.cpp
-/home/ubuntu/ran/ocudu-oai/tests/unittests/adt/concurrent_queue_test.cpp

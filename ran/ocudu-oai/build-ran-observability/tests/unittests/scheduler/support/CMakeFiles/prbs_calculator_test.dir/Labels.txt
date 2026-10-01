@@ -1,4 +1,0 @@
-# Directory labels
- sched
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/support/prbs_calculator_test.cpp

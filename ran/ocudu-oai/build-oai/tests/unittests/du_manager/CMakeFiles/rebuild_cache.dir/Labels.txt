@@ -1,4 +1,0 @@
-# Directory labels
- du_manager
- du_high
-# Source files and their labels

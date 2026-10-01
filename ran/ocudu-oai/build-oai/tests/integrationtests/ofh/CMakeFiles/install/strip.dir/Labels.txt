@@ -1,4 +1,0 @@
-# Directory labels
- ofh
- MVP-ARCH-INTF-4
-# Source files and their labels

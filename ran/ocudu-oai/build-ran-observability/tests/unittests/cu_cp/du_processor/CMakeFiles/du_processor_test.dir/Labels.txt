@@ -1,5 +1,0 @@
-# Directory labels
- cu_cp
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/cu_cp/du_processor/du_configuration_manager_test.cpp
-/home/ubuntu/ran/ocudu-oai/tests/unittests/cu_cp/du_processor/du_processor_test.cpp

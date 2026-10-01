@@ -1,6 +1,0 @@
-# Directory labels
- du_manager
- du_high
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/du_manager/du_manager_test_helpers.cpp
-/home/ubuntu/ran/ocudu-oai/tests/unittests/du_manager/procedures/du_manager_procedure_test_helpers.cpp

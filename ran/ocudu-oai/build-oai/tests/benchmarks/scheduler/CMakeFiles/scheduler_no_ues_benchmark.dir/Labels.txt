@@ -1,4 +1,0 @@
-# Directory labels
- sched|rtsan
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/benchmarks/scheduler/scheduler_no_ues_benchmark.cpp

@@ -1,4 +1,0 @@
-# Directory labels
- cu_up
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/cu_up/pdu_session_manager_test.cpp
