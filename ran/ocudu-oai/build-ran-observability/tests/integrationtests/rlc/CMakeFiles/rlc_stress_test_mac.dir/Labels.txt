@@ -1,4 +1,0 @@
-# Directory labels
- rlc
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/integrationtests/rlc/rlc_stress_test_mac.cpp

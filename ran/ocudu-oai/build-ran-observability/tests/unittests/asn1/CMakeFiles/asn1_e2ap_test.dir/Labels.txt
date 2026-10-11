@@ -1,5 +1,0 @@
-# Directory labels
- asn1
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/asn1/asn1_e2ap_test.cpp
-/home/ubuntu/ran/ocudu-oai/tests/unittests/asn1/asn1_e2sm_test.cpp

@@ -1,3 +1,0 @@
-# Directory labels
- rohc
-# Source files and their labels

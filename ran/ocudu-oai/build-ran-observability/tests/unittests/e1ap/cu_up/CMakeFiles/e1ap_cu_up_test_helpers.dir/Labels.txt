@@ -1,4 +1,0 @@
-# Directory labels
- e1ap
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/e1ap/cu_up/e1ap_cu_up_test_helpers.cpp

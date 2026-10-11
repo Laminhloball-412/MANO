@@ -1,8 +1,0 @@
-# Directory labels
- du_manager
- du_high
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/du_manager/procedures/await_all_ues_test.cpp
-/home/ubuntu/ran/ocudu-oai/tests/unittests/du_manager/procedures/du_param_config_procedure_test.cpp
-/home/ubuntu/ran/ocudu-oai/tests/unittests/du_manager/procedures/du_pws_broadcast_procedure_test.cpp
-/home/ubuntu/ran/ocudu-oai/tests/unittests/du_manager/procedures/du_cell_stop_procedure_test.cpp

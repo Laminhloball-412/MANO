@@ -1,4 +1,0 @@
-# Directory labels
- du_high|tsan|rtsan
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/benchmarks/du_high/du_high_benchmark.cpp

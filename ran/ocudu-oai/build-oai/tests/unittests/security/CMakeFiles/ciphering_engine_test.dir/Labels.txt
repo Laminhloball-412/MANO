@@ -1,4 +1,0 @@
-# Directory labels
- security
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/security/ciphering_engine_test.cpp

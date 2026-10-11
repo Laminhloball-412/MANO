@@ -1,4 +1,0 @@
-# Directory labels
- fapi_adaptor
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/fapi_adaptor/mac/p5/mac_fapi_p5_stop_cell_procedure_test.cpp

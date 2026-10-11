@@ -1,3 +1,0 @@
-# Directory labels
- du_high
-# Source files and their labels

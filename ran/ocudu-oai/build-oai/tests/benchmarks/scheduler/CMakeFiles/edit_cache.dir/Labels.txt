@@ -1,3 +1,0 @@
-# Directory labels
- sched|rtsan
-# Source files and their labels

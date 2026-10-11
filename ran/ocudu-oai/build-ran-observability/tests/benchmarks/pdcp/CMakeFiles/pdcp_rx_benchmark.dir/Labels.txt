@@ -1,4 +1,0 @@
-# Directory labels
- pdcp
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/benchmarks/pdcp/pdcp_rx_benchmark.cpp

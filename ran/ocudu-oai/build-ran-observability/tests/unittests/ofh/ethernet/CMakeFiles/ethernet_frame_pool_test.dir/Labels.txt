@@ -1,4 +1,0 @@
-# Directory labels
- ethernet
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/ofh/ethernet/ethernet_frame_pool_test.cpp

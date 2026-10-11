@@ -1,4 +1,0 @@
-# Directory labels
- adt
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/adt/strong_type_test.cpp

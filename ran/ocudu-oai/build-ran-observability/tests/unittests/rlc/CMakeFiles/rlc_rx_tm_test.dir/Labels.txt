@@ -1,4 +1,0 @@
-# Directory labels
- rlc
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/rlc/rlc_rx_tm_test.cpp

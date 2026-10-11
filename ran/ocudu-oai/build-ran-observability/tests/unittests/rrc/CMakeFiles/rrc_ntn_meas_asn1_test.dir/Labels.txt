@@ -1,4 +1,0 @@
-# Directory labels
- rrc
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_ntn_meas_asn1_test.cpp

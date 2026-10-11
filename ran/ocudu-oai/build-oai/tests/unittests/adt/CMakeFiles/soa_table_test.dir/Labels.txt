@@ -1,5 +1,0 @@
-# Directory labels
- adt
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/adt/soa_table_test.cpp
-/home/ubuntu/ran/ocudu-oai/tests/unittests/adt/stable_id_map_test.cpp

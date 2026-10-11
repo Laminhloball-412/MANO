@@ -1,4 +1,0 @@
-# Directory labels
- rrc
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_ue_test_messages.cpp

@@ -1,4 +1,0 @@
-# Directory labels
- ran
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/ran/test_ssb_coreset0_freq_pos_generator.cpp

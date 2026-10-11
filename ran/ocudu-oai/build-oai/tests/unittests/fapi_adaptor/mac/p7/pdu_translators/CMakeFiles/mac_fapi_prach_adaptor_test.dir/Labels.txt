@@ -1,4 +1,0 @@
-# Directory labels
- fapi_adaptor
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/fapi_adaptor/mac/p7/pdu_translators/ul_prach_pdu_test.cpp

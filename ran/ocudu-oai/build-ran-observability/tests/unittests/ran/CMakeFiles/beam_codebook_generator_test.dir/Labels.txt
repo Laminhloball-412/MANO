@@ -1,4 +1,0 @@
-# Directory labels
- ran
-# Source files and their labels
-/home/ubuntu/ran/ocudu-oai/tests/unittests/ran/beamforming/beam_codebook_generator_test.cpp
