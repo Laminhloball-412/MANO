@@ -1,0 +1,15 @@
+# Directory labels
+ sched
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_retx_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_ue_removal_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_tdd_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_pdsch_repetition_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_ue_fallback_mode_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_ta_cmd_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_multi_cell_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_multi_slice_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_qos_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_multi_grants_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_multi_ue_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/scheduler_no_ue_test.cpp

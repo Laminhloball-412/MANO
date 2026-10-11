@@ -1,0 +1,5 @@
+# Directory labels
+ du_high
+ apps
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/apps/units/flexible_du/du_high/metrics/du_high_scheduler_cell_metrics_consumer_stdout_test.cpp

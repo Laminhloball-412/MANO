@@ -1,0 +1,4 @@
+# Directory labels
+ cu_cp
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/cu_cp/cu_cp_config_test.cpp

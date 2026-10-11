@@ -71,6 +71,8 @@ class UeTelemetryCollector:
         self._previous: dict[tuple[int, int], InterfaceCounters] = {}
         self._last_interface: dict[tuple[int, int], str] = {}
         self._lock = threading.Lock()
+        self._render_lock = threading.Lock()
+        self._last_render = ""
 
     def _discover_ue_ids(self) -> None:
         try:
@@ -179,24 +181,35 @@ class UeTelemetryCollector:
         return samples
 
     def render(self) -> str:
-        lines = []
-        for sample in self.collect():
-            profile = sample.profile
-            labels = (
-                f'ue_id="{sample.ue_id}",pdu_session_id="{profile.pdu_session_id}",'
-                f'slice_id="{profile.namespace}",sst="{profile.sst}",sd="{profile.sd}",'
-                f'dnn="{profile.dnn}",interface="{sample.interface}",source="passive"'
-            )
-            values = {
-                "ansa_ue_pdu_up": int(sample.up),
-                "ansa_ue_passive_sample_ready": int(sample.sample_ready),
-                "ansa_ue_rx_mbps": sample.rx_mbps,
-                "ansa_ue_tx_mbps": sample.tx_mbps,
-                "ansa_ue_rx_packets_per_second": sample.rx_packets_per_second,
-                "ansa_ue_tx_packets_per_second": sample.tx_packets_per_second,
-                "ansa_ue_average_rx_packet_bytes": sample.average_rx_packet_bytes,
-                "ansa_ue_average_tx_packet_bytes": sample.average_tx_packet_bytes,
-            }
-            for metric, value in values.items():
-                lines.extend((f"# TYPE {metric} gauge", f"{metric}{{{labels}}} {value}"))
-        return "\n".join(lines) + "\n"
+        if not self._render_lock.acquire(blocking=False):
+            if self._last_render:
+                return self._last_render
+            return "# TYPE ansa_ue_collector_busy gauge\nansa_ue_collector_busy 1\n"
+        try:
+            lines = []
+            for sample in self.collect():
+                profile = sample.profile
+                labels = (
+                    f'ue_id="{sample.ue_id}",pdu_session_id="{profile.pdu_session_id}",'
+                    f'slice_id="{profile.namespace}",sst="{profile.sst}",sd="{profile.sd}",'
+                    f'dnn="{profile.dnn}",interface="{sample.interface}",source="passive"'
+                )
+                values = {
+                    "ansa_ue_pdu_up": int(sample.up),
+                    "ansa_ue_passive_sample_ready": int(sample.sample_ready),
+                    "ansa_ue_rx_mbps": sample.rx_mbps,
+                    "ansa_ue_tx_mbps": sample.tx_mbps,
+                    "ansa_ue_rx_packets_per_second": sample.rx_packets_per_second,
+                    "ansa_ue_tx_packets_per_second": sample.tx_packets_per_second,
+                    "ansa_ue_average_rx_packet_bytes": sample.average_rx_packet_bytes,
+                    "ansa_ue_average_tx_packet_bytes": sample.average_tx_packet_bytes,
+                }
+                for metric, value in values.items():
+                    lines.extend(
+                        (f"# TYPE {metric} gauge", f"{metric}{{{labels}}} {value}")
+                    )
+            rendered = "\n".join(lines) + "\n"
+            self._last_render = rendered
+            return rendered
+        finally:
+            self._render_lock.release()

@@ -1,0 +1,17 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/unittests/apps/units/flexible_du/du_high/du_high_remote_commands_test.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"du_high",
+			"apps"
+		],
+		"name" : "du_high_remote_commands_test"
+	}
+}

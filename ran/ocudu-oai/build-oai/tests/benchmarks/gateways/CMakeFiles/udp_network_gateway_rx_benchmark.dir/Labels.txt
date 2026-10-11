@@ -1,0 +1,4 @@
+# Directory labels
+ gateways
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/benchmarks/gateways/udp_network_gateway_rx_benchmark.cpp

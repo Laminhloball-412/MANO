@@ -1,0 +1,4 @@
+# Directory labels
+ ethernet
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/ofh/ethernet/vlan_ethernet_frame_decoder_test.cpp

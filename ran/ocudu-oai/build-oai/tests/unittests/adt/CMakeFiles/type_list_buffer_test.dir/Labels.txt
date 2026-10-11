@@ -1,0 +1,5 @@
+# Directory labels
+ adt
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/adt/type_list_buffer_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/adt/segment_list_test.cpp

@@ -1,0 +1,5 @@
+# Directory labels
+ sched
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/srs_scheduling/srs_scheduler_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/scheduler/srs_scheduling/srs_allocator_test.cpp

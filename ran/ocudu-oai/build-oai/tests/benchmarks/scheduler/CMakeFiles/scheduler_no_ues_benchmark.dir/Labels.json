@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/benchmarks/scheduler/scheduler_no_ues_benchmark.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"sched|rtsan"
+		],
+		"name" : "scheduler_no_ues_benchmark"
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"sources" : [],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"ofh",
+			"MVP-ARCH-INTF-4"
+		],
+		"name" : "install/strip"
+	}
+}

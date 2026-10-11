@@ -1,0 +1,26 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/integrationtests/du_high/test_utils/du_high_worker_manager.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/integrationtests/du_high/test_utils/du_high_env_simulator.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/integrationtests/du_high/test_utils/du_high_ue_simulator.cpp"
+		},
+		{
+			"file" : "/home/ubuntu/ran/ocudu-oai/tests/integrationtests/du_high/test_utils/du_high_sim_dependencies.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"du_high",
+			"integrationtest"
+		],
+		"name" : "du_high_worker_manager"
+	}
+}

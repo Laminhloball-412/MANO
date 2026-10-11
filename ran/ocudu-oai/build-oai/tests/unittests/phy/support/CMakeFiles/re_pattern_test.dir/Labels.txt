@@ -1,0 +1,4 @@
+# Directory labels
+ phy
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/phy/support/re_pattern_test.cpp

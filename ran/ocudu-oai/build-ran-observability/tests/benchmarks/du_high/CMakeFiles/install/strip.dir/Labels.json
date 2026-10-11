@@ -1,0 +1,11 @@
+{
+	"sources" : [],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"du_high|tsan|rtsan"
+		],
+		"name" : "install/strip"
+	}
+}

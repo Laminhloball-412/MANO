@@ -1,0 +1,3 @@
+add_test([=[scheduler_json_metrics_test.serializes_exact_cell_capacity_and_per_ue_prb_usage]=]  /home/ubuntu/ran/ocudu-oai/build-ran-observability/tests/unittests/apps/helpers/scheduler_json_metrics_test [==[--gtest_filter=scheduler_json_metrics_test.serializes_exact_cell_capacity_and_per_ue_prb_usage]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[scheduler_json_metrics_test.serializes_exact_cell_capacity_and_per_ue_prb_usage]=]  PROPERTIES WORKING_DIRECTORY /home/ubuntu/ran/ocudu-oai/build-ran-observability/tests/unittests/apps/helpers SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+set(  scheduler_json_metrics_test_TESTS scheduler_json_metrics_test.serializes_exact_cell_capacity_and_per_ue_prb_usage)

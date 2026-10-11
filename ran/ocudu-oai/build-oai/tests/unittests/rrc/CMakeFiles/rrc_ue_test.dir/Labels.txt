@@ -1,0 +1,12 @@
+# Directory labels
+ rrc
+# Source files and their labels
+/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_asn1_helpers_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_du_ref_time_r16_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_ue_setup_proc_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_ue_dl_info_transfer_proc_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_ue_reconfig_proc_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_ue_capability_transfer_proc_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_ue_reest_proc_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_ue_ho_prep_info_test.cpp
+/home/ubuntu/ran/ocudu-oai/tests/unittests/rrc/rrc_ue_meas_report_test.cpp

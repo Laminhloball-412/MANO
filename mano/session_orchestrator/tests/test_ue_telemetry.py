@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import subprocess
 import tempfile
+import threading
+import time
 import unittest
 from pathlib import Path
 
@@ -165,6 +167,47 @@ class UeTelemetryTests(unittest.TestCase):
         self.assertEqual(1, len(ue4))
         self.assertTrue(ue4[0].up)
         self.assertEqual("tun_srsue41", ue4[0].interface)
+
+    def test_concurrent_render_returns_cached_metrics_instead_of_waiting(self):
+        payload = json.dumps([{
+            "ifname": "tun_srsue11",
+            "operstate": "UNKNOWN",
+            "stats64": {
+                "rx": {"bytes": 1000, "packets": 10},
+                "tx": {"bytes": 2000, "packets": 20},
+            },
+        }])
+        collector = UeTelemetryCollector(
+            {"embb": profile("embb", 1, 1, "oaitun_ue1")},
+            [1], self.root,
+            command_runner=lambda command, **_kwargs: subprocess.CompletedProcess(
+                command, 0, payload, ""
+            ),
+            netns_path=self.netns,
+        )
+        cached = collector.render()
+        entered = threading.Event()
+        release = threading.Event()
+
+        def slow_run(command, **_kwargs):
+            entered.set()
+            release.wait(timeout=1)
+            return subprocess.CompletedProcess(command, 0, payload, "")
+
+        collector.command_runner = slow_run
+        worker = threading.Thread(target=collector.render)
+        worker.start()
+        self.assertTrue(entered.wait(timeout=1))
+        timer = threading.Timer(0.2, release.set)
+        timer.start()
+        started = time.monotonic()
+        concurrent = collector.render()
+        elapsed = time.monotonic() - started
+        worker.join(timeout=1)
+        timer.cancel()
+
+        self.assertLess(elapsed, 0.1)
+        self.assertEqual(cached, concurrent)
 
 
 if __name__ == "__main__":

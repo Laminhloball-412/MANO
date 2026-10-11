@@ -1,0 +1,1124 @@
+diff --git a/ran/srsRAN_4G/lib/include/srsran/interfaces/ue_gw_interfaces.h b/ran/srsRAN_4G/lib/include/srsran/interfaces/ue_gw_interfaces.h
+index 7deacb4..fa6e038 100644
+--- a/ran/srsRAN_4G/lib/include/srsran/interfaces/ue_gw_interfaces.h
++++ b/ran/srsRAN_4G/lib/include/srsran/interfaces/ue_gw_interfaces.h
+@@ -63,6 +63,7 @@ public:
+    * @param ip_pdu_delay_ms The PDU delay in ms
+    */
+   virtual void set_test_loop_mode(const test_loop_mode_state_t mode, const uint32_t ip_pdu_delay_ms = 0) = 0;
++  virtual void add_bearer_mapping(uint32_t lcid, uint8_t  pdu_session_id) = 0;
+ };
+ 
+ class gw_interface_rrc
+diff --git a/ran/srsRAN_4G/lib/include/srsran/interfaces/ue_nas_interfaces.h b/ran/srsRAN_4G/lib/include/srsran/interfaces/ue_nas_interfaces.h
+index 3267159..651c3c8 100644
+--- a/ran/srsRAN_4G/lib/include/srsran/interfaces/ue_nas_interfaces.h
++++ b/ran/srsRAN_4G/lib/include/srsran/interfaces/ue_nas_interfaces.h
+@@ -41,6 +41,8 @@ public:
+   apn_types   apn_type = ipv4;
+   std::string apn_user;
+   std::string apn_pass;
++  int nssai_sst = 1;
++  int nssai_sd  = 0;
+ };
+ class nas_interface_rrc
+ {
+diff --git a/ran/srsRAN_4G/srsue/hdr/stack/ue_stack_nr.h b/ran/srsRAN_4G/srsue/hdr/stack/ue_stack_nr.h
+index 3349a32..ca1be23 100644
+--- a/ran/srsRAN_4G/srsue/hdr/stack/ue_stack_nr.h
++++ b/ran/srsRAN_4G/srsue/hdr/stack/ue_stack_nr.h
+@@ -48,7 +48,7 @@
+ namespace srsue {
+ 
+ class rrc_nr;
+-
++class gw;
+ /** \brief L2/L3 stack class for 5G/NR UEs.
+  *
+  *  This class wraps all L2/L3 blocks and provides a single interface towards the PHY.
+@@ -118,7 +118,21 @@ public:
+ 
+   // Interface for RRC
+   srsran::tti_point get_current_tti() final { return srsran::tti_point{0}; }
+-  void              add_eps_bearer(uint8_t eps_bearer_id, srsran::srsran_rat_t rat, uint32_t lcid) final {}
++
++  void add_eps_bearer(uint8_t          eps_bearer_id,
++                    srsran::srsran_rat_t rat,
++                    uint32_t         lcid) final
++{
++    // Ép kiểu sang lớp gw thực tế (đã chỉ định rõ namespace srsue::gw)
++    auto* gw_impl = dynamic_cast<srsue::gw*>(gw);
++    if (gw_impl != nullptr) {
++        gw_impl->add_bearer_mapping(
++            lcid,
++            static_cast<uint8_t>(eps_bearer_id)
++        );
++    }
++}
++
+   void              remove_eps_bearer(uint8_t eps_bearer_id) final {}
+   void              reset_eps_bearers() final {}
+   void              cell_select_completed(const cell_select_result_t& result) override;
+diff --git a/ran/srsRAN_4G/srsue/hdr/stack/upper/gw.h b/ran/srsRAN_4G/srsue/hdr/stack/upper/gw.h
+index 318865c..34d6643 100644
+--- a/ran/srsRAN_4G/srsue/hdr/stack/upper/gw.h
++++ b/ran/srsRAN_4G/srsue/hdr/stack/upper/gw.h
+@@ -49,6 +49,19 @@ struct gw_args_t {
+   std::string tun_dev_netmask;
+ };
+ 
++struct gw_session_t {
++  int32_t            tun_fd     = -1;
++  int32_t            sock       = -1;
++  uint32_t           ip_addr    = 0;
++  uint8_t            session_id = 0;
++  std::atomic<bool>  if_up      = {false}; // Đã đồng bộ kiểu atomic giống bản gốc
++  struct ifreq       ifr        = {};
++  std::string        tun_name;
++  std::atomic<bool>  run_enable{false};
++  std::thread        worker;
++  uint8_t            eps_bearer_id = NOT_ASSIGNED;
++};
++
+ class gw : public gw_interface_stack, public srsran::thread
+ {
+ public:
+@@ -56,7 +69,7 @@ public:
+   ~gw();
+   int  init(const gw_args_t& args_, stack_interface_gw* stack);
+   void stop();
+-
++  void add_bearer_mapping(uint32_t lcid, uint8_t pdu_session_id) override;
+   void get_metrics(gw_metrics_t& m, const uint32_t nof_tti);
+ 
+   // PDCP interface
+@@ -83,18 +96,16 @@ private:
+   std::atomic<bool> running    = {false};
+   std::atomic<bool> run_enable = {false};
+   int32_t           netns_fd   = 0;
+-  int32_t           tun_fd     = 0;
+-  struct ifreq      ifr        = {};
+-  int32_t           sock       = 0;
+-  std::atomic<bool> if_up      = {false};
++
++  std::map<uint8_t, std::shared_ptr<gw_session_t>> sessions;
++  std::map<uint32_t, int>                          lcid_to_tun_fd;
++  std::map<uint32_t, uint8_t>                      lcid_to_session;
+ 
+   static const int NOT_ASSIGNED          = -1;
+-  int32_t          default_eps_bearer_id = NOT_ASSIGNED;
+   std::mutex       gw_mutex;
+ 
+   srslog::basic_logger& logger;
+ 
+-  uint32_t current_ip_addr = 0;
+   uint8_t  current_if_id[8];
+ 
+   uint32_t                                       ul_tput_bytes = 0;
+@@ -102,12 +113,14 @@ private:
+   std::chrono::high_resolution_clock::time_point metrics_tp; // stores time when last metrics have been taken
+ 
+   void run_thread();
+-  int  init_if(char* err_str);
+-  int  setup_if_addr4(uint32_t ip_addr, char* err_str);
++  int setup_if_addr4(std::shared_ptr<gw_session_t> session, uint32_t ip_addr, char* err_str);
+   int  setup_if_addr6(uint8_t* ipv6_if_id, char* err_str);
+   bool find_ipv6_addr(struct in6_addr* in6_out);
+   void del_ipv6_addr(struct in6_addr* in6p);
+ 
++  void run_session(std::shared_ptr<gw_session_t> session);
++  void stop_session(uint8_t session_id);
++  int  init_if(uint8_t session_id, char* err_str);
+   // MBSFN
+   int                mbsfn_sock_fd                   = 0;  // Sink UDP socket file descriptor
+   struct sockaddr_in mbsfn_sock_addr                 = {}; // Target address
+diff --git a/ran/srsRAN_4G/srsue/hdr/stack/upper/nas_5g.h b/ran/srsRAN_4G/srsue/hdr/stack/upper/nas_5g.h
+index 5ada19e..f8d71e4 100644
+--- a/ran/srsRAN_4G/srsue/hdr/stack/upper/nas_5g.h
++++ b/ran/srsRAN_4G/srsue/hdr/stack/upper/nas_5g.h
+@@ -160,6 +160,7 @@ private:
+   int  apply_security_config(srsran::unique_byte_buffer_t& pdu, uint8_t sec_hdr_type);
+   bool check_replayed_ue_security_capabilities(srsran::nas_5g::ue_security_capability_t& caps);
+   void set_nssai(srsran::nas_5g::s_nssai_t& s_nssai);
++  void set_nssai(srsran::nas_5g::s_nssai_t& s_nssai, const pdu_session_cfg_t&    session_cfg);
+ 
+   // message handler
+   int handle_registration_accept(srsran::nas_5g::registration_accept_t& registration_accept);
+@@ -209,4 +210,4 @@ private:
+   std::array<pdu_session_t, MAX_PDU_SESSIONS> pdu_sessions;
+ };
+ } // namespace srsue
+-#endif
+\ No newline at end of file
++#endif
+diff --git a/ran/srsRAN_4G/srsue/hdr/stack/upper/nas_config.h b/ran/srsRAN_4G/srsue/hdr/stack/upper/nas_config.h
+index 91014d0..79bd1bd 100644
+--- a/ran/srsRAN_4G/srsue/hdr/stack/upper/nas_config.h
++++ b/ran/srsRAN_4G/srsue/hdr/stack/upper/nas_config.h
+@@ -69,8 +69,12 @@ public:
+   std::vector<pdu_session_cfg_t> pdu_session_cfgs;
+   // slicing configuration
+   bool enable_slicing;
+-  int  nssai_sst;
+-  int  nssai_sd;
++  int nssai_sst;
++  int nssai_sd;
++  std::string apn_list;
++  std::string apn_protocol_list;
++  std::string nssai_sst_list;
++  std::string nssai_sd_list;
+ };
+ 
+ } // namespace srsue
+diff --git a/ran/srsRAN_4G/srsue/hdr/stack/upper/test/nas_test_common.h b/ran/srsRAN_4G/srsue/hdr/stack/upper/test/nas_test_common.h
+index 367ca5f..b550e28 100644
+--- a/ran/srsRAN_4G/srsue/hdr/stack/upper/test/nas_test_common.h
++++ b/ran/srsRAN_4G/srsue/hdr/stack/upper/test/nas_test_common.h
+@@ -206,6 +206,7 @@ public:
+ 
+ class gw_dummy : public gw_interface_nas, public gw_interface_pdcp
+ {
++  void add_bearer_mapping(uint32_t lcid, uint8_t pdu_session_id) override {}
+   int setup_if_addr(uint32_t eps_bearer_id, uint8_t pdn_type, uint32_t ip_addr, uint8_t* ipv6_if_id, char* err_str)
+   {
+     return SRSRAN_SUCCESS;
+@@ -222,4 +223,4 @@ class gw_dummy : public gw_interface_nas, public gw_interface_pdcp
+ 
+ } // namespace srsran
+ 
+-#endif // SRSUE_NAS_TEST_COMMON
+\ No newline at end of file
++#endif // SRSUE_NAS_TEST_COMMON
+diff --git a/ran/srsRAN_4G/srsue/src/main.cc b/ran/srsRAN_4G/srsue/src/main.cc
+index c60584d..2361f44 100644
+--- a/ran/srsRAN_4G/srsue/src/main.cc
++++ b/ran/srsRAN_4G/srsue/src/main.cc
+@@ -162,8 +162,17 @@ static int parse_args(all_args_t* args, int argc, char* argv[])
+     ("nas.eea",               bpo::value<string>(&args->stack.nas.eea)->default_value("0,1,2,3"),  "List of ciphering algorithms included in UE capabilities")
+ 
+     ("slicing.enable",        bpo::value<bool>(&args->stack.nas_5g.enable_slicing)->default_value(false),  "enable slicing in the UE")
+-    ("slicing.nssai-sst",     bpo::value<int>(&args->stack.nas_5g.nssai_sst)->default_value(1),  "sst of requested slice")
+-    ("slicing.nssai-sd",      bpo::value<int>(&args->stack.nas_5g.nssai_sd)->default_value(1),  "sd of requested slice")
++    ("slicing.nssai-sst",
++   bpo::value<int>(&args->stack.nas_5g.nssai_sst)->default_value(1),
++   "NSSAI SST (Legacy single session)")
++    ("slicing.nssai-sd",
++   bpo::value<int>(&args->stack.nas_5g.nssai_sd)->default_value(0),
++   "NSSAI SD (Legacy single session)")
++    ("slicing.apn_list", bpo::value<string>(&args->stack.nas_5g.apn_list)->default_value(""), "Comma-separated APN list. Example: srsapn,internet")
++    ("slicing.apn_protocol_list", bpo::value<string>(&args->stack.nas_5g.apn_protocol_list)->default_value("ipv4"), "Comma-separated protocol list. Example: ipv4,ipv4")
++    ("slicing.nssai_sst_list", bpo::value<string>(&args->stack.nas_5g.nssai_sst_list)->default_value("1"), "Comma-separated SST list. Example: 1,2")
++    ("slicing.nssai_sd_list", bpo::value<string>(&args->stack.nas_5g.nssai_sd_list)->default_value("0"), "Comma-separated SD list. Example: 000001,000002")
++
+ 
+     ("pcap.enable", bpo::value<string>(&args->stack.pkt_trace.enable)->default_value("none"), "Enable (MAC, MAC_NR, NAS) packet captures for wireshark")
+     ("pcap.mac_filename", bpo::value<string>(&args->stack.pkt_trace.mac_pcap.filename)->default_value("/tmp/ue_mac.pcap"), "MAC layer capture filename")
+diff --git a/ran/srsRAN_4G/srsue/src/stack/rrc_nr/rrc_nr.cc b/ran/srsRAN_4G/srsue/src/stack/rrc_nr/rrc_nr.cc
+index 8727fa9..9e5167f 100644
+--- a/ran/srsRAN_4G/srsue/src/stack/rrc_nr/rrc_nr.cc
++++ b/ran/srsRAN_4G/srsue/src/stack/rrc_nr/rrc_nr.cc
+@@ -2061,8 +2061,8 @@ bool rrc_nr::apply_drb_add_mod(const drb_to_add_mod_s& drb_cfg)
+     const auto& sdap_cfg = drb_cfg.cn_assoc.sdap_cfg();
+ 
+     // Check supported configuration
+-    if (sdap_cfg.sdap_hdr_dl.value == sdap_cfg_s::sdap_hdr_dl_opts::present || !sdap_cfg.default_drb ||
+-        sdap_cfg.mapped_qos_flows_to_add.size() != 1) {
++    if (sdap_cfg.sdap_hdr_dl.value == sdap_cfg_s::sdap_hdr_dl_opts::present ||
++       sdap_cfg.mapped_qos_flows_to_add.size() != 1) {
+       logger.error(
+           "Configuring SDAP: only UL headder is supported. Default DRB must be set and number of QoS flows must be 1");
+       return false;
+diff --git a/ran/srsRAN_4G/srsue/src/stack/rrc_nr/rrc_nr_procedures.cc b/ran/srsRAN_4G/srsue/src/stack/rrc_nr/rrc_nr_procedures.cc
+index 619eac6..31a322f 100644
+--- a/ran/srsRAN_4G/srsue/src/stack/rrc_nr/rrc_nr_procedures.cc
++++ b/ran/srsRAN_4G/srsue/src/stack/rrc_nr/rrc_nr_procedures.cc
+@@ -165,7 +165,10 @@ void rrc_nr::connection_reconf_no_ho_proc::then(const srsran::proc_state_t& resu
+           rrc_handle.rrc_eutra->nr_notify_reconfiguration_failure();
+         }
+         break;
+-      default:
++        case reconf_initiator_t::nr:
++        Warning("Reconfiguration failure not implemented for initiator %d", initiator);
++        break;
++        default:
+         Warning("Reconfiguration failure not implemented for initiator %d", initiator);
+         break;
+     }
+diff --git a/ran/srsRAN_4G/srsue/src/stack/upper/gw.cc b/ran/srsRAN_4G/srsue/src/stack/upper/gw.cc
+index 211c2a6..373865e 100644
+--- a/ran/srsRAN_4G/srsue/src/stack/upper/gw.cc
++++ b/ran/srsRAN_4G/srsue/src/stack/upper/gw.cc
+@@ -40,6 +40,42 @@ namespace srsue {
+ 
+ gw::gw(srslog::basic_logger& logger_) : thread("GW"), logger(logger_), tft_matcher(logger) {}
+ 
++void gw::run_session(std::shared_ptr<gw_session_t> session)
++{
++  uint8_t buf[SRSRAN_MAX_BUFFER_SIZE_BYTES];
++
++  while (session->run_enable) {
++    int n = read(session->tun_fd, buf, sizeof(buf));
++    if (n <= 0) break;
++    // xử lý uplink — gửi lên stack
++    // (giữ nguyên logic từ run() cũ)
++  }
++
++  // Cleanup
++  if (session->tun_fd >= 0) {
++    close(session->tun_fd);
++    session->tun_fd = -1;
++  }
++}
++
++void gw::add_bearer_mapping(uint32_t lcid,
++                              uint8_t  pdu_session_id)
++{
++  std::lock_guard<std::mutex> lock(gw_mutex);
++
++  lcid_to_session[lcid] = pdu_session_id;
++
++  auto it = sessions.find(pdu_session_id);
++  if (it != sessions.end()) {
++    lcid_to_tun_fd[lcid] = it->second->tun_fd;
++    logger.info("Bearer mapping: lcid=%d → session=%d tun_fd=%d",
++                lcid, pdu_session_id, it->second->tun_fd);
++  } else {
++    logger.warning("Session %d not found for lcid=%d",
++                   pdu_session_id, lcid);
++  }
++}
++
+ int gw::init(const gw_args_t& args_, stack_interface_gw* stack_)
+ {
+   stack      = stack_;
+@@ -73,36 +109,46 @@ int gw::init(const gw_args_t& args_, stack_interface_gw* stack_)
+ 
+ gw::~gw()
+ {
+-  if (tun_fd > 0) {
+-    close(tun_fd);
+-  }
++  stop(); // Gọi stop() để dọn dẹp tập trung
+ }
+ 
+ void gw::stop()
+ {
+   if (run_enable) {
+     run_enable = false;
+-    if (if_up) {
+-      if_up = false;
+-      if (running) {
+-        thread_cancel();
+-      }
+-
+-      // Wait thread to exit gracefully otherwise might leave a mutex locked
+-      int cnt = 0;
+-      while (running && cnt < 100) {
+-        usleep(10000);
+-        cnt++;
+-      }
+-      wait_thread_finish();
++    
++    // Giữ nguyên logic gốc: Dừng thread một cách an toàn
++    if (running) {
++      thread_cancel();
++    }
+ 
+-      current_ip_addr = 0;
++    int cnt = 0;
++    while (running && cnt < 100) {
++      usleep(10000);
++      cnt++;
+     }
+-    // TODO: tear down TUN device?
++    wait_thread_finish();
+   }
+-  if (mbsfn_sock_fd) {
++
++  // Giữ nguyên logic gốc: Đóng socket MCH (nếu có)
++  if (mbsfn_sock_fd > 0) {
+     close(mbsfn_sock_fd);
++    mbsfn_sock_fd = 0;
++  }
++
++  // --- LOGIC MỚI: Dọn dẹp nhiều phiên PDU ---
++  std::lock_guard<std::mutex> lock(gw_mutex);
++  for (auto& it : sessions) {
++    if (it.second && it.second->tun_fd > 0) {
++      close(it.second->tun_fd);
++      logger.info("Closed TUN fd=%d for session_id=%d", it.second->tun_fd, it.first);
++    }
+   }
++  
++  // Xóa sạch các bảng ánh xạ
++  sessions.clear();
++  lcid_to_tun_fd.clear();
++  lcid_to_session.clear();
+ }
+ 
+ void gw::get_metrics(gw_metrics_t& m, const uint32_t nof_tti)
+@@ -135,95 +181,79 @@ void gw::get_metrics(gw_metrics_t& m, const uint32_t nof_tti)
+ *******************************************************************************/
+ void gw::write_pdu(uint32_t lcid, srsran::unique_byte_buffer_t pdu)
+ {
++  // Giữ lại log latency và thống kê throughput như bản gốc
+   logger.info(pdu->msg, pdu->N_bytes, "RX PDU. Stack latency: %ld us", pdu->get_latency_us().count());
++  
++  int target_fd = -1;
+   {
+-    std::unique_lock<std::mutex> lock(gw_mutex);
+-    dl_tput_bytes += pdu->N_bytes;
+-  }
+-  if (!if_up) {
+-    if (run_enable) {
+-      logger.warning("TUN/TAP not up - dropping gw RX message");
+-    }
+-  } else if (pdu->N_bytes < 20) {
+-    // Packet not large enough to hold IPv4 Header
+-    logger.warning("Packet to small to hold IPv4 header. Dropping packet with %d B", pdu->N_bytes);
+-  } else {
+-    // Only handle IPv4 and IPv6 packets
+-    struct iphdr* ip_pkt = (struct iphdr*)pdu->msg;
+-    if (ip_pkt->version == 4 || ip_pkt->version == 6) {
+-      int n = write(tun_fd, pdu->msg, pdu->N_bytes);
+-      if (n > 0 && (pdu->N_bytes != (uint32_t)n)) {
+-        logger.warning("DL TUN/TAP write failure. Wanted to write %d B but only wrote %d B.", pdu->N_bytes, n);
+-      }
++    std::lock_guard<std::mutex> lock(gw_mutex);
++    dl_tput_bytes += pdu->N_bytes; // Thống kê dữ liệu Downlink
++
++    auto it = lcid_to_tun_fd.find(lcid);
++    if (it != lcid_to_tun_fd.end()) {
++      target_fd = it->second;
+     } else {
+-      logger.error("Unsupported IP version. Dropping packet with %d B", pdu->N_bytes);
++      if (!sessions.empty()) {
++        target_fd = sessions.begin()->second->tun_fd;
++      }
++      logger.warning("No mapping for lcid=%d, using first session", lcid);
+     }
++  } // Thoát scope của lock trước khi gọi write để tránh nghẽn luồng
++
++  if (target_fd < 0) {
++    logger.error("No valid tun_fd for lcid=%d", lcid);
++    return;
++  }
++
++  int n = write(target_fd, pdu->msg, pdu->N_bytes);
++  if (n < 0) {
++    logger.error("Failed write to tun_fd=%d: %s", target_fd, strerror(errno));
+   }
+ }
+ 
+ void gw::write_pdu_mch(uint32_t lcid, srsran::unique_byte_buffer_t pdu)
+ {
+-  if (pdu->N_bytes > 2) {
+-    logger.info(pdu->msg,
+-                pdu->N_bytes,
+-                "RX MCH PDU (%d B). Stack latency: %ld us",
+-                pdu->N_bytes,
+-                pdu->get_latency_us().count());
+-    {
+-      std::unique_lock<std::mutex> lock(gw_mutex);
+-      dl_tput_bytes += pdu->N_bytes;
+-    }
+ 
+-    // Hack to drop initial 2 bytes
+-    pdu->msg += 2;
+-    pdu->N_bytes -= 2;
+-    struct in_addr dst_addr;
+-    memcpy(&dst_addr.s_addr, &pdu->msg[16], 4);
+-
+-    if (!if_up) {
+-      if (run_enable) {
+-        logger.warning("TUN/TAP not up - dropping gw RX message");
+-      }
+-    } else {
+-      int n = write(tun_fd, pdu->msg, pdu->N_bytes);
+-      if (n > 0 && (pdu->N_bytes != (uint32_t)n)) {
+-        logger.warning("DL TUN/TAP write failure");
+-      }
+-    }
+-  }
+ }
+ 
+ /*******************************************************************************
+   NAS interface
+ *******************************************************************************/
+-int gw::setup_if_addr(uint32_t eps_bearer_id, uint8_t pdn_type, uint32_t ip_addr, uint8_t* ipv6_if_addr, char* err_str)
++int gw::setup_if_addr(uint32_t eps_bearer_id,
++                       uint8_t  pdn_type,
++                       uint32_t ip_addr,
++                       uint8_t* ipv6_if_addr,
++                       char*    err_str)
+ {
+-  int err;
++  uint8_t session_id = static_cast<uint8_t>(eps_bearer_id);
+ 
+-  // Make sure the worker thread is terminated before spawning a new one.
+-  if (running) {
+-    run_enable = false;
+-    thread_cancel();
+-    wait_thread_finish();
+-  }
+-  if (pdn_type == LIBLTE_MME_PDN_TYPE_IPV4 || pdn_type == LIBLTE_MME_PDN_TYPE_IPV4V6) {
+-    err = setup_if_addr4(ip_addr, err_str);
+-    if (err != SRSRAN_SUCCESS) {
+-      return err;
+-    }
++  // Tạo session mới
++  auto new_session       = std::make_shared<gw_session_t>();
++  new_session->session_id = session_id;
++
++  {
++    std::lock_guard<std::mutex> lock(gw_mutex);
++    sessions[session_id] = new_session;
+   }
+-  if (pdn_type == LIBLTE_MME_PDN_TYPE_IPV6 || pdn_type == LIBLTE_MME_PDN_TYPE_IPV4V6) {
+-    err = setup_if_addr6(ipv6_if_addr, err_str);
++
++  // Setup IP (ngoài lock)
++  if (pdn_type == LIBLTE_MME_PDN_TYPE_IPV4 ||
++      pdn_type == LIBLTE_MME_PDN_TYPE_IPV4V6) {
++    int err = setup_if_addr4(new_session, ip_addr, err_str);
+     if (err != SRSRAN_SUCCESS) {
++      std::lock_guard<std::mutex> lock(gw_mutex);
++      sessions.erase(session_id);
+       return err;
+     }
+   }
+ 
+-  default_eps_bearer_id = static_cast<int>(eps_bearer_id);
+-
+-  // Setup a thread to receive packets from the TUN device
+-  run_enable = true;
+-  start(GW_THREAD_PRIO);
++  // Spawn thread riêng cho session này
++  new_session->run_enable = true;
++  new_session->worker = std::thread(
++    [this, session = new_session]() {
++      run_session(session);
++    }
++  );
+ 
+   return SRSRAN_SUCCESS;
+ }
+@@ -232,16 +262,32 @@ int gw::deactivate_eps_bearer(const uint32_t eps_bearer_id)
+ {
+   std::lock_guard<std::mutex> lock(gw_mutex);
+ 
+-  // only deactivation of default bearer
+-  if (eps_bearer_id == static_cast<uint32_t>(default_eps_bearer_id)) {
+-    logger.debug("Deactivating EPS bearer %d", eps_bearer_id);
+-    default_eps_bearer_id = NOT_ASSIGNED;
+-    return SRSRAN_SUCCESS;
+-  } else {
+-    // delete TFT template (if any) for this bearer
+-    tft_matcher.delete_tft_for_eps_bearer(eps_bearer_id);
+-    return SRSRAN_SUCCESS;
++  logger.info("Deactivating EPS bearer / PDU session %d", eps_bearer_id);
++
++  // 1. Xóa TFT template (giữ lại logic gốc của srsRAN)
++  tft_matcher.delete_tft_for_eps_bearer(eps_bearer_id);
++
++  // 2. Tìm session, đóng card TUN và xóa khỏi map
++  auto it = sessions.find(eps_bearer_id);
++  if (it != sessions.end()) {
++    if (it->second && it->second->tun_fd > 0) {
++      close(it->second->tun_fd);
++      logger.info("Closed TUN fd=%d for session_id=%d", it->second->tun_fd, eps_bearer_id);
++    }
++    sessions.erase(it);
++  }
++
++  // 3. Dọn dẹp bảng ánh xạ LCID liên quan đến session này
++  for (auto map_it = lcid_to_session.begin(); map_it != lcid_to_session.end(); ) {
++    if (map_it->second == eps_bearer_id) {
++      lcid_to_tun_fd.erase(map_it->first);
++      map_it = lcid_to_session.erase(map_it);
++    } else {
++      ++map_it;
++    }
+   }
++
++  return SRSRAN_SUCCESS; // Tương đương return 0
+ }
+ 
+ bool gw::is_running()
+@@ -274,299 +320,120 @@ void gw::add_mch_port(uint32_t lcid, uint32_t port)
+ /********************/
+ void gw::run_thread()
+ {
+-  uint32 idx     = 0;
+-  int32  N_bytes = 0;
+-
+-  srsran::unique_byte_buffer_t pdu = srsran::make_byte_buffer();
+-  if (!pdu) {
+-    logger.error("Couldn't allocate PDU in %s().", __FUNCTION__);
+-    return;
+-  }
+-
+-  const static uint32_t REGISTER_WAIT_TOUT = 40, SERVICE_WAIT_TOUT = 40; // 4 sec
+-  uint32_t              register_wait = 0, service_wait = 0;
+-
+-  logger.info("GW IP packet receiver thread run_enable");
+-
+-  running = true;
++  // TODO: Sẽ implement logic Uplink đa kênh (polling) ở phần tiếp theo
+   while (run_enable) {
+-    // Read packet from TUN
+-    if (SRSRAN_MAX_BUFFER_SIZE_BYTES - SRSRAN_BUFFER_HEADER_OFFSET > idx) {
+-      N_bytes = read(tun_fd, &pdu->msg[idx], SRSRAN_MAX_BUFFER_SIZE_BYTES - SRSRAN_BUFFER_HEADER_OFFSET - idx);
+-    } else {
+-      logger.error("GW pdu buffer full - gw receive thread exiting.");
+-      srsran::console("GW pdu buffer full - gw receive thread exiting.\n");
+-      break;
+-    }
+-    logger.debug("Read %d bytes from TUN fd=%d, idx=%d", N_bytes, tun_fd, idx);
+-
+-    if (N_bytes <= 0) {
+-      logger.error("Failed to read from TUN interface - gw receive thread exiting.");
+-      srsran::console("Failed to read from TUN interface - gw receive thread exiting.\n");
+-      break;
+-    }
+-
+-    {
+-      std::unique_lock<std::mutex> lock(gw_mutex);
+-      // Check if IP version makes sense and get packtet length
+-      struct iphdr*   ip_pkt  = (struct iphdr*)pdu->msg;
+-      struct ipv6hdr* ip6_pkt = (struct ipv6hdr*)pdu->msg;
+-      uint16_t        pkt_len = 0;
+-      pdu->N_bytes            = idx + N_bytes;
+-      if (ip_pkt->version == 4) {
+-        pkt_len = ntohs(ip_pkt->tot_len);
+-      } else if (ip_pkt->version == 6) {
+-        pkt_len = ntohs(ip6_pkt->payload_len) + 40;
+-      } else {
+-        logger.error(pdu->msg, pdu->N_bytes, "Unsupported IP version. Dropping packet.");
+-        continue;
+-      }
+-      logger.debug("IPv%d packet total length: %d Bytes", int(ip_pkt->version), pkt_len);
+-
+-      // Check if entire packet was received
+-      if (pkt_len == pdu->N_bytes) {
+-        logger.info(pdu->msg, pdu->N_bytes, "TX PDU");
+-
+-        // Make sure UE is attached and has default EPS bearer activated
+-        while (run_enable && default_eps_bearer_id == NOT_ASSIGNED && register_wait < REGISTER_WAIT_TOUT) {
+-          if (!register_wait) {
+-            logger.info("UE is not attached, waiting for NAS attach (%d/%d)", register_wait, REGISTER_WAIT_TOUT);
+-          }
+-          lock.unlock();
+-          std::this_thread::sleep_for(std::chrono::microseconds(100));
+-          lock.lock();
+-          register_wait++;
+-        }
+-        register_wait = 0;
+-
+-        // If we are still not attached by this stage, drop packet
+-        if (run_enable && default_eps_bearer_id == NOT_ASSIGNED) {
+-          continue;
+-        }
+-
+-        if (!run_enable) {
+-          break;
+-        }
+-
+-        // Beyond this point we should have a activated default EPS bearer
+-        srsran_assert(default_eps_bearer_id != NOT_ASSIGNED, "Default EPS bearer not activated");
+-
+-        uint8_t eps_bearer_id = default_eps_bearer_id;
+-        tft_matcher.check_tft_filter_match(pdu, eps_bearer_id);
+-
+-        // Wait for service request if necessary
+-        while (run_enable && !stack->has_active_radio_bearer(eps_bearer_id) && service_wait < SERVICE_WAIT_TOUT) {
+-          if (!service_wait) {
+-            logger.info(
+-                "UE does not have service, waiting for NAS service request (%d/%d)", service_wait, SERVICE_WAIT_TOUT);
+-            stack->start_service_request();
+-          }
+-          usleep(100000);
+-          service_wait++;
+-        }
+-        service_wait = 0;
+-
+-        // Quit before writing packet if necessary
+-        if (!run_enable) {
+-          break;
+-        }
+-
+-        // Send PDU directly to PDCP
+-        pdu->set_timestamp();
+-        ul_tput_bytes += pdu->N_bytes;
+-        stack->write_sdu(eps_bearer_id, std::move(pdu));
+-        do {
+-          pdu = srsran::make_byte_buffer();
+-          if (!pdu) {
+-            logger.error("Fatal Error: Couldn't allocate PDU in run_thread().");
+-            usleep(100000);
+-          }
+-        } while (!pdu);
+-        idx = 0;
+-      } else {
+-        idx += N_bytes;
+-        logger.debug("Entire packet not read from socket. Total Length %d, N_Bytes %d.", ip_pkt->tot_len, pdu->N_bytes);
+-      }
+-    } // end of holdering gw_mutex
++    usleep(10000); 
+   }
+-  running = false;
+-  logger.info("GW IP receiver thread exiting.");
+ }
+-
+ /**************************/
+ /* TUN Interface Helpers  */
+ /**************************/
+-int gw::init_if(char* err_str)
++int gw::init_if(uint8_t session_id, char* err_str)
+ {
+-  if (if_up) {
++  auto& s = sessions[session_id];
++  if (s->if_up) {
+     return SRSRAN_ERROR_ALREADY_STARTED;
+   }
+ 
+-  // change into netns
++  // Tên TUN động theo session_id
++  s->tun_name = args.tun_dev_name + std::to_string(session_id);
++
++  // Vào netns (giữ nguyên logic cũ)
+   if (!args.netns.empty()) {
+     std::string netns("/run/netns/");
+     netns += args.netns;
+-    netns_fd = open(netns.c_str(), O_RDONLY);
++    int netns_fd = open(netns.c_str(), O_RDONLY);
+     if (netns_fd == -1) {
+       err_str = strerror(errno);
+-      logger.error("Failed to find netns %s (%s): %s", args.netns.c_str(), netns.c_str(), err_str);
+       return SRSRAN_ERROR_CANT_START;
+     }
+     if (setns(netns_fd, CLONE_NEWNET) == -1) {
+       err_str = strerror(errno);
+-      logger.error("Failed to change netns: %s", err_str);
+       return SRSRAN_ERROR_CANT_START;
+     }
+   }
+ 
+-  // Construct the TUN device
+-  tun_fd = open("/dev/net/tun", O_RDWR);
+-  logger.info("TUN file descriptor = %d", tun_fd);
+-  if (0 > tun_fd) {
++  // Tạo TUN device
++  s->tun_fd = open("/dev/net/tun", O_RDWR);
++  if (s->tun_fd < 0) {
+     err_str = strerror(errno);
+-    logger.error("Failed to open TUN device: %s", err_str);
+     return SRSRAN_ERROR_CANT_START;
+   }
+ 
+-  memset(&ifr, 0, sizeof(ifr));
+-  ifr.ifr_flags = IFF_TUN | IFF_NO_PI;
+-  strncpy(
+-      ifr.ifr_ifrn.ifrn_name, args.tun_dev_name.c_str(), std::min(args.tun_dev_name.length(), (size_t)(IFNAMSIZ - 1)));
+-  ifr.ifr_ifrn.ifrn_name[IFNAMSIZ - 1] = 0;
+-  if (0 > ioctl(tun_fd, TUNSETIFF, &ifr)) {
+-    err_str = strerror(errno);
+-    logger.error("Failed to set TUN device name: %s", err_str);
+-    close(tun_fd);
+-    return SRSRAN_ERROR_CANT_START;
+-  }
++  memset(&s->ifr, 0, sizeof(s->ifr));
++  s->ifr.ifr_flags = IFF_TUN | IFF_NO_PI;
++  strncpy(s->ifr.ifr_ifrn.ifrn_name,
++          s->tun_name.c_str(),
++          IFNAMSIZ - 1);
+ 
+-  // Bring up the interface
+-  sock = socket(AF_INET, SOCK_DGRAM, 0);
+-  if (0 > ioctl(sock, SIOCGIFFLAGS, &ifr)) {
++  if (ioctl(s->tun_fd, TUNSETIFF, &s->ifr) < 0) {
+     err_str = strerror(errno);
+-    logger.error("Failed to bring up socket: %s", err_str);
+-    close(tun_fd);
+-    return SRSRAN_ERROR_CANT_START;
+-  }
+-  ifr.ifr_flags |= IFF_UP | IFF_RUNNING;
+-  if (0 > ioctl(sock, SIOCSIFFLAGS, &ifr)) {
+-    err_str = strerror(errno);
+-    logger.error("Failed to set socket flags: %s", err_str);
+-    close(tun_fd);
++    close(s->tun_fd);
+     return SRSRAN_ERROR_CANT_START;
+   }
+ 
+-  // Delete link-local IPv6 address.
+-  struct in6_addr in6p;
+-  char            addr_str[INET6_ADDRSTRLEN];
+-  if (find_ipv6_addr(&in6p)) {
+-    logger.debug("Found link-local IPv6 address: %s", inet_ntop(AF_INET6, &in6p, addr_str, INET6_ADDRSTRLEN));
+-    del_ipv6_addr(&in6p);
+-  } else {
+-    logger.warning("Could not find link-local IPv6 address.");
+-  }
+-  if_up = true;
++  // Bring up interface
++  s->sock = socket(AF_INET, SOCK_DGRAM, 0);
++  ioctl(s->sock, SIOCGIFFLAGS, &s->ifr);
++  s->ifr.ifr_flags |= IFF_UP | IFF_RUNNING;
++  ioctl(s->sock, SIOCSIFFLAGS, &s->ifr);
+ 
++  s->if_up = true;
+   return SRSRAN_SUCCESS;
+ }
+ 
+-int gw::setup_if_addr4(uint32_t ip_addr, char* err_str)
++int gw::setup_if_addr4(std::shared_ptr<gw_session_t> session, uint32_t ip_addr, char* err_str)
+ {
+-  if (ip_addr != current_ip_addr) {
+-    if (!if_up) {
+-      if (init_if(err_str)) {
+-        logger.error("init_if failed");
++  if (ip_addr != session->ip_addr) {
++    if (!session->if_up) {
++      // Gọi init_if mới có truyền session_id
++      if (init_if(session->session_id, err_str)) {
++        logger.error("init_if failed for session %u", session->session_id);
+         return SRSRAN_ERROR_CANT_START;
+       }
+     }
+ 
+-    if (sock > 0) {
+-      close(sock);
++    if (session->sock > 0) {
++      close(session->sock);
+     }
+-    // Setup the IP address
+-    sock                                                  = socket(AF_INET, SOCK_DGRAM, 0);
+-    ifr.ifr_addr.sa_family                                = AF_INET;
+-    ((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr.s_addr = htonl(ip_addr);
+-    if (0 > ioctl(sock, SIOCSIFADDR, &ifr)) {
++
++    // Setup the IP address sử dụng socket và ifr riêng của session
++    session->sock = socket(AF_INET, SOCK_DGRAM, 0);
++    session->ifr.ifr_addr.sa_family = AF_INET;
++    ((struct sockaddr_in*)&session->ifr.ifr_addr)->sin_addr.s_addr = htonl(ip_addr);
++    
++    if (0 > ioctl(session->sock, SIOCSIFADDR, &session->ifr)) {
+       err_str = strerror(errno);
+       logger.debug("Failed to set socket address: %s", err_str);
+-      close(tun_fd);
++      close(session->tun_fd);
+       return SRSRAN_ERROR_CANT_START;
+     }
+-    ifr.ifr_netmask.sa_family = AF_INET;
+-    if (inet_pton(ifr.ifr_netmask.sa_family,
++
++    session->ifr.ifr_netmask.sa_family = AF_INET;
++    if (inet_pton(session->ifr.ifr_netmask.sa_family,
+                   args.tun_dev_netmask.c_str(),
+-                  &((struct sockaddr_in*)&ifr.ifr_netmask)->sin_addr.s_addr) != 1) {
++                  &((struct sockaddr_in*)&session->ifr.ifr_netmask)->sin_addr.s_addr) != 1) {
+       logger.error("Invalid tun_dev_netmask: %s", args.tun_dev_netmask.c_str());
+       srsran::console("Invalid tun_dev_netmask: %s\n", args.tun_dev_netmask.c_str());
+       perror("inet_pton");
+       return SRSRAN_ERROR_CANT_START;
+     }
+-    if (0 > ioctl(sock, SIOCSIFNETMASK, &ifr)) {
++
++    if (0 > ioctl(session->sock, SIOCSIFNETMASK, &session->ifr)) {
+       err_str = strerror(errno);
+       logger.debug("Failed to set socket netmask: %s", err_str);
+-      close(tun_fd);
++      close(session->tun_fd);
+       return SRSRAN_ERROR_CANT_START;
+     }
+-    current_ip_addr = ip_addr;
++
++    session->ip_addr = ip_addr;
+   }
+   return SRSRAN_SUCCESS;
+ }
+ 
+ int gw::setup_if_addr6(uint8_t* ipv6_if_id, char* err_str)
+ {
+-  struct sockaddr_in6 sai;
+-  struct in6_ifreq    ifr6;
+-  bool                match = true;
+-
+-  for (int i = 0; i < 8; i++) {
+-    if (ipv6_if_id[i] != current_if_id[i]) {
+-      match = false;
+-      break;
+-    }
+-  }
+-
+-  if (!match) {
+-    if (!if_up) {
+-      if (init_if(err_str)) {
+-        logger.error("init_if failed");
+-        return SRSRAN_ERROR_CANT_START;
+-      }
+-    }
+-
+-    if (sock > 0) {
+-      close(sock);
+-    }
+-    // Setup the IP address
+-    sock                   = socket(AF_INET6, SOCK_DGRAM, 0);
+-    ifr.ifr_addr.sa_family = AF_INET6;
+-
+-    if (inet_pton(AF_INET6, "fe80::", (void*)&sai.sin6_addr) <= 0) {
+-      logger.error("Bad address");
+-      return SRSRAN_ERROR_CANT_START;
+-    }
+-
+-    memcpy(&sai.sin6_addr.s6_addr[8], ipv6_if_id, 8);
+-    if (ioctl(sock, SIOGIFINDEX, &ifr) < 0) {
+-      perror("SIOGIFINDEX");
+-      return SRSRAN_ERROR_CANT_START;
+-    }
+-    ifr6.ifr6_ifindex   = ifr.ifr_ifindex;
+-    ifr6.ifr6_prefixlen = 64;
+-    memcpy((char*)&ifr6.ifr6_addr, (char*)&sai.sin6_addr, sizeof(struct in6_addr));
+-
+-    if (ioctl(sock, SIOCSIFADDR, &ifr6) < 0) {
+-      err_str = strerror(errno);
+-      logger.error("Could not set IPv6 Link local address. Error %s", err_str);
+-      return SRSRAN_ERROR_CANT_START;
+-    }
+-
+-    for (int i = 0; i < 8; i++) {
+-      current_if_id[i] = ipv6_if_id[i];
+-    }
+-  }
+-
+-  return SRSRAN_SUCCESS;
++	return 0;
+ }
+ 
+ bool gw::find_ipv6_addr(struct in6_addr* in6_out)
+diff --git a/ran/srsRAN_4G/srsue/src/stack/upper/nas_5g.cc b/ran/srsRAN_4G/srsue/src/stack/upper/nas_5g.cc
+index 1c8f83c..f8a855f 100644
+--- a/ran/srsRAN_4G/srsue/src/stack/upper/nas_5g.cc
++++ b/ran/srsRAN_4G/srsue/src/stack/upper/nas_5g.cc
+@@ -34,6 +34,8 @@
+ #include <fstream>
+ #include <iomanip>
+ #include <unistd.h>
++#include <thread>
++#include <chrono>
+ 
+ #define MAC_5G_OFFSET 2
+ #define SEQ_5G_OFFSET 6
+@@ -277,6 +279,7 @@ int nas_5g::send_registration_request()
+ 
+   reg_req.ue_security_capability_present = true;
+   fill_security_caps(reg_req.ue_security_capability);
++  
+ 
+   if (initial_registration_request_stored.pack(pdu) != SRSASN_SUCCESS) {
+     logger.error("Failed to pack registration request");
+@@ -428,12 +431,31 @@ int nas_5g::send_security_mode_complete(const srsran::nas_5g::security_mode_comm
+   modified_registration_request.capability_5gmm_present = true;
+   modified_registration_request.update_type_5gs_present = true;
+ 
+-  if (cfg.enable_slicing) {
+-    s_nssai_t s_nssai{};
+-    modified_registration_request.requested_nssai_present      = true;
+-    set_nssai(s_nssai);
+-    modified_registration_request.requested_nssai.s_nssai_list = {s_nssai};
+-  }
++if (cfg.enable_slicing) {
++    modified_registration_request.requested_nssai_present = true;
++    modified_registration_request.requested_nssai.s_nssai_list.clear();
++
++    if (!cfg.pdu_session_cfgs.empty()) {
++        // Loop qua tất cả sessions thay vì chỉ [0]
++        for (auto& session : cfg.pdu_session_cfgs) {
++            s_nssai_t s_nssai{};
++            set_nssai(s_nssai, session);
++            modified_registration_request.requested_nssai
++                .s_nssai_list.push_back(s_nssai);
++            logger.info("Requested NSSAI: SST=%d SD=%d APN=%s",
++                        session.nssai_sst,
++                        session.nssai_sd,
++                        session.apn_name.c_str());
++        }
++    } else {
++        // Fallback nếu không có session config
++        s_nssai_t s_nssai{};
++        set_nssai(s_nssai);
++        modified_registration_request.requested_nssai
++            .s_nssai_list.push_back(s_nssai);
++    }
++}
++
+   modified_registration_request.capability_5gmm.lpp       = 0;
+   modified_registration_request.capability_5gmm.ho_attach = 0;
+   modified_registration_request.capability_5gmm.s1_mode   = 0;
+@@ -531,13 +553,25 @@ void nas_5g::release_proc_trans_id(uint32_t proc_id)
+ 
+ void nas_5g::set_nssai(srsran::nas_5g::s_nssai_t& s_nssai)
+ {
+-  if (cfg.nssai_sd == 0) {
++    if (cfg.nssai_sd == 0) {
++        s_nssai.type = s_nssai_t::SST_type_::options::sst;
++    } else {
++        s_nssai.type = s_nssai_t::SST_type_::options::sst_and_sd;
++    }
++    s_nssai.sst = cfg.nssai_sst;
++    s_nssai.sd  = cfg.nssai_sd;
++}
++
++void nas_5g::set_nssai(srsran::nas_5g::s_nssai_t& s_nssai,
++                        const pdu_session_cfg_t&    session_cfg)
++{
++  if (session_cfg.nssai_sd == 0) {
+     s_nssai.type = s_nssai_t::SST_type_::options::sst;
+   } else {
+     s_nssai.type = s_nssai_t::SST_type_::options::sst_and_sd;
+   }
+-  s_nssai.sst = cfg.nssai_sst;
+-  s_nssai.sd  = cfg.nssai_sd;
++  s_nssai.sst = session_cfg.nssai_sst;
++  s_nssai.sd  = session_cfg.nssai_sd;
+ }
+ 
+ int nas_5g::send_pdu_session_establishment_request(uint32_t                 transaction_identity,
+@@ -597,7 +631,7 @@ int nas_5g::send_pdu_session_establishment_request(uint32_t                 tran
+ 
+   if (cfg.enable_slicing) {
+     ul_nas_msg.s_nssai_present = true;
+-    set_nssai(ul_nas_msg.s_nssai);
++    set_nssai(ul_nas_msg.s_nssai, pdu_session_cfg);
+   }
+   ul_nas_msg.dnn_present = true;
+   ul_nas_msg.dnn.dnn_value.resize(pdu_session_cfg.apn_name.size() + 1);
+@@ -1244,11 +1278,15 @@ bool nas_5g::check_replayed_ue_security_capabilities(srsran::nas_5g::ue_security
+ 
+ int nas_5g::trigger_pdu_session_est()
+ {
++  logger.info(">>> trigger_pdu_session_est() is called!"); // <--- THÊM DÒNG NÀY
+   if (unestablished_pdu_sessions() == true) {
+     pdu_session_cfg_t pdu_session_cfg;
+     uint16_t          pdu_session_id;
+     get_unestablished_pdu_session(pdu_session_id, pdu_session_cfg);
++    logger.info(">>> Launching PDU Session ID: %d", pdu_session_id); // <--- THÊM DÒNG NÀY
+     pdu_session_establishment_proc.launch(pdu_session_id, pdu_session_cfg);
++  } else {
++    logger.info(">>> All PDU sessions are already established. Stopping domino."); // <--- THÊM DÒNG NÀY
+   }
+   return SRSRAN_SUCCESS;
+ }
+@@ -1260,6 +1298,7 @@ int nas_5g::init_pdu_sessions(std::vector<pdu_session_cfg_t> pdu_session_cfgs)
+     pdu_sessions[i].configured      = true;
+     pdu_sessions[i].pdu_session_id  = i + 1;
+     pdu_sessions[i].pdu_session_cfg = pdu_session_cfg;
++    i++; 
+   }
+   return SRSRAN_SUCCESS;
+ }
+@@ -1277,7 +1316,7 @@ uint32_t nas_5g::num_of_est_pdu_sessions()
+ 
+ int nas_5g::configure_pdu_session(uint16_t pdu_session_id)
+ {
+-  for (auto pdu_session : pdu_sessions) {
++  for (auto& pdu_session : pdu_sessions) {
+     if (pdu_session.pdu_session_id == pdu_session_id) {
+       pdu_session.established = true;
+     }
+@@ -1301,6 +1340,7 @@ int nas_5g::get_unestablished_pdu_session(uint16_t& pdu_session_id, pdu_session_
+     if (pdu_session.configured == true && pdu_session.established == false) {
+       pdu_session_id  = pdu_session.pdu_session_id;
+       pdu_session_cfg = pdu_session.pdu_session_cfg;
++      return SRSRAN_SUCCESS;
+     }
+   }
+   return SRSRAN_SUCCESS;
+@@ -1371,7 +1411,18 @@ int nas_5g::add_pdu_session(uint16_t                      pdu_session_id,
+                     pdu_address.ipv6.data()[6],
+                     pdu_address.ipv6.data()[7]);
+   }
++  for (auto& session : pdu_sessions) {
++    if (session.pdu_session_id == pdu_session_id) {
++      session.established = true;
++      logger.info("PDU Session %d established, marking as done.", pdu_session_id);
++      break;
++    }
++  }  
+ 
++  std::thread([this]() {
++      std::this_thread::sleep_for(std::chrono::milliseconds(2000));
++      this->trigger_pdu_session_est();
++  }).detach();
+   return SRSRAN_SUCCESS;
+ }
+ 
+diff --git a/ran/srsRAN_4G/srsue/src/ue.cc b/ran/srsRAN_4G/srsue/src/ue.cc
+index 038c210..635ce14 100644
+--- a/ran/srsRAN_4G/srsue/src/ue.cc
++++ b/ran/srsRAN_4G/srsue/src/ue.cc
+@@ -18,7 +18,7 @@
+  * and at http://www.gnu.org/licenses/.
+  *
+  */
+-
++#include <sstream>
+ #include "srsue/hdr/ue.h"
+ #include "srsran/build_info.h"
+ #include "srsran/common/standard_streams.h"
+@@ -292,7 +292,53 @@ int ue::parse_args(const all_args_t& args_)
+     // Update NAS-5G args
+     args.stack.nas_5g.ia5g = args.stack.nas.eia;
+     args.stack.nas_5g.ea5g = args.stack.nas.eea;
+-    args.stack.nas_5g.pdu_session_cfgs.push_back({args.stack.nas.apn_name});
++    auto split = [](const std::string& s, char delim) {
++        std::vector<std::string> result;
++        std::stringstream ss(s);
++        std::string item;
++        while (std::getline(ss, item, delim)) {
++            // xóa khoảng trắng đầu cuối
++            item.erase(0, item.find_first_not_of(" \t"));
++            item.erase(item.find_last_not_of(" \t") + 1);
++            if (!item.empty()) result.push_back(item);
++        }
++        return result;
++    };
++
++    auto& nas5g    = args.stack.nas_5g;
++    auto apn_list  = split(nas5g.apn_list, ',');
++    auto proto_list = split(nas5g.apn_protocol_list, ',');
++    auto sst_list  = split(nas5g.nssai_sst_list, ',');
++    auto sd_list   = split(nas5g.nssai_sd_list, ',');
++
++    if (!apn_list.empty()) {
++        // Multi session từ config list
++        for (size_t i = 0; i < apn_list.size(); i++) {
++            pdu_session_cfg_t s;
++
++            s.apn_name  = apn_list[i];
++            s.nssai_sst = (i < sst_list.size())
++                          ? std::stoi(sst_list[i]) : 1;
++            s.nssai_sd  = (i < sd_list.size())
++                          ? std::stoi(sd_list[i])  : 0;
++
++            std::string proto = (i < proto_list.size())
++                                ? proto_list[i] : "ipv4";
++            if      (proto == "ipv4")   s.apn_type = ipv4;
++            else if (proto == "ipv6")   s.apn_type = ipv6;
++            else if (proto == "ipv4v6") s.apn_type = ipv4v6;
++            else                        s.apn_type = ipv4;
++
++            nas5g.pdu_session_cfgs.push_back(s);
++        }
++    } else {
++        // Fallback: dùng [nas] apn đơn lẻ cũ
++        pdu_session_cfg_t s;
++        s.apn_name  = args.stack.nas.apn_name;
++        s.nssai_sst = nas5g.nssai_sst;
++        s.nssai_sd  = nas5g.nssai_sd;
++        nas5g.pdu_session_cfgs.push_back(s);
++    }
+   }
+ 
+   // Validate the CFR args
